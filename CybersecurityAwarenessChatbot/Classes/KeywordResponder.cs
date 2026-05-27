@@ -3,10 +3,6 @@
     ST10073464
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace CybersecurityAwarenessChatbot.Classes
 {
     /// Handles cybersecurity keyword recognition and random responses.
