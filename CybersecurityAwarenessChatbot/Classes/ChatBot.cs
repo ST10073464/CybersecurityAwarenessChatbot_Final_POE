@@ -3,8 +3,7 @@
     ST10073464
 */
 
-using System;
-using System.Collections.Generic;
+using CybersecurityAwarenessChatbot.Classes;
 
 namespace CybersecurityAwarenessChatbot.Classes
 {
