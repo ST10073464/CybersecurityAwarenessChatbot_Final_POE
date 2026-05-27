@@ -355,15 +355,12 @@ This project includes GitHub Actions workflows for:
 
 ## screenshot of the WPF Chatbot Interface
 
-![CybersecurityAwarenessChatbot] (images/ActiveWindows.jpeg)
+![CybersecurityAwarenessChatbot] (images/ActiveWindows.png)
 
 ## Document of how to Clone the Repository and Run the WPF Application
 
 ![CybersecurityAwarenessChatbot] (instructions/How to Clone Part 2_ST10073464.pdf)
 
-## video demonstration of how to clone from github and run the WPF application
-
-[CybersecurityAwarenessChatbot] (instructions/How to Clone Part 2_ST10073464.mp4)
 
 ### Github Repository Link:
 
