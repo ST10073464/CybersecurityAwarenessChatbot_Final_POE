@@ -3,6 +3,8 @@
     ST10073464
 */
 
+using CybersecurityAwarenessChatbot.Classes;
+
 namespace CybersecurityAwarenessChatbot.Classes
 {
     // Possible user emotions.
