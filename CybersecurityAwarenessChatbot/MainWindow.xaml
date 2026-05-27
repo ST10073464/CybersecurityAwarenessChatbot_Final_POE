@@ -5,8 +5,237 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CybersecurityAwarenessChatbot"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Height="950"
+        Width="1600"
+        WindowStartupLocation="CenterScreen"
+        Background="#07111F"
+        WindowState="Maximized">
+
+    <!-- ========================================================= -->
+    <!-- RESOURCES -->
+    <!-- ========================================================= -->
+
+    <Window.Resources>
+
+        <!-- Rounded Cyber Button -->
+        <Style x:Key="CyberButton" TargetType="Button">
+
+            <Setter Property="Background" Value="#00C2FF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+
+        </Style>
+
+    </Window.Resources>
+
+    <!-- ========================================================= -->
+    <!-- MAIN GRID -->
+    <!-- ========================================================= -->
+
+    <Grid Margin="12">
+
+        <Grid.RowDefinitions>
+
+            <!-- SMALLER HEADER -->
+            <RowDefinition Height="150"/>
+
+            <!-- BIGGER CHAT AREA -->
+            <RowDefinition Height="*"/>
+
+            <!-- SMALLER INPUT -->
+            <RowDefinition Height="90"/>
+
+        </Grid.RowDefinitions>
+
+        <!-- ========================================================= -->
+        <!-- HEADER AREA -->
+        <!-- ========================================================= -->
+
+        <Border Grid.Row="0"
+                Background="#10263A"
+                CornerRadius="20"
+                Padding="10"
+                BorderBrush="#00C2FF"
+                BorderThickness="2">
+
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+
+                    <!-- ASCII -->
+                    <ColumnDefinition Width="3*"/>
+
+                    <!-- FEATURES -->
+                    <ColumnDefinition Width="2*"/>
+
+                </Grid.ColumnDefinitions>
+
+                <!-- ================================================= -->
+                <!-- ASCII SECTION -->
+                <!-- ================================================= -->
+
+                <StackPanel Grid.Column="0">
+
+                    <TextBlock Text="🔒 SECUREWIN CYBERSECURITY ASSISTANT 🔒"
+                               Foreground="#00E5FF"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Margin="370,0,0,8"/>
+
+                    <!-- ASCII ART -->
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto">
+
+                        <TextBlock x:Name="AsciiArtText"
+                                   Foreground="#7DF9FF"
+                                   FontFamily="Consolas"
+                                   FontSize="10"
+                                   FontWeight="Bold"
+                                   TextWrapping="NoWrap"
+                                   Margin="350,0,0,8"/>
+
+                    </ScrollViewer>
+
+                </StackPanel>
+
+                <!-- ================================================= -->
+                <!-- FEATURE DASHBOARD -->
+                <!-- ================================================= -->
+
+                <Border Grid.Column="1"
+                        Margin="12,0,0,0"
+                        Background="#0D1B2A"
+                        CornerRadius="18"
+                        Padding="15">
+
+                    <StackPanel>
+
+                        <TextBlock Text="🛡️ AVAILABLE FEATURES"
+                                   Foreground="#00E5FF"
+                                   FontSize="13"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,10"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="✅ Ransomware Safety" Foreground="White" FontSize="11" Margin="0,3"/>
+                                <TextBlock Text="✅ VPN Security" Foreground="White" FontSize="11" Margin="0,3"/>
+                                <TextBlock Text="✅ Malware Protection" Foreground="White" FontSize="11" Margin="0,3"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                <TextBlock Text="✅ Sentiment Detection" Foreground="White" FontSize="11" Margin="0,3"/>
+                                <TextBlock Text="✅ Smart Follow-up Conversations" Foreground="White" FontSize="11" Margin="0,3"/>
+                                <TextBlock Text="✅ Emoji Messaging" Foreground="White" FontSize="11" Margin="0,3"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2" Margin="10,0,0,0">
+                                <TextBlock Text="✅ Password Safety Tips" Foreground="White" FontSize="11" Margin="0,3"/>
+                                <TextBlock Text="✅ Phishing Detection" Foreground="White" FontSize="11" Margin="0,3"/>
+                                <TextBlock Text="✅ Scam Awareness" Foreground="White" FontSize="11" Margin="0,3"/>
+                            </StackPanel>
+
+                        </Grid>
+
+                    </StackPanel>
+
+                </Border>
+
+            </Grid>
+
+        </Border>
+
+        <!-- ========================================================= -->
+        <!-- CHAT SECTION -->
+        <!-- ========================================================= -->
+
+        <Border Grid.Row="1"
+                Margin="0,12"
+                Background="White"
+                CornerRadius="15"
+                Padding="10"
+                BorderBrush="#00C2FF"
+                BorderThickness="1.5">
+
+            <ScrollViewer x:Name="ChatScrollViewer"
+                          VerticalScrollBarVisibility="Auto">
+
+                <StackPanel x:Name="ChatPanel"/>
+
+            </ScrollViewer>
+
+        </Border>
+
+        <!-- ========================================================= -->
+        <!-- INPUT SECTION -->
+        <!-- ========================================================= -->
+
+        <Border Grid.Row="2"
+                Background="#10263A"
+                CornerRadius="20"
+                Padding="12">
+
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="140"/>
+
+                </Grid.ColumnDefinitions>
+
+                <!-- ================================================= -->
+                <!-- LEFT SIDE -->
+                <!-- ================================================= -->
+
+                <StackPanel Grid.Column="0">
+
+                    <!-- USER INPUT -->
+                    <TextBox x:Name="UserInputTextBox"
+                             Height="50"
+                             FontSize="20"
+                             Padding="10"
+                             Foreground="Black"
+                             Background="White"
+                             BorderBrush="#00C2FF"
+                             CaretBrush="White"
+                             KeyDown="UserInputTextBox_KeyDown"/>
+
+                    <TextBlock Text=" 🛡️ Protecting South African Citizens Online 🛡️" 
+                               Foreground="White" 
+                               FontSize="13" 
+                               Margin="600,0,0,8"/>
+
+                </StackPanel>
+
+                <!-- ================================================= -->
+                <!-- SEND BUTTON -->
+                <!-- ================================================= -->
+
+                <Button Grid.Column="1"
+                        x:Name="SendButton"
+                        Content="📨 SEND"
+                        Style="{StaticResource CyberButton}"
+                        Height="42"
+                        Width="95"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Click="SendButton_Click"/>
+
+            </Grid>
+
+        </Border>
 
     </Grid>
+
 </Window>
