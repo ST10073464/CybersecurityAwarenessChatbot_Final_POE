@@ -9,11 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="images\" />
-    <Folder Include="instructions\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Audio\hello.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
