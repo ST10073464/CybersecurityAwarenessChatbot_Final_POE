@@ -290,12 +290,11 @@ CybersecurityAwarenessChatbot/
 │   └── VoicePlayer.cs
 │
 ├── images/
-│   └── ActiveWindows.jpeg
+│   └── ActiveWindows.png
 │   └── gitworkflows.png
 │
 ├── instructions/
 │   └── How to Clone Part 2_ST10073464.pdf
-│   └── How to Clone Part 2_ST10073464.mp4
 │
 ├── .github/
 │   └── workflows/
@@ -337,7 +336,7 @@ Visual Studio 2022 or 2026
 
 1. Clone the repository
 - create a folder in the desktop and clone the repository in that folder
-- clone https://github.com/ST10073464/CybersecurityAwarenessChatbot_WPF
+- clone https://github.com/ST10073464/CybersecurityAwarenessChatbot_WPF_Part_2
 2. Build the Solution
 - Build → Build Solution
 4. Run the Application
@@ -367,7 +366,9 @@ This project includes GitHub Actions workflows for:
 [CybersecurityAwarenessChatbot] (instructions/How to Clone Part 2_ST10073464.mp4)
 
 ### Github Repository Link:
-https://github.com/ST10073464/CybersecurityAwarenessChatbot_Part_2_WPF
+
+https://github.com/ST10073464/CybersecurityAwarenessChatbot_WPF_Part_2
+
 
 ### Youtube Unlisted link:
 

@@ -90,6 +90,24 @@ namespace CybersecurityAwarenessChatbot
             // Smooth scroll
             ChatScrollViewer.ScrollToBottom();
         }
+        // Handles placeholder text behavior.
+        private void UserInputTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (UserInputTextBox.Text == "Type your message here...")
+            {
+                UserInputTextBox.Text = "";
+                UserInputTextBox.Foreground = Brushes.Black;
+            }
+        }
+        // Restores placeholder text if input is empty.
+        private void UserInputTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(UserInputTextBox.Text))
+            {
+                UserInputTextBox.Text = "Type your message here...";
+                UserInputTextBox.Foreground = Brushes.Gray;
+            }
+        }
 
         // Displays user message bubble.
         private void AppendUserMessage(string message)
