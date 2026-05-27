@@ -226,7 +226,7 @@
                         x:Name="SendButton"
                         Content="📨 SEND"
                         Style="{StaticResource CyberButton}"
-                        Height="42"
+                        Height="50"
                         Width="95"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center"
