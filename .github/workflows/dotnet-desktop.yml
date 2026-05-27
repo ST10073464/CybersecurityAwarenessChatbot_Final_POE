@@ -1,0 +1,39 @@
+name: CybersecurityAwarenessChatbot CI
+
+on:
+  push:
+    branches:
+      - master
+
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+
+      # Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Install .NET
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # Restore dependencies
+      - name: Restore project
+        run: dotnet restore CybersecurityAwarenessChatbot.slnx
+
+      # Build project
+      - name: Build project
+        run: dotnet build CybersecurityAwarenessChatbot.slnx --configuration Release --no-restore
+
+      # Workflow success message
+      - name: Success
+        run: echo "Build completed successfully!"
