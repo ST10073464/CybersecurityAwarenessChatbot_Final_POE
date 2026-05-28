@@ -60,7 +60,7 @@ namespace CybersecurityAwarenessChatbot
         {
             if (e.Key == Key.Enter)
             {
-                SendMessage();
+                SendButton_Click(sender, e);
             }
         }
 
@@ -91,23 +91,15 @@ namespace CybersecurityAwarenessChatbot
             ChatScrollViewer.ScrollToBottom();
         }
         // Handles placeholder text behavior.
-        private void UserInputTextBox_GotFocus(object sender, RoutedEventArgs e)
+        private void UserInputTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (UserInputTextBox.Text == "Type your message here...")
-            {
-                UserInputTextBox.Text = "";
-                UserInputTextBox.Foreground = Brushes.Black;
-            }
+            PlaceholderText.Visibility =
+                string.IsNullOrWhiteSpace(UserInputTextBox.Text)
+                ? Visibility.Visible
+                : Visibility.Hidden;
         }
-        // Restores placeholder text if input is empty.
-        private void UserInputTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(UserInputTextBox.Text))
-            {
-                UserInputTextBox.Text = "Type your message here...";
-                UserInputTextBox.Foreground = Brushes.Gray;
-            }
-        }
+
+      
 
         // Displays user message bubble.
         private void AppendUserMessage(string message)

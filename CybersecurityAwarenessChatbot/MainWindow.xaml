@@ -253,23 +253,33 @@
                 <!-- USER INPUT -->
                 <!-- ================================================= -->
 
-                <TextBox x:Name="UserInputTextBox"
-                         Grid.Row="0"
-                         Grid.Column="0"
-                         Height="60"
-                         FontSize="20"
-                         Padding="15"
-                         Margin="0,0,10,0"
-                         Foreground="Gray"
-                         Background="White"
-                         BorderBrush="#00C2FF"
-                         BorderThickness="2"
-                         CaretBrush="Black"
-                         VerticalAlignment="Center"
-                         Text="Type your message here..."
-                         GotFocus="UserInputTextBox_GotFocus"
-                         LostFocus="UserInputTextBox_LostFocus"
-                         KeyDown="UserInputTextBox_KeyDown"/>
+                <Grid Grid.Row="0" Grid.Column="0">
+
+                    <!-- TextBox -->
+                    <TextBox x:Name="UserInputTextBox"
+                             Height="60"
+                             FontSize="20"
+                             Padding="15"
+                             Margin="0,0,10,0"
+                             Foreground="Black"
+                             Background="White"
+                             BorderBrush="#00C2FF"
+                             BorderThickness="2"
+                             CaretBrush="Black"
+                             VerticalAlignment="Center"
+                             TextChanged="UserInputTextBox_TextChanged"
+                             KeyDown="UserInputTextBox_KeyDown"/>
+
+                    <!-- Placeholder Text -->
+                    <TextBlock x:Name="PlaceholderText"
+                               Text="Reply..."
+                               Foreground="Gray"
+                               FontSize="20"
+                               Margin="20,0,0,0"
+                               VerticalAlignment="Center"
+                               IsHitTestVisible="False"/>
+
+                </Grid>
 
                 <!-- ================================================= -->
                 <!-- SEND BUTTON -->
