@@ -5,6 +5,8 @@
 
 namespace CybersecurityAwarenessChatbot.Classes
 {
+    // Main chatbot engine.
+    // Controls memory, sentiment, keyword recognition, and conversation flow.
     public class ChatBot
     {
         private readonly KeywordResponder keywordResponder;
@@ -19,6 +21,7 @@ namespace CybersecurityAwarenessChatbot.Classes
 
         private string LastMatchedKeyword = "";
 
+        // Constructor
         public ChatBot()
         {
             keywordResponder = new KeywordResponder();
@@ -37,21 +40,14 @@ namespace CybersecurityAwarenessChatbot.Classes
 
         public string GetGreeting()
         {
-            return "👋 Welcome to SecureWin!\n\nWhat is your name?";
+            return "\n👋 Welcome to SecureWin!\n\nWhat is your name?";
         }
 
         public string ProcessInput(string input)
         {
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return "⚠️ Please enter a message.";
-            }
+            input = input.ToLower().Trim();
 
-            input = input.Trim();
-            string lowerInput = input.ToLower();
-
-            // NAME HANDLING
-
+            // CAPTURE USER NAME
             if (awaitingName)
             {
                 string previousName = memoryStore.UserName;
@@ -59,89 +55,171 @@ namespace CybersecurityAwarenessChatbot.Classes
                 memoryStore.RememberUserName(input);
                 awaitingName = false;
 
-                if (!string.IsNullOrEmpty(previousName) &&
-                    previousName.Equals(memoryStore.UserName, StringComparison.OrdinalIgnoreCase) &&
-                    memoryStore.ConversationHistory.Count > 0)
-                {
-                    return $"👋 Welcome back, {memoryStore.UserName}!\n\nHere are your previous chats:\n\n" +
-                           string.Join("\n", memoryStore.ConversationHistory);
-                }
+                if (
+                        !string.IsNullOrEmpty(previousName) &&
+                        previousName.Equals(memoryStore.UserName, StringComparison.OrdinalIgnoreCase) &&
+                        memoryStore.ConversationHistory.Count > 0
+                    )
 
-                return $"😊 Nice to meet you, {memoryStore.UserName}!\n\nYou can ask me about:\n" +
-                       $"🔒 Passwords\n🎣 Phishing\n🛡️ Privacy\n💻 Malware\n⚠️ Scams\n\nType 'exit' to leave.";
+                    {
+                        string previousChats =
+                        string.Join("\n", memoryStore.ConversationHistory);
+
+                        return $"\n👋 Welcome back, {memoryStore.UserName}!\n" +
+                               $"Here are your previous chats:\n\n{previousChats}";
+                    }
+
+                return $"\n😊 Nice to meet you, {memoryStore.UserName}!\n\n" +
+                       $"You can ask me about:\n\n" +
+                       $"🔒 Passwords\n🎣 Phishing\n🛡️ Privacy\n💻 Malware\n⚠️ Scams\n\n" +
+                       $"Type 'exit' anytime to leave the chat.";
             }
 
             memoryStore.AddConversation($"User: {input}");
 
-            // EXIT
-
-            if (lowerInput == "exit" || lowerInput == "quit" || lowerInput == "bye")
+            // EXIT OPTIONS
+            if (input == "exit" || input == "quit" || input == "bye")
             {
                 awaitingName = true;
                 LastMatchedKeyword = "";
 
-                return $"👋 Goodbye, {memoryStore.UserName}. Stay safe online!";
+                return $"\n👋 Chat ended successfully.\n\nWelcome back!\nWhat is your name?";
             }
 
-            // MEMORY
+            // MEMORY QUESTIONS
+            if (input.Contains("what is my name") ||
+                input.Contains("do you remember my name") ||
+                input.Contains("who am i"))
+            {
+                return $"😊 Your name is {memoryStore.UserName}.";
+            }
 
-            if (lowerInput.Contains("what is my name") ||
-                lowerInput.Contains("do you remember my name") ||
-                lowerInput.Contains("who am i"))
+            // FOLLOW-UP QUESTIONS
+            if (input.Contains("tell me more") ||
+                input.Contains("another tip") ||
+                input.Contains("explain more") ||
+                input.Contains("continue"))
+            {
+                if (!string.IsNullOrEmpty(LastMatchedKeyword))
                 {
-                    return $"😊 Your name is {memoryStore.UserName}, Erwin.";
-                }
-
-            // FOLLOW UP
-
-            if (lowerInput.Contains("tell me more") ||
-                lowerInput.Contains("another tip") ||
-                lowerInput.Contains("explain more") ||
-                lowerInput.Contains("continue"))
-                {
-                    if (!string.IsNullOrEmpty(LastMatchedKeyword))
-                    {
-                        return $"{memoryStore.UserName}, here is more about {LastMatchedKeyword}:\n" +
+                    return $"{memoryStore.UserName}, here is more about {LastMatchedKeyword}:\n" +
                            $"{keywordResponder.GetFollowUpResponse()}";
-                     }
+                }
 
                 return $"{memoryStore.UserName}, {keywordResponder.GetFollowUpResponse()}";
             }
 
-            // KEYWORD RESPONSE
+            // STORE FAVOURITE TOPIC
+            if (input.Contains("interested in"))
+            {
+                foreach (string keyword in keywordResponder.GetAllKeywords())
+                {
+                    if (input.Contains(keyword))
+                    {
+                        memoryStore.FavouriteTopic = keyword;
 
-            string keywordResponse = keywordResponder.GetResponse(lowerInput);
+                        return $"\nGreat, {memoryStore.UserName}! \n" +
+                               $"I'll remember that you're interested in {keyword}.";
+                    }
+                }
+            }
+
+            // SENTIMENT DETECTION
+            Sentiment sentiment =
+                sentimentDetector.Detect(input);
+            
+            string keywordResponse =
+                keywordResponder.GetResponse(input);
+
+            string sentimentResponse =
+                sentimentDetector.GetSentimentResponse(memoryStore.UserName, sentiment);
+
+            string tipResponse =
+                sentimentDetector.GetCybersecurityTip(memoryStore.UserName, sentiment);
+
+            // KEYWORD RESPONSES (FIXED PRIORITY)
+            
 
             if (!string.IsNullOrEmpty(keywordResponse))
             {
                 LastMatchedKeyword = keywordResponder.LastMatchedKeyword;
 
                 string response =
-                    $"{memoryStore.UserName}, {keywordResponse}\n\n" +
-                    $"{sentimentDetector.GetCybersecurityTip(memoryStore.UserName, sentimentDetector.Detect(lowerInput))}";
+                    $"\n{memoryStore.UserName}, {sentimentResponse}" +
+                    $"{keywordResponse}" +
+                    $"{tipResponse}";
 
                 memoryStore.AddConversation($"Bot: {response}");
 
                 return response;
             }
 
-            // SENTIMENT RESPONSE
-
-            Sentiment sentiment = sentimentDetector.Detect(lowerInput);
-
+            // TEST OUTPUT (kept as original behaviour but fixed structure)
             if (sentiment != Sentiment.Neutral)
             {
                 string response =
-                    $"{memoryStore.UserName}, {sentimentDetector.GetSentimentResponse(memoryStore.UserName, sentiment)}\n\n" +
-                    $"{sentimentDetector.GetCybersecurityTip(memoryStore.UserName, sentiment)}";
+                    $"\nDetected Sentiment: {sentiment}" +
+                    $"{sentimentResponse}" +
+                    $"{tipResponse}";
 
                 memoryStore.AddConversation($"Bot: {response}");
 
                 return response;
             }
 
-            // FALLBACK
+            if (!string.IsNullOrEmpty(keywordResponse))
+            {
+                string response =
+                    $"\n\nDetected Sentiment: {sentiment}\n\n" +
+                    $"{sentimentResponse}\n\n" +
+                    $"{tipResponse}";
 
+                memoryStore.AddConversation($"Bot: {response}");
+
+                return response;
+            }
+
+            // SPECIAL QUESTIONS
+            if (input.Contains("how are you") ||
+                input.Contains("how are things") ||
+                input.Contains("are you okay"))
+            {
+                return $"😊 I'm functioning perfectly, {memoryStore.UserName}, and ready to help keep you safe online!";
+            }
+
+            if (input.Contains("purpose") ||
+                input.Contains("what is your purpose") ||
+                input.Contains("why were you created"))
+            {
+                return $"🎯 My purpose is to educate users like you, {memoryStore.UserName}, about cybersecurity awareness and online safety.";
+            }
+
+            if (input.Contains("what can you do") ||
+                input.Contains("help me with") ||
+                input.Contains("features"))
+            {
+                return $"💡 {memoryStore.UserName}, I can help with phishing, passwords, scams, malware, privacy, ransomware, VPNs, and online safety tips.";
+            }
+
+            if (input.Contains("who created you") ||
+                input.Contains("who made you"))
+            {
+                return $"👨‍💻 I was created by Erwin Mashobane to help users stay safe online.";
+            }
+
+            if (input.Contains("thank you") ||
+                input.Contains("thanks"))
+            {
+                return $"😊 You're welcome, {memoryStore.UserName}! I'm always here to help.";
+            }
+
+            if (input.Contains("hello") ||
+                input.Contains("hi"))
+            {
+                return $"👋 Hello again, {memoryStore.UserName}! How can I help you today?";
+            }
+
+            // PERSONALISED FALLBACK
             string fallback =
                 $"{memoryStore.UserName}, " +
                 fallbackResponses[random.Next(fallbackResponses.Count)];

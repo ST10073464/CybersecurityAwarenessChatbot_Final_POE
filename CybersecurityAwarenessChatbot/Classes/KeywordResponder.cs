@@ -152,17 +152,26 @@ namespace CybersecurityAwarenessChatbot.Classes
             {
                 foreach (string alias in keyword.Value)
                 {
-                    if (input.Contains(alias))
+                    if (input.Contains(alias.ToLower()))
                     {
                         LastMatchedKeyword = keyword.Key;
 
-                        List<string> responses = keywordResponses[keyword.Key];
-                        return responses[random.Next(responses.Count)];
+                        // SAFE CHECK (PREVENT FALLBACK ERROR)
+                        if (keywordResponses.ContainsKey(keyword.Key))
+                        {
+                            List<string> responses = keywordResponses[keyword.Key];
+                            return responses[random.Next(responses.Count)];
+                        }
+                        else
+                        {
+                            return $"Here is information about {keyword.Key}. Stay safe online, {input}.";
+                        }
                     }
                 }
             }
 
-            return "I don't have information on that topic. Try asking about password, phishing, privacy, malware, scam, vpn, wifi, 2fa, ransomware, or downloads.";
+            // ONLY runs if NOTHING matched
+            return "";
         }
 
         // Returns another random response for follow-up questions.
