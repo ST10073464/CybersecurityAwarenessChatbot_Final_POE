@@ -218,10 +218,7 @@ namespace CybersecurityAwarenessChatbot.Classes
 
         // Returns cybersecurity tips
         // Returns cybersecurity tips with username
-        public string GetCybersecurityTip(
-            string username,
-            Sentiment sentiment
-        )
+        public string GetCybersecurityTip(string username, Sentiment sentiment)
         {
             // Make first letter uppercase
             username =

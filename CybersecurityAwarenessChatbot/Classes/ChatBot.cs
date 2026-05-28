@@ -65,8 +65,8 @@ namespace CybersecurityAwarenessChatbot.Classes
                         string previousChats =
                         string.Join("\n", memoryStore.ConversationHistory);
 
-                        return $"👋 Welcome back, {memoryStore.UserName}!\n\n" +
-                               $"Here are your previous chats:\n\n{previousChats}";
+                        return $"\n👋 Welcome back, {memoryStore.UserName}!\n\n" +
+                               $"\nHere are your previous chats:\n\n{previousChats}";
                     }
 
                 return $"😊 Nice to meet you, {memoryStore.UserName}!\n\n" +
@@ -83,7 +83,7 @@ namespace CybersecurityAwarenessChatbot.Classes
                 awaitingName = true;
                 LastMatchedKeyword = "";
 
-                return $"👋 Chat ended successfully.\n\nWelcome back!\n\nWhat is your name?";
+                return $"\n👋 Chat ended successfully.\n\nWelcome back!\n\nWhat is your name?";
             }
 
             // MEMORY QUESTIONS
@@ -145,8 +145,8 @@ namespace CybersecurityAwarenessChatbot.Classes
                 LastMatchedKeyword = keywordResponder.LastMatchedKeyword;
 
                 string response =
-                    $"{memoryStore.UserName}, {sentimentResponse}" +        
-                    $"{keywordResponse}" +
+                    $"{memoryStore.UserName}, {sentimentResponse}\n\n" +        
+                    $"{keywordResponse}\n\n" +
                     $"{tipResponse}";
 
                 memoryStore.AddConversation($"Bot: {response}");
@@ -221,7 +221,7 @@ namespace CybersecurityAwarenessChatbot.Classes
 
             // PERSONALISED FALLBACK
             string fallback =
-                $"{memoryStore.UserName}, " +
+                $"{memoryStore.UserName},\n\n " +
                 fallbackResponses[random.Next(fallbackResponses.Count)];
 
             memoryStore.AddConversation($"Bot: {fallback}");
