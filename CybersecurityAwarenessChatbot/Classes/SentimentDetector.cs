@@ -190,38 +190,60 @@ namespace CybersecurityAwarenessChatbot.Classes
             return Sentiment.Neutral;
         }
         // Returns empathetic response
-        public string GetSentimentResponse(Sentiment sentiment)
+        // Returns empathetic response with username
+        public string GetSentimentResponse(
+            string username,
+            Sentiment sentiment
+        )
         {
             if (sentiment == Sentiment.Neutral)
             {
                 return "";
             }
 
+            // Make first letter uppercase
+            username =
+                char.ToUpper(username[0]) +
+                username.Substring(1).ToLower();
+
             List<string> responses =
                 sentimentResponses[sentiment];
 
-            return responses[random.Next(responses.Count)];
+            string selectedResponse =
+                responses[random.Next(responses.Count)];
+
+            // Insert username into response
+            return string.Format(selectedResponse, username);
         }
 
         // Returns cybersecurity tips
-        public string GetCybersecurityTip(Sentiment sentiment)
+        // Returns cybersecurity tips with username
+        public string GetCybersecurityTip(
+            string username,
+            Sentiment sentiment
+        )
         {
+            // Make first letter uppercase
+            username =
+                char.ToUpper(username[0]) +
+                username.Substring(1).ToLower();
+
             switch (sentiment)
             {
                 case Sentiment.Worried:
-                    return "🔐 Tip: Never click suspicious links or emails from unknown senders.";
+                    return $"🔐 Tip for you, {username}: Never click suspicious links or emails from unknown senders.";
 
                 case Sentiment.Curious:
-                    return "💡 Tip: Keep learning about phishing, scams, and password safety.";
+                    return $"💡 Tip for you, {username}: Keep learning about phishing, scams, and password safety.";
 
                 case Sentiment.Frustrated:
-                    return "⚠️ Tip: Use strong passwords and enable two-factor authentication.";
+                    return $"⚠️ Tip for you, {username}: Use strong passwords and enable two-factor authentication.";
 
                 case Sentiment.Happy:
-                    return "✅ Tip: Continue practicing safe browsing habits online.";
+                    return $"✅ Great job, {username}. Continue practicing safe browsing habits online.";
 
                 case Sentiment.Angry:
-                    return "🛡️ Tip: Report suspicious websites and online scams immediately.";
+                    return $"🛡️ Tip for you, {username}: Report suspicious websites and online scams immediately.";
 
                 default:
                     return "";

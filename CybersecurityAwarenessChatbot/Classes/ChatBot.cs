@@ -49,7 +49,14 @@ namespace CybersecurityAwarenessChatbot.Classes
         // Main chatbot processing logic
         public string ProcessInput(string input)
         {
-            input = input.ToLower().Trim();
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return "⚠️ Please enter a message.";
+            }
+
+            input = input.Trim();
+
+            string lowerInput = input.ToLower();
 
             // CAPTURE USER NAME
 
@@ -77,7 +84,7 @@ namespace CybersecurityAwarenessChatbot.Classes
                             memoryStore.ConversationHistory
                         );
 
-                    return $"👋 Welcome back, {memoryStore.UserName}!\n" +
+                    return $"👋 Welcome back, {memoryStore.UserName}!\n\n" +
                            $"Here are your previous chats:\n\n" +
                            $"{previousChats}";
                 }
@@ -93,31 +100,32 @@ namespace CybersecurityAwarenessChatbot.Classes
             }
 
             // Save user message
-            memoryStore.AddConversation($"User: {input}");
+            memoryStore.AddConversation(
+                $"{memoryStore.UserName}: {input}"
+            );
 
             // EXIT OPTIONS
 
             if (
-                input == "exit" ||
-                input == "quit" ||
-                input == "bye"
+                lowerInput == "exit" ||
+                lowerInput == "quit" ||
+                lowerInput == "bye"
                )
             {
                 awaitingName = true;
 
                 LastMatchedKeyword = "";
 
-                return $"👋 Chat ended successfully.\n\n" +
-                       $"Welcome back!\n" +
-                       $"What is your name?";
+                return $"👋 Goodbye, {memoryStore.UserName}.\n\n" +
+                       $"Stay safe online and come back anytime!";
             }
 
             // MEMORY QUESTIONS
 
             if (
-                input.Contains("what is my name") ||
-                input.Contains("do you remember my name") ||
-                input.Contains("who am i")
+                lowerInput.Contains("what is my name") ||
+                lowerInput.Contains("do you remember my name") ||
+                lowerInput.Contains("who am i")
                )
             {
                 return $"😊 Your name is {memoryStore.UserName}.";
@@ -126,27 +134,26 @@ namespace CybersecurityAwarenessChatbot.Classes
             // FOLLOW-UP QUESTIONS
 
             if (
-                input.Contains("tell me more") ||
-                input.Contains("another tip") ||
-                input.Contains("explain more") ||
-                input.Contains("continue")
+                lowerInput.Contains("tell me more") ||
+                lowerInput.Contains("another tip") ||
+                lowerInput.Contains("explain more") ||
+                lowerInput.Contains("continue")
                )
             {
-                return $"{memoryStore.UserName},\n" +
-                       $"{keywordResponder.GetFollowUpResponse()}";
+                return $"{memoryStore.UserName}, {keywordResponder.GetFollowUpResponse()}";
             }
 
             // STORE FAVOURITE TOPIC
 
-            if (input.Contains("interested in"))
+            if (lowerInput.Contains("interested in"))
             {
                 foreach (string keyword in keywordResponder.GetAllKeywords())
                 {
-                    if (input.Contains(keyword))
+                    if (lowerInput.Contains(keyword))
                     {
                         memoryStore.FavouriteTopic = keyword;
 
-                        return $"Great, {memoryStore.UserName}! " +
+                        return $"😊 Great, {memoryStore.UserName}! " +
                                $"I'll remember that you're interested in {keyword}.";
                     }
                 }
@@ -155,71 +162,68 @@ namespace CybersecurityAwarenessChatbot.Classes
             // SENTIMENT DETECTION
 
             Sentiment sentiment =
-                sentimentDetector.Detect(input);
+                sentimentDetector.Detect(lowerInput);
 
             string sentimentResponse =
-                sentimentDetector.GetSentimentResponse(sentiment);
+                sentimentDetector.GetSentimentResponse(
+                    memoryStore.UserName,
+                    sentiment
+                );
 
             string tipResponse =
-                sentimentDetector.GetCybersecurityTip(sentiment);
-
-            // TEST OUTPUT
-            if (sentiment != Sentiment.Neutral)
-            {
-                return
-                    $"Detected Sentiment: {sentiment}\n" +
-                    sentimentResponse + "\n" +
-                    tipResponse;
-            }
+                sentimentDetector.GetCybersecurityTip(
+                    memoryStore.UserName,
+                    sentiment
+                );
 
             // SPECIAL QUESTIONS
 
             if (
-                input.Contains("how are you") ||
-                input.Contains("how are things") ||
-                input.Contains("are you okay")
+                lowerInput.Contains("how are you") ||
+                lowerInput.Contains("how are things") ||
+                lowerInput.Contains("are you okay")
                )
             {
                 return $"😊 I'm functioning perfectly, {memoryStore.UserName}, and ready to help keep you safe online!";
             }
 
             if (
-                input.Contains("purpose") ||
-                input.Contains("what is your purpose") ||
-                input.Contains("why were you created")
+                lowerInput.Contains("purpose") ||
+                lowerInput.Contains("what is your purpose") ||
+                lowerInput.Contains("why were you created")
                )
             {
                 return $"🎯 My purpose is to educate users like you, {memoryStore.UserName}, about cybersecurity awareness and online safety.";
             }
 
             if (
-                input.Contains("what can you do") ||
-                input.Contains("help me with") ||
-                input.Contains("features")
+                lowerInput.Contains("what can you do") ||
+                lowerInput.Contains("help me with") ||
+                lowerInput.Contains("features")
                )
             {
                 return $"💡 {memoryStore.UserName}, I can help with phishing, passwords, scams, malware, privacy, ransomware, VPNs, and online safety tips.";
             }
 
             if (
-                input.Contains("who created you") ||
-                input.Contains("who made you")
+                lowerInput.Contains("who created you") ||
+                lowerInput.Contains("who made you")
                )
             {
-                return $"👨‍💻 I was created by Erwin Mashobane to help users stay safe online.";
+                return $"👨‍💻 I was created by Erwin Mashobane to help users like you, {memoryStore.UserName}, stay safe online.";
             }
 
             if (
-                input.Contains("thank you") ||
-                input.Contains("thanks")
+                lowerInput.Contains("thank you") ||
+                lowerInput.Contains("thanks")
                )
             {
                 return $"😊 You're welcome, {memoryStore.UserName}! I'm always here to help.";
             }
 
             if (
-                input.Contains("hello") ||
-                input.Contains("hi")
+                lowerInput.Contains("hello") ||
+                lowerInput.Contains("hi")
                )
             {
                 return $"👋 Hello again, {memoryStore.UserName}! How can I help you today?";
@@ -228,7 +232,7 @@ namespace CybersecurityAwarenessChatbot.Classes
             // KEYWORD RESPONSES
 
             string keywordResponse =
-                keywordResponder.GetResponse(input);
+                keywordResponder.GetResponse(lowerInput);
 
             if (!string.IsNullOrEmpty(keywordResponse))
             {
@@ -236,12 +240,13 @@ namespace CybersecurityAwarenessChatbot.Classes
                     keywordResponder.LastMatchedKeyword;
 
                 string response =
-                    $"{memoryStore.UserName}," +
-                    $"{sentimentResponse}" +
-                    $"{keywordResponse}" +
+                    $"{sentimentResponse}\n\n" +
+                    $"{keywordResponse}\n\n" +
                     $"{tipResponse}";
 
-                memoryStore.AddConversation($"Bot: {response}");
+                memoryStore.AddConversation(
+                    $"Bot: {response}"
+                );
 
                 return response;
             }
@@ -250,11 +255,7 @@ namespace CybersecurityAwarenessChatbot.Classes
 
             if (sentiment != Sentiment.Neutral)
             {
-                string response =
-                    $"{memoryStore.UserName}," +
-                    $"{sentimentResponse}" +
-                    $"{keywordResponse}" +
-                    $"{tipResponse}";
+                string response = $"{sentimentResponse}\n\n{tipResponse}";
 
                 memoryStore.AddConversation($"Bot: {response}");
 
@@ -263,8 +264,7 @@ namespace CybersecurityAwarenessChatbot.Classes
 
             // PERSONALISED FALLBACK
 
-            string fallback =
-                $"{memoryStore.UserName}, " +
+            string fallback = $"{memoryStore.UserName}, " +
                 fallbackResponses[random.Next(fallbackResponses.Count)];
 
             memoryStore.AddConversation($"Bot: {fallback}");
