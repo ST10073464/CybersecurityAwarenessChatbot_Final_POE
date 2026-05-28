@@ -145,8 +145,8 @@ namespace CybersecurityAwarenessChatbot.Classes
                 LastMatchedKeyword = keywordResponder.LastMatchedKeyword;
 
                 string response =
-                    $"{memoryStore.UserName}, {sentimentResponse}\n" +        
-                    $"{keywordResponse}\n" +
+                    $"{memoryStore.UserName}, {sentimentResponse}" +        
+                    $"{keywordResponse}" +
                     $"{tipResponse}";
 
                 memoryStore.AddConversation($"Bot: {response}");
