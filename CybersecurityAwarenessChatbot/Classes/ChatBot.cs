@@ -240,13 +240,11 @@ namespace CybersecurityAwarenessChatbot.Classes
                     keywordResponder.LastMatchedKeyword;
 
                 string response =
-                    $"{sentimentResponse}\n\n" +
-                    $"{keywordResponse}\n\n" +
+                    $"{memoryStore.UserName}, {sentimentResponse}" +
+                    $"{keywordResponse}" +
                     $"{tipResponse}";
 
-                memoryStore.AddConversation(
-                    $"Bot: {response}"
-                );
+                memoryStore.AddConversation($"Bot: {response}");
 
                 return response;
             }
