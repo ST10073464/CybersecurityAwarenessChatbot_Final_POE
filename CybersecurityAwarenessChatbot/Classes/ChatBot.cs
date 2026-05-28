@@ -102,8 +102,8 @@ namespace CybersecurityAwarenessChatbot.Classes
             {
                 if (!string.IsNullOrEmpty(LastMatchedKeyword))
                 {
-                    return $"{memoryStore.UserName}, here is more about {LastMatchedKeyword}:\n\n" +
-                           $"{keywordResponder.GetFollowUpResponse()}";
+                    return $"\n{memoryStore.UserName}, here is more about {LastMatchedKeyword}:\n\n" +
+                           $"\n{keywordResponder.GetFollowUpResponse()}";
                 }
 
                 return $"{memoryStore.UserName}, {keywordResponder.GetFollowUpResponse()}";
@@ -118,8 +118,8 @@ namespace CybersecurityAwarenessChatbot.Classes
                     {
                         memoryStore.FavouriteTopic = keyword;
 
-                        return $"Great, {memoryStore.UserName}! \n\n" +
-                               $"I'll remember that you're interested in {keyword}.";
+                        return $"\nGreat, {memoryStore.UserName}! \n\n" +
+                               $"\nI'll remember that you're interested in {keyword}.";
                     }
                 }
             }
@@ -145,8 +145,8 @@ namespace CybersecurityAwarenessChatbot.Classes
                 LastMatchedKeyword = keywordResponder.LastMatchedKeyword;
 
                 string response =
-                    $"{memoryStore.UserName}, {sentimentResponse}" +
-                    $"{keywordResponse}" +
+                    $"{memoryStore.UserName}, {sentimentResponse}\n" +        
+                    $"{keywordResponse}\n" +
                     $"{tipResponse}";
 
                 memoryStore.AddConversation($"Bot: {response}");
@@ -158,8 +158,8 @@ namespace CybersecurityAwarenessChatbot.Classes
             if (sentiment != Sentiment.Neutral)
             {
                 string response =
-                    $"Detected Sentiment: {sentiment}" +
-                    $"{sentimentResponse}" +
+                    $"Detected Sentiment: {sentiment}\n\n" +
+                    $"{sentimentResponse}\n\n" +
                     $"{tipResponse}";
 
                 memoryStore.AddConversation($"Bot: {response}");
