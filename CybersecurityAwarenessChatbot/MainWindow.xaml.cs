@@ -26,20 +26,26 @@ namespace CybersecurityAwarenessChatbot
             // Load ASCII art
             AsciiArtText.Text = UIHelper.ShowLogo();
 
-            // Display greeting message
-            AppendBotMessage(_chatBot.GetGreeting());
-
             // Run startup sequence
             Loaded += MainWindow_Loaded;
         }
 
+        private bool _isGreetingPlayed = false;
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            // Play greeting voice
-            VoicePlayer.PlayGreeting();
 
-            // Wait while audio plays
-            await Task.Delay(10500);
+            // Check if it already ran
+            if (_isGreetingPlayed) return;
+            _isGreetingPlayed = true;
+
+            // Play greeting voice
+            await Task.Run(() => VoicePlayer.PlayGreeting());
+
+            // Play a quick system notification ping
+            System.Media.SystemSounds.Asterisk.Play();
+
+            // Show chatbot greeting after audio
+            AppendBotMessage(_chatBot.GetGreeting());
 
             // Enable user interaction
             UserInputTextBox.IsEnabled = true;
@@ -99,8 +105,6 @@ namespace CybersecurityAwarenessChatbot
                 : Visibility.Hidden;
         }
 
-      
-
         // Displays user message bubble.
         private void AppendUserMessage(string message)
         {
@@ -116,7 +120,7 @@ namespace CybersecurityAwarenessChatbot
 
             TextBlock text = new TextBlock
             {
-                Text = $"🧑 You [{DateTime.Now:HH:mm}]\n{message}",
+                Text = $"🧑 You [{DateTime.Now:HH:mm}]\n\n{message}",
                 Foreground = Brushes.White,
                 FontSize = 16,
                 TextWrapping = TextWrapping.Wrap
@@ -142,7 +146,7 @@ namespace CybersecurityAwarenessChatbot
 
             TextBlock text = new TextBlock
             {
-                Text = $"🤖 SecureWin [{DateTime.Now:HH:mm}]\n{message}",
+                Text = $"🤖 SecureWin [{DateTime.Now:HH:mm}]\n\n{message}",
                 Foreground = Brushes.White,
                 FontSize = 16,
                 TextWrapping = TextWrapping.Wrap
@@ -153,19 +157,5 @@ namespace CybersecurityAwarenessChatbot
             ChatPanel.Children.Add(bubble);
         }
 
-        // Adds emojis to the input box.
-        private void Emoji_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button button)
-            {
-                string emoji = button.Content?.ToString() ?? string.Empty;
-                if (!string.IsNullOrEmpty(emoji))
-                {
-                    UserInputTextBox.Text += " " + emoji;
-                    UserInputTextBox.Focus();
-                    UserInputTextBox.CaretIndex = UserInputTextBox.Text.Length;
-                }
-            }
-        }
     }
 }

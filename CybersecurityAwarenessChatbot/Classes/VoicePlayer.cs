@@ -13,7 +13,7 @@ namespace CybersecurityAwarenessChatbot.Classes
         public static void PlayGreeting()
         {
             SoundPlayer player = new SoundPlayer("Audio/hello.wav");
-            player.Play();
+            player.PlaySync();
         }
 
         public static void PlaySound()
@@ -21,6 +21,5 @@ namespace CybersecurityAwarenessChatbot.Classes
             SoundPlayer player = new SoundPlayer("Audio/notification.wav");
             player.Play();
         }
-
     }
 }

@@ -10,7 +10,8 @@
         Width="1600"
         WindowStartupLocation="CenterScreen"
         Background="#07111F"
-        WindowState="Maximized">
+        WindowState="Maximized"
+        Loaded="MainWindow_Loaded">
 
     <!-- ========================================================= -->
     <!-- RESOURCES -->

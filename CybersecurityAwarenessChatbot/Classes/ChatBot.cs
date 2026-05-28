@@ -40,7 +40,7 @@ namespace CybersecurityAwarenessChatbot.Classes
 
         public string GetGreeting()
         {
-            return "\n👋 Welcome to SecureWin!\n\nWhat is your name?";
+            return "👋 Welcome to SecureWin!\n\nPlease type your name.";
         }
 
         public string ProcessInput(string input)
@@ -65,11 +65,11 @@ namespace CybersecurityAwarenessChatbot.Classes
                         string previousChats =
                         string.Join("\n", memoryStore.ConversationHistory);
 
-                        return $"\n👋 Welcome back, {memoryStore.UserName}!\n" +
+                        return $"👋 Welcome back, {memoryStore.UserName}!\n\n" +
                                $"Here are your previous chats:\n\n{previousChats}";
                     }
 
-                return $"\n😊 Nice to meet you, {memoryStore.UserName}!\n\n" +
+                return $"😊 Nice to meet you, {memoryStore.UserName}!\n\n" +
                        $"You can ask me about:\n\n" +
                        $"🔒 Passwords\n🎣 Phishing\n🛡️ Privacy\n💻 Malware\n⚠️ Scams\n\n" +
                        $"Type 'exit' anytime to leave the chat.";
@@ -83,7 +83,7 @@ namespace CybersecurityAwarenessChatbot.Classes
                 awaitingName = true;
                 LastMatchedKeyword = "";
 
-                return $"\n👋 Chat ended successfully.\n\nWelcome back!\nWhat is your name?";
+                return $"👋 Chat ended successfully.\n\nWelcome back!\n\nWhat is your name?";
             }
 
             // MEMORY QUESTIONS
@@ -102,7 +102,7 @@ namespace CybersecurityAwarenessChatbot.Classes
             {
                 if (!string.IsNullOrEmpty(LastMatchedKeyword))
                 {
-                    return $"{memoryStore.UserName}, here is more about {LastMatchedKeyword}:\n" +
+                    return $"{memoryStore.UserName}, here is more about {LastMatchedKeyword}:\n\n" +
                            $"{keywordResponder.GetFollowUpResponse()}";
                 }
 
@@ -118,7 +118,7 @@ namespace CybersecurityAwarenessChatbot.Classes
                     {
                         memoryStore.FavouriteTopic = keyword;
 
-                        return $"\nGreat, {memoryStore.UserName}! \n" +
+                        return $"Great, {memoryStore.UserName}! \n\n" +
                                $"I'll remember that you're interested in {keyword}.";
                     }
                 }
@@ -145,7 +145,7 @@ namespace CybersecurityAwarenessChatbot.Classes
                 LastMatchedKeyword = keywordResponder.LastMatchedKeyword;
 
                 string response =
-                    $"\n{memoryStore.UserName}, {sentimentResponse}" +
+                    $"{memoryStore.UserName}, {sentimentResponse}" +
                     $"{keywordResponse}" +
                     $"{tipResponse}";
 
@@ -158,7 +158,7 @@ namespace CybersecurityAwarenessChatbot.Classes
             if (sentiment != Sentiment.Neutral)
             {
                 string response =
-                    $"\nDetected Sentiment: {sentiment}" +
+                    $"Detected Sentiment: {sentiment}" +
                     $"{sentimentResponse}" +
                     $"{tipResponse}";
 
@@ -170,7 +170,7 @@ namespace CybersecurityAwarenessChatbot.Classes
             if (!string.IsNullOrEmpty(keywordResponse))
             {
                 string response =
-                    $"\n\nDetected Sentiment: {sentiment}\n\n" +
+                    $"Detected Sentiment: {sentiment}\n\n" +
                     $"{sentimentResponse}\n\n" +
                     $"{tipResponse}";
 
@@ -198,7 +198,7 @@ namespace CybersecurityAwarenessChatbot.Classes
                 input.Contains("help me with") ||
                 input.Contains("features"))
             {
-                return $"💡 {memoryStore.UserName}, I can help with phishing, passwords, scams, malware, privacy, ransomware, VPNs, and online safety tips.";
+                return $"{memoryStore.UserName}, 💡 I can help with phishing, passwords, scams, malware, privacy, ransomware, VPNs, and online safety tips.";
             }
 
             if (input.Contains("who created you") ||
