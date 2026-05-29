@@ -145,8 +145,6 @@ namespace CybersecurityAwarenessChatbot.Classes
                 }
             };
         }
-
-        // Detects the user's sentiment
         // Detects the user's sentiment
         public Sentiment Detect(string input)
         {
@@ -189,7 +187,6 @@ namespace CybersecurityAwarenessChatbot.Classes
 
             return Sentiment.Neutral;
         }
-        // Returns empathetic response
         // Returns empathetic response with username
         public string GetSentimentResponse(
             string username,
@@ -216,7 +213,6 @@ namespace CybersecurityAwarenessChatbot.Classes
             return string.Format(selectedResponse, username);
         }
 
-        // Returns cybersecurity tips
         // Returns cybersecurity tips with username
         public string GetCybersecurityTip(string username, Sentiment sentiment)
         {
