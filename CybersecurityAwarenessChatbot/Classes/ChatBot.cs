@@ -138,36 +138,32 @@ namespace CybersecurityAwarenessChatbot.Classes
                 sentimentDetector.GetCybersecurityTip(memoryStore.UserName, sentiment);
 
             // KEYWORD RESPONSES (FIXED PRIORITY)
-            
 
             if (!string.IsNullOrEmpty(keywordResponse))
             {
                 LastMatchedKeyword = keywordResponder.LastMatchedKeyword;
 
-                string response =
-                    $"{memoryStore.UserName}, {sentimentResponse}\n\n" +        
-                    $"{keywordResponse}\n\n" +
-                    $"{tipResponse}";
+                string response = $"{memoryStore.UserName},\n\n{keywordResponse}";
+
+                // Only add sentiment if it exists
+                if (!string.IsNullOrEmpty(sentimentResponse))
+                {
+                    response += $"\n\n{sentimentResponse}";
+                }
+
+                // Only add tip if it exists
+                if (!string.IsNullOrEmpty(tipResponse))
+                {
+                    response += $"\n\n{tipResponse}";
+                }
 
                 memoryStore.AddConversation($"Bot: {response}");
 
                 return response;
             }
 
-            // TEST OUTPUT (kept as original behaviour but fixed structure)
+            // Sentiment only response
             if (sentiment != Sentiment.Neutral)
-            {
-                string response =
-                    $"Detected Sentiment: {sentiment}\n\n" +
-                    $"{sentimentResponse}\n\n" +
-                    $"{tipResponse}";
-
-                memoryStore.AddConversation($"Bot: {response}");
-
-                return response;
-            }
-
-            if (!string.IsNullOrEmpty(keywordResponse))
             {
                 string response =
                     $"Detected Sentiment: {sentiment}\n\n" +

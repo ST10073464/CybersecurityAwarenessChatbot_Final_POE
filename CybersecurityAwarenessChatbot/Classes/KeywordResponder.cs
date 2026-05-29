@@ -157,6 +157,7 @@ namespace CybersecurityAwarenessChatbot.Classes
                         LastMatchedKeyword = keyword.Key;
 
                         // SAFE CHECK (PREVENT FALLBACK ERROR)
+
                         if (keywordResponses.ContainsKey(keyword.Key))
                         {
                             List<string> responses = keywordResponses[keyword.Key];
@@ -171,6 +172,7 @@ namespace CybersecurityAwarenessChatbot.Classes
             }
 
             // ONLY runs if NOTHING matched
+
             return "";
         }
 
