@@ -19,16 +19,16 @@ namespace CybersecurityAwarenessChatbot.Classes
 
             keywordAliases = new Dictionary<string, List<string>>
             {
-                { "password", new List<string> { "password", "passcode", "login", "credentials" } },
-                { "phishing", new List<string> { "phishing", "fake email", "scam email" } },
-                { "privacy", new List<string> { "privacy", "tracking", "permissions" } },
-                { "malware", new List<string> { "malware", "virus", "trojan", "spyware" } },
-                { "scam", new List<string> { "scam", "fraud", "impersonation" } },
-                { "vpn", new List<string> { "vpn", "virtual private network" } },
-                { "wifi", new List<string> { "wifi", "public wifi", "hotspot" } },
-                { "2fa", new List<string> { "2fa", "two-factor authentication", "authentication" } },
-                { "ransomware", new List<string> { "ransomware", "encrypted files" } },
-                { "downloads", new List<string> { "downloads", "download files" } }
+                {"password",new List<string>{"password", "passwords", "passcode","login", "credentials", "signin", "sign in"}},
+                {"phishing",new List<string>{"phishing", "fake email", "scam email","fake website", "phishing link", "email scam"}},
+                {"privacy", new List<string>{"privacy", "tracking", "permissions","personal data", "online privacy", "data collection"}},
+                {"malware", new List<string>{"malware", "virus", "trojan","spyware", "infected", "malicious software" }},
+                {"scam",new List<string>{"scam", "scams", "fraud", "impersonation","fake call", "money scam", "online scam"}},
+                {"vpn",new List<string>{"vpn", "virtual private network","secure connection", "encrypted browsing"}},
+                {"wifi",new List<string>{"wifi", "wi-fi", "public wifi","hotspot", "wireless network"}},
+                {"2fa",new List<string>{"2fa", "two-factor authentication","authentication", "multi-factor authentication","verification code", "authenticator"}},
+                {"ransomware",new List<string>{"ransomware", "encrypted files","locked files", "ransom attack"}},
+                {"download",new List<string>{"download","downloads", "download files","unsafe download", "file download","attachments"}}
             };
 
             keywordResponses = new Dictionary<string, List<string>>
@@ -37,9 +37,11 @@ namespace CybersecurityAwarenessChatbot.Classes
                     "password",
                     new List<string>
                     {
-                        "🔒 Use strong passwords with symbols and numbers.",
-                        "🛡️ Never reuse passwords across multiple websites.",
-                        "💡 Use a password manager for secure storage."
+                    "🔒 Use strong passwords with symbols and numbers.",
+                    "🛡️ Never reuse passwords across multiple websites.",
+                    "💡 Use a password manager for secure storage.",
+                    "⚠️ Avoid sharing your passwords with anyone.",
+                    "🔑 Change weak passwords immediately."
                     }
                 },
 
@@ -50,7 +52,8 @@ namespace CybersecurityAwarenessChatbot.Classes
                         "🎣 Never click suspicious email links.",
                         "⚠️ Check sender email addresses carefully.",
                         "📧 Banks never ask for passwords via email.",
-                        "⚠️ Look carefully for spelling mistakes in phishing emails."
+                        "⚠️ Look carefully for spelling mistakes in phishing emails.",
+                        "🔍 Verify websites before entering login details."
                     }
                 },
 
@@ -61,7 +64,8 @@ namespace CybersecurityAwarenessChatbot.Classes
                         "🛡️ Review your social media privacy settings.",
                         "🔒 Limit personal information shared online.",
                         "📱 Disable unnecessary app permissions.",
-                        "🛡️ Use secure websites that start with HTTPS."
+                        "🛡️ Use secure websites that start with HTTPS.",
+                        "👤 Be careful about what you post publicly online."
                     }
                 },
 
@@ -72,7 +76,8 @@ namespace CybersecurityAwarenessChatbot.Classes
                         "💻 Install trusted antivirus software to prevent malware infections.",
                         "⚠️ Avoid downloading files from unknown sites.",
                         "🔒 Keep Windows updated for security patches.",
-                        "⚠️ Malware can steal sensitive information from your device."
+                        "⚠️ Malware can steal sensitive information from your device.",
+                        "🛡️ Scan USB devices before opening files."
                     }
                 },
 
@@ -83,7 +88,8 @@ namespace CybersecurityAwarenessChatbot.Classes
                         "🚨 If it sounds too good to be true, it probably is.",
                         "💰 Never send money to strangers online.",
                         "📞 Ignore fake lottery or prize calls.",
-                        "💰 Be careful of investment scams on social media."
+                        "💰 Be careful of investment scams on social media.",
+                        "⚠️ Scammers often create urgency to pressure victims."
                     }
                 },
 
@@ -93,7 +99,9 @@ namespace CybersecurityAwarenessChatbot.Classes
                     {
                         "🌍 VPNs protect your internet traffic on public Wi-Fi.",
                         "🔒 A VPN helps keep your browsing private.",
-                        "📡 Use trusted VPN providers only."
+                        "📡 Use trusted VPN providers only.",
+                        "🛡️ VPNs help hide your online activity from attackers.",
+                        "🌐 Always enable your VPN on public networks."
                     }
                 },
 
@@ -103,7 +111,9 @@ namespace CybersecurityAwarenessChatbot.Classes
                     {
                         "🌍 Avoid logging into banking apps on public WiFi.",
                         "🔒 Use a VPN when connected to public hotspots.",
-                        "🚨Hackers may monitor unsecured WiFi networks."
+                        "🚨 Hackers may monitor unsecured WiFi networks.",
+                        "📡 Disable auto-connect on unknown WiFi networks.",
+                        "🛡️ Use password-protected WiFi whenever possible."
                     }
                 },
 
@@ -113,30 +123,35 @@ namespace CybersecurityAwarenessChatbot.Classes
                     {
                         "🔒 Two-factor authentication adds extra account security.",
                         "💡 Enable 2FA on banking and email accounts.",
-                        "🚨 Authenticator apps are safer than SMS codes."
+                        "🚨 Authenticator apps are safer than SMS codes.",
+                        "📱 2FA helps protect accounts even if passwords are stolen.",
+                        "🛡️ Enable multi-factor authentication wherever possible."
                     }
                 },
 
-                {
+                    {
                     "ransomware",
                     new List<string>
                     {
                         "💾 Backup important files regularly.",
                         "⚠️ Never open suspicious attachments.",
-                        "🔒 Ransomware encrypts your files for payment."
+                        "🔒 Ransomware encrypts your files for payment.",
+                        "🛡️ Keep backups stored separately from your computer.",
+                        "🚨 Do not download software from untrusted websites."
                     }
                 },
 
                 {
-                    "downloads",
+                    "download",
                     new List<string>
                     {
                         "💾 Only download files from trusted websites.",
                         "💻 Scan downloads before opening them.",
-                        "⚠️ Pirated software often contains malware."
+                        "⚠️ Pirated software often contains malware.",
+                        "🔒 Avoid downloading unknown email attachments.",
+                        "🛡️ Keep your browser updated for safer downloads."
                     }
                 }
-
             };
         }
 
