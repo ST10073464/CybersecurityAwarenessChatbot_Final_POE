@@ -296,6 +296,7 @@ CybersecurityAwarenessChatbot/
 ├── instructions/
 │   └── How to Clone Part 2_ST10073464.pdf
 │   └── Part_2_Explanation.pdf
+│   └── Test Screenshots.pdf
 │
 ├── .gitignore
 │
