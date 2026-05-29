@@ -2,6 +2,7 @@
     Erwin Mashobane
     ST10073464
 */
+using System.Windows;
 
 namespace CybersecurityAwarenessChatbot.Classes
 {
@@ -83,9 +84,21 @@ namespace CybersecurityAwarenessChatbot.Classes
                 awaitingName = true;
                 LastMatchedKeyword = "";
 
-                return $"\n👋 Chat ended successfully.\n\nWelcome back!\n\nWhat is your name?";
+                return "__CLEAR_CHAT__\n\n👋 Chat ended successfully.\n\nWelcome back!\n\nWhat is your name?";
             }
 
+            if (input == "end" || input == "close")
+            {
+                System.Windows.Application.Current?.Shutdown();
+                return "";
+            }
+
+            // END → close the whole application
+            if (input == "end" || input == "close" || input == "leave")
+            {
+                Application.Current.Shutdown();
+                return null;
+            }
             // MEMORY QUESTIONS
             if (input.Contains("what is my name") ||
                 input.Contains("do you remember my name") ||

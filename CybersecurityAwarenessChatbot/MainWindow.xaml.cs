@@ -82,10 +82,22 @@ namespace CybersecurityAwarenessChatbot
             VoicePlayer.PlaySound();
 
             // Display user message
+            if (!string.IsNullOrWhiteSpace(input))
+            {
+                input = char.ToUpper(input[0]) + input.Substring(1);
+            }
+
             AppendUserMessage(input);
 
-            // Process chatbot response
             string response = _chatBot.ProcessInput(input) ?? string.Empty;
+
+            // CLEAR CHAT if signal is found
+            if (response.StartsWith("__CLEAR_CHAT__"))
+            {
+                ChatPanel.Children.Clear();
+
+                response = response.Replace("__CLEAR_CHAT__", "").Trim();
+            }
 
             // Display bot response
             AppendBotMessage(response);
@@ -95,6 +107,8 @@ namespace CybersecurityAwarenessChatbot
 
             // Smooth scroll
             ChatScrollViewer.ScrollToBottom();
+
+
         }
         // Handles placeholder text behavior.
         private void UserInputTextBox_TextChanged(object sender, TextChangedEventArgs e)
