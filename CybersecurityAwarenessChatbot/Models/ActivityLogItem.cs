@@ -1,10 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CybersecurityAwarenessChatbot.Models
+﻿namespace CybersecurityAwarenessChatbot.Classes
 {
-    internal class ActivityLogItem
+    public class ActivityLogItem
     {
+        public DateTime Timestamp { get; set; }
+
+        public string Action { get; set; }
+
+        public override string ToString()
+        {
+            return $"[{Timestamp:HH:mm}] {Action}";
+        }
     }
 }

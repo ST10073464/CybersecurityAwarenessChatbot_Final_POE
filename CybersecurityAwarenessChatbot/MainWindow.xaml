@@ -48,7 +48,7 @@
             <RowDefinition Height="*"/>
 
             <!-- INPUT -->
-            <RowDefinition Height="120"/>
+            <RowDefinition Height="160"/>
 
         </Grid.RowDefinitions>
 
@@ -241,6 +241,8 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
+                    <!-- BUTTONS -->
+                    <RowDefinition Height="50"/>
 
                     <!-- INPUT -->
                     <RowDefinition Height="60"/>
@@ -254,7 +256,7 @@
                 <!-- USER INPUT -->
                 <!-- ================================================= -->
 
-                <Grid Grid.Row="0" Grid.Column="0">
+                <Grid Grid.Row="1" Grid.Column="0">
 
                     <!-- TextBox -->
                     <TextBox x:Name="UserInputTextBox"
@@ -283,10 +285,43 @@
                 </Grid>
 
                 <!-- ================================================= -->
+                <!-- PART 3 FEATURE BUTTONS -->
+                <!-- ================================================= -->
+
+                <StackPanel Grid.Row="0"
+            Grid.ColumnSpan="2"
+            Orientation="Horizontal"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+
+                    <Button x:Name="TaskButton"
+            Content="📋 Tasks"
+            Width="140"
+            Height="35"
+            Margin="5"
+            Style="{StaticResource CyberButton}"/>
+
+                    <Button x:Name="QuizButton"
+            Content="🎮 Quiz"
+            Width="140"
+            Height="35"
+            Margin="5"
+            Style="{StaticResource CyberButton}"/>
+
+                    <Button x:Name="ActivityButton"
+            Content="📊 Activity Log"
+            Width="160"
+            Height="35"
+            Margin="5"
+            Style="{StaticResource CyberButton}"/>
+
+                </StackPanel>
+
+                <!-- ================================================= -->
                 <!-- SEND BUTTON -->
                 <!-- ================================================= -->
 
-                <Button Grid.Row="0"
+                <Button Grid.Row="1"
                         Grid.Column="1"
                         x:Name="SendButton"
                         Content="📨 SEND"
@@ -296,12 +331,12 @@
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center"
                         Click="SendButton_Click"/>
-
+               
                 <!-- ================================================= -->
                 <!-- FOOTER -->
                 <!-- ================================================= -->
 
-                <TextBlock Grid.Row="1"
+                <TextBlock Grid.Row="2"
                            Grid.ColumnSpan="2"
                            Text="🛡️ Protecting South African Citizens Online 🛡️"
                            Foreground="White"

@@ -1,10 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CybersecurityAwarenessChatbot.Models
+﻿namespace CybersecurityAwarenessChatbot.Classes
 {
-    internal class QuizQuestion
+    public class QuizQuestion
     {
+        public string Question { get; set; }
+
+        public List<string> Options { get; set; }
+
+        public int CorrectAnswer { get; set; }
+
+        public string Explanation { get; set; }
     }
 }

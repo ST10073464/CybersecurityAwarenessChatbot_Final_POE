@@ -1,10 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CybersecurityAwarenessChatbot.Services
+﻿namespace CybersecurityAwarenessChatbot.Classes
 {
-    internal class DatabaseService
+    public class DatabaseService
     {
+        public void SaveTask(TaskItem task)
+        {
+            // MySQL save logic here
+        }
+
+        public void DeleteTask(TaskItem task)
+        {
+            // MySQL delete logic here
+        }
+
+        public void UpdateTask(TaskItem task)
+        {
+            // MySQL update logic here
+        }
     }
 }
