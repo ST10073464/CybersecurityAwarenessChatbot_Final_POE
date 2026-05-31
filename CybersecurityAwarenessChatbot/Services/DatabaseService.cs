@@ -12,15 +12,16 @@ namespace CybersecurityAwarenessChatbot.Services
     {
         private readonly string connectionString =
             "server=localhost;" +
-            "database=CyberSecurityChatbot;" +
+            "database=Cybersecurityawarenesschatbot;" +
             "uid=root;" +
-            "pwd=YOUR_PASSWORD;";
+            "pwd=root;";
 
         // Add Task
         public void AddTask(TaskItem task)
         {
             using MySqlConnection connection =
                 new MySqlConnection(connectionString);
+            { }
 
             connection.Open();
 

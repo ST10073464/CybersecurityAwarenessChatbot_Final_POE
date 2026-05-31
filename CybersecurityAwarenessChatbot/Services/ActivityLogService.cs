@@ -1,4 +1,6 @@
-﻿namespace CybersecurityAwarenessChatbot.Classes
+﻿using CybersecurityAwarenessChatbot.Models;
+
+namespace CybersecurityAwarenessChatbot.Classes
 {
     public class ActivityLogService
     {
@@ -8,7 +10,7 @@
         {
             logs.Add(new ActivityLogItem
             {
-                Timestamp = DateTime.Now,
+                TimeStamp = DateTime.Now,
                 Action = action
             });
         }
@@ -16,7 +18,7 @@
         public List<ActivityLogItem> GetRecentLogs()
         {
             return logs
-                .OrderByDescending(x => x.Timestamp)
+                .OrderByDescending(x => x.TimeStamp)
                 .Take(10)
                 .ToList();
         }

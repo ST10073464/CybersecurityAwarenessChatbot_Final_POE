@@ -1,14 +1,16 @@
-﻿namespace CybersecurityAwarenessChatbot.Classes
+﻿using System;
+
+namespace CybersecurityAwarenessChatbot.Models
 {
     public class ActivityLogItem
     {
-        public DateTime Timestamp { get; set; }
+        public DateTime TimeStamp { get; set; }
 
         public string Action { get; set; }
 
         public override string ToString()
         {
-            return $"[{Timestamp:HH:mm}] {Action}";
+            return $"{TimeStamp:g} - {Action}";
         }
     }
 }

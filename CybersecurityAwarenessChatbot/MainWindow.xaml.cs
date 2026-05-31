@@ -1,6 +1,12 @@
 ﻿using CybersecurityAwarenessChatbot.Classes;
-using CybersecurityAwarenessChatbot.Services;
 using CybersecurityAwarenessChatbot.Models;
+using CybersecurityAwarenessChatbot.Services;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,6 +19,12 @@ namespace CybersecurityAwarenessChatbot
     public partial class MainWindow : Window
     {
         private ChatBot _chatBot;
+
+        // Stores selected task for delete/complete operations
+        private int selectedTaskId = -1;
+
+        // Tracks quiz state
+        private bool quizInProgress = false;
 
         private readonly TaskService taskService = new();
         private readonly QuizService quizService = new();
@@ -68,6 +80,109 @@ namespace CybersecurityAwarenessChatbot
             UserInputTextBox.Focus();
         }
 
+        private void TaskButton_Click(object sender, RoutedEventArgs e)
+        {
+            ShowTasks();
+        }
+
+        private void ViewTasks_Click(object sender, RoutedEventArgs e)
+        {
+            List<TaskItem> tasks =
+                taskService.GetTasks();
+
+            if (tasks.Count == 0)
+            {
+                AppendBotMessage("No tasks found.");
+                return;
+            }
+
+            string output = "";
+
+            foreach (TaskItem task in tasks)
+            {
+                output += task + "\n\n";
+            }
+
+            AppendBotMessage(output);
+        }
+
+        // =====================================================
+        // DELETE TASK
+        // =====================================================
+        private void DeleteTask_Click(object sender, RoutedEventArgs e)
+        {
+            if (selectedTaskId == -1)
+            {
+                AppendBotMessage(
+                    "⚠ Please select or view a task first.");
+                return;
+            }
+
+            taskService.DeleteTask(selectedTaskId);
+
+            logService.AddLog(
+                $"Deleted Task {selectedTaskId}");
+
+            AppendBotMessage(
+                $"🗑 Task {selectedTaskId} has been deleted successfully.");
+
+            selectedTaskId = -1;
+        }
+
+        // =====================================================
+        // COMPLETE TASK
+        // =====================================================
+        private void CompleteTask_Click(object sender, RoutedEventArgs e)
+        {
+            if (selectedTaskId == -1)
+            {
+                AppendBotMessage(
+                    "⚠ Please select or view a task first.");
+                return;
+            }
+
+            taskService.CompleteTask(selectedTaskId);
+
+            logService.AddLog(
+                $"Completed Task {selectedTaskId}");
+
+            AppendBotMessage(
+                $"✅ Task {selectedTaskId} marked as completed.");
+
+            selectedTaskId = -1;
+        }
+
+        // =====================================================
+        // SHOW ALL TASKS IN CHAT
+        // =====================================================
+        private void ShowTasks()
+        {
+            List<TaskItem> tasks =
+                taskService.GetTasks();
+
+            if (tasks.Count == 0)
+            {
+                AppendBotMessage(
+                    "📋 No cybersecurity tasks found.");
+                return;
+            }
+
+            string message =
+                "📋 CYBERSECURITY TASKS\n\n";
+
+            foreach (TaskItem task in tasks)
+            {
+                message +=
+                    $"ID: {task.Id}\n" +
+                    $"Title: {task.Title}\n" +
+                    $"Description: {task.Description}\n" +
+                    $"Reminder: {task.ReminderDate:d}\n" +
+                    $"Completed: {(task.IsCompleted ? "Yes" : "No")}\n\n";
+            }
+
+            AppendBotMessage(message);
+        }
+
         // Handles send button click.
         private void SendButton_Click(object sender, RoutedEventArgs e)
         {
@@ -83,33 +198,115 @@ namespace CybersecurityAwarenessChatbot
             }
         }
 
+        // =====================================================
+        // CHECK QUIZ ANSWER
+        // =====================================================
+
+        private void CheckQuizAnswer(string input)
+        {
+            if (!int.TryParse(input, out int answer))
+            {
+                AppendBotMessage(
+                    "⚠ Please enter a number.");
+                return;
+            }
+
+            QuizQuestion currentQuestion =
+                quizService.Questions[
+                    quizService.CurrentQuestionIndex];
+
+            answer--;
+
+            if (answer == currentQuestion.CorrectAnswer)
+            {
+                quizService.Score++;
+
+                AppendBotMessage(
+                    "✅ Correct!\n\n" +
+                    currentQuestion.Explanation);
+            }
+            else
+            {
+                AppendBotMessage(
+                    "❌ Incorrect.\n\n" +
+                    currentQuestion.Explanation);
+            }
+
+            quizService.CurrentQuestionIndex++;
+
+            // More questions available
+            if (quizService.CurrentQuestionIndex <
+                quizService.Questions.Count)
+            {
+                QuizQuestion nextQuestion =
+                    quizService.Questions[
+                        quizService.CurrentQuestionIndex];
+
+                string message =
+                    $"Question {quizService.CurrentQuestionIndex + 1}\n\n" +
+                    $"{nextQuestion.Question}\n\n";
+
+                for (int i = 0;
+                     i < nextQuestion.Options.Count;
+                     i++)
+                {
+                    message +=
+                        $"{i + 1}. {nextQuestion.Options[i]}\n";
+                }
+
+                AppendBotMessage(message);
+            }
+            else
+            {
+                quizInProgress = false;
+
+                AppendBotMessage(
+                    $"🏆 Quiz Complete!\n\n" +
+                    $"Final Score: " +
+                    $"{quizService.Score}/" +
+                    $"{quizService.Questions.Count}");
+
+                logService.AddLog(
+                    $"Quiz Completed - Score " +
+                    $"{quizService.Score}/" +
+                    $"{quizService.Questions.Count}");
+            }
+        }
+
         // Sends user message to chatbot.
         // Sends user message to chatbot.
         private void SendMessage()
         {
-            string input = (UserInputTextBox.Text ?? string.Empty).Trim();
+            string input =
+                (UserInputTextBox.Text ?? "")
+                .Trim();
 
             if (string.IsNullOrWhiteSpace(input))
                 return;
 
-            // Play Notification sound
             VoicePlayer.PlaySound();
-
-            // Display user message
-            if (!string.IsNullOrWhiteSpace(input))
-            {
-                input = char.ToUpper(input[0]) + input.Substring(1);
-            }
 
             AppendUserMessage(input);
 
-            // =====================================================
-            // PART 3 NLP DETECTION
-            // =====================================================
+            // ===================================
+            // QUIZ ANSWER MODE
+            // ===================================
+
+            if (quizInProgress)
+            {
+                CheckQuizAnswer(input);
+
+                UserInputTextBox.Clear();
+
+                ChatScrollViewer.ScrollToBottom();
+
+                return;
+            }
 
             string response = "";
 
-            string intent = nlpService.DetectIntent(input);
+            string intent =
+                nlpService.DetectIntent(input);
 
             switch (intent)
             {
@@ -118,157 +315,127 @@ namespace CybersecurityAwarenessChatbot
                     TaskItem task = new TaskItem
                     {
                         Title = input,
-                        Description = "Task created from chatbot request",
-                        ReminderDate = DateTime.Now.AddDays(7),
+                        Description =
+                            "Cybersecurity task created via chatbot",
+                        ReminderDate =
+                            DateTime.Now.AddDays(7),
                         IsCompleted = false
                     };
 
                     taskService.AddTask(task);
 
-                    logService.AddLog($"Task Added: {task.Title}");
+                    logService.AddLog(
+                        $"Task Added: {task.Title}");
 
                     response =
-                        $"✅ Task added successfully.\n\n" +
+                        $"✅ Task Added\n\n" +
                         $"Title: {task.Title}\n" +
-                        $"Reminder: {task.ReminderDate:d}";
+                        $"Reminder Date: {task.ReminderDate:d}";
 
                     break;
 
                 case "REMINDER":
 
-                    logService.AddLog("Reminder Created");
+                    logService.AddLog(
+                        "Reminder Created");
 
                     response =
-                        "⏰ Reminder recorded.\n\n" +
-                        "Don't forget to complete your cybersecurity task.";
+                        "⏰ Reminder created successfully.";
 
                     break;
 
                 case "QUIZ":
 
-                    quizService.CurrentQuestionIndex = 0;
-                    quizService.Score = 0;
+                    QuizButton_Click(null, null);
 
-                    QuizQuestion question =
-                        quizService.Questions[0];
+                    UserInputTextBox.Clear();
 
-                    logService.AddLog("Quiz Started");
-
-                    response =
-                        $"🎮 Cybersecurity Quiz Started!\n\n" +
-                        $"{question.Question}\n\n";
-
-                    for (int i = 0; i < question.Options.Count; i++)
-                    {
-                        response += $"{i + 1}. {question.Options[i]}\n";
-                    }
-
-                    break;
+                    return;
 
                 case "LOG":
 
-                    List<ActivityLogItem> logs =
-                        logService.GetRecentLogs();
+                    ActivityButton_Click(null, null);
 
-                    if (logs.Count == 0)
-                    {
-                        response = "📊 No activity recorded yet.";
-                    }
-                    else
-                    {
-                        response = "📊 Recent Activity:\n\n";
+                    UserInputTextBox.Clear();
 
-                        foreach (ActivityLogItem log in logs)
-                        {
-                            response += log + "\n";
-                        }
-                    }
-
-                    break;
+                    return;
 
                 default:
 
-                    // Existing Part 2 chatbot logic
                     response =
-                        _chatBot.ProcessInput(input) ?? string.Empty;
+                        _chatBot.ProcessInput(input)
+                        ?? "";
 
                     break;
             }
-
-            // =====================================================
-            // EXISTING CHAT CLEAR FEATURE
-            // =====================================================
 
             if (response.StartsWith("__CLEAR_CHAT__"))
             {
                 ChatPanel.Children.Clear();
 
                 response =
-                    response.Replace("__CLEAR_CHAT__", "")
-                            .Trim();
+                    response.Replace(
+                        "__CLEAR_CHAT__",
+                        "")
+                    .Trim();
             }
 
-            // Display bot response
             AppendBotMessage(response);
 
-            // Clear input
             UserInputTextBox.Clear();
 
-            // Scroll chat
             ChatScrollViewer.ScrollToBottom();
         }
 
-        private void CheckQuizAnswer(string input)
+        private void QuizButton_Click(object sender, RoutedEventArgs e)
         {
-            if (quizService.CurrentQuestionIndex >= quizService.Questions.Count)
-                return;
+            quizService.CurrentQuestionIndex = 0;
+            quizService.Score = 0;
 
-            QuizQuestion currentQuestion =
-                quizService.Questions[quizService.CurrentQuestionIndex];
+            quizInProgress = true;
 
-            if (int.TryParse(input, out int answer))
+            QuizQuestion question =
+                quizService.Questions[0];
+
+            string response =
+                "🎮 CYBERSECURITY QUIZ STARTED\n\n" +
+                question.Question + "\n\n";
+
+            for (int i = 0; i < question.Options.Count; i++)
             {
-                answer--;
-
-                if (answer == currentQuestion.CorrectAnswer)
-                {
-                    quizService.Score++;
-
-                    AppendBotMessage(
-                        $"✅ Correct!\n\n{currentQuestion.Explanation}");
-                }
-                else
-                {
-                    AppendBotMessage(
-                        $"❌ Incorrect.\n\n{currentQuestion.Explanation}");
-                }
-
-                quizService.CurrentQuestionIndex++;
-
-                if (quizService.CurrentQuestionIndex <
-                    quizService.Questions.Count)
-                {
-                    QuizQuestion next =
-                        quizService.Questions[quizService.CurrentQuestionIndex];
-
-                    AppendBotMessage(
-                        $"Question {quizService.CurrentQuestionIndex + 1}\n\n" +
-                        next.Question +
-                        "\n\n1. " +
-                        string.Join("\n", next.Options.Select((x, i) =>
-                            $"{i + 1}. {x}")));
-                }
-                else
-                {
-                    AppendBotMessage(
-                        $"🏆 Quiz Finished!\n\n" +
-                        $"Score: {quizService.Score}/{quizService.Questions.Count}");
-
-                    logService.AddLog(
-                        $"Quiz Completed - Score {quizService.Score}/{quizService.Questions.Count}");
-                }
+                response += $"{i + 1}. {question.Options[i]}\n";
             }
+
+            logService.AddLog("Quiz Started");
+
+            AppendBotMessage(response);
         }
+
+        private void ActivityButton_Click(object sender, RoutedEventArgs e)
+        {
+            List<ActivityLogItem> logs =
+                logService.GetRecentLogs();
+
+            if (logs.Count == 0)
+            {
+                AppendBotMessage(
+                    "📊 No activity recorded yet.");
+                return;
+            }
+
+            string output =
+                "📊 ACTIVITY LOG\n\n";
+
+            foreach (ActivityLogItem log in logs)
+            {
+                output +=
+                    $"{log.TimeStamp:HH:mm} - {log.Action}\n";
+            }
+
+            AppendBotMessage(output);
+        }
+
+
         // Handles placeholder text behavior.
         private void UserInputTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {

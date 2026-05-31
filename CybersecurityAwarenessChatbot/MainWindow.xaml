@@ -295,25 +295,28 @@
             VerticalAlignment="Center">
 
                     <Button x:Name="TaskButton"
-            Content="📋 Tasks"
-            Width="140"
-            Height="35"
-            Margin="5"
-            Style="{StaticResource CyberButton}"/>
+                            Content="📋 Tasks"
+                            Click="TaskButton_Click"
+                            Width="140"
+                            Height="35"
+                            Margin="5"
+                            Style="{StaticResource CyberButton}"/>
 
                     <Button x:Name="QuizButton"
-            Content="🎮 Quiz"
-            Width="140"
-            Height="35"
-            Margin="5"
-            Style="{StaticResource CyberButton}"/>
+                            Content="🎮 Quiz"
+                            Click="QuizButton_Click"
+                            Width="140"
+                            Height="35"
+                            Margin="5"
+                            Style="{StaticResource CyberButton}"/>
 
                     <Button x:Name="ActivityButton"
-            Content="📊 Activity Log"
-            Width="160"
-            Height="35"
-            Margin="5"
-            Style="{StaticResource CyberButton}"/>
+                            Content="📊 Activity Log"
+                            Click="ActivityButton_Click"
+                            Width="160"
+                            Height="35"
+                            Margin="5"
+                            Style="{StaticResource CyberButton}"/>
 
                 </StackPanel>
 
