@@ -1,27 +1,34 @@
-﻿namespace CybersecurityAwarenessChatbot.Classes
+﻿using CybersecurityAwarenessChatbot.Models;
+
+namespace CybersecurityAwarenessChatbot.Services
 {
     public class TaskService
     {
-        private readonly List<TaskItem> tasks = new();
+        private readonly DatabaseService database;
+
+        public TaskService()
+        {
+            database = new DatabaseService();
+        }
 
         public void AddTask(TaskItem task)
         {
-            tasks.Add(task);
+            database.AddTask(task);
         }
 
         public List<TaskItem> GetTasks()
         {
-            return tasks;
+            return database.GetTasks();
         }
 
-        public void CompleteTask(TaskItem task)
+        public void DeleteTask(int id)
         {
-            task.IsCompleted = true;
+            database.DeleteTask(id);
         }
 
-        public void DeleteTask(TaskItem task)
+        public void CompleteTask(int id)
         {
-            tasks.Remove(task);
+            database.CompleteTask(id);
         }
     }
 }

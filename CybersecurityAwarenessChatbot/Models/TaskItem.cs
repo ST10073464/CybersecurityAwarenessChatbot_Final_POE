@@ -1,18 +1,37 @@
-﻿namespace CybersecurityAwarenessChatbot.Classes
+﻿/*
+    Erwin Mashobane
+    ST10073464
+*/
+
+namespace CybersecurityAwarenessChatbot.Models
 {
+    // Represents a cybersecurity task
     public class TaskItem
     {
-        public string Title { get; set; }
+        // Unique task ID
+        public int Id { get; set; }
 
-        public string Description { get; set; }
+        // Task title
+        public string Title { get; set; } = "";
 
+        // Task description
+        public string Description { get; set; } = "";
+
+        // Optional reminder date
         public DateTime? ReminderDate { get; set; }
 
+        // Completion status
         public bool IsCompleted { get; set; }
 
+        // Display task nicely inside ListBox
         public override string ToString()
         {
-            return $"{Title} | Reminder: {ReminderDate:d} | Completed: {IsCompleted}";
+            string reminder =
+                ReminderDate.HasValue
+                ? ReminderDate.Value.ToShortDateString()
+                : "No Reminder";
+
+            return $"{Title} | {Description} | {reminder} | Completed: {IsCompleted}";
         }
     }
 }

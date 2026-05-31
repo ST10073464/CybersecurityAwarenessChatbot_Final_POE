@@ -1,20 +1,121 @@
-﻿namespace CybersecurityAwarenessChatbot.Classes
+﻿/*
+    Erwin Mashobane
+    ST10073464
+*/
+
+using MySql.Data.MySqlClient;
+using CybersecurityAwarenessChatbot.Models;
+
+namespace CybersecurityAwarenessChatbot.Services
 {
     public class DatabaseService
     {
-        public void SaveTask(TaskItem task)
+        private readonly string connectionString =
+            "server=localhost;" +
+            "database=CyberSecurityChatbot;" +
+            "uid=root;" +
+            "pwd=YOUR_PASSWORD;";
+
+        // Add Task
+        public void AddTask(TaskItem task)
         {
-            // MySQL save logic here
+            using MySqlConnection connection =
+                new MySqlConnection(connectionString);
+
+            connection.Open();
+
+            string query =
+                @"INSERT INTO Tasks
+                (Title, Description, ReminderDate, IsCompleted)
+                VALUES
+                (@Title, @Description, @ReminderDate, @IsCompleted)";
+
+            MySqlCommand command =
+                new MySqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@Title", task.Title);
+            command.Parameters.AddWithValue("@Description", task.Description);
+            command.Parameters.AddWithValue("@ReminderDate", task.ReminderDate);
+            command.Parameters.AddWithValue("@IsCompleted", task.IsCompleted);
+
+            command.ExecuteNonQuery();
         }
 
-        public void DeleteTask(TaskItem task)
+        // Get All Tasks
+        public List<TaskItem> GetTasks()
         {
-            // MySQL delete logic here
+            List<TaskItem> tasks = new();
+
+            using MySqlConnection connection =
+                new MySqlConnection(connectionString);
+
+            connection.Open();
+
+            string query = "SELECT * FROM Tasks";
+
+            MySqlCommand command =
+                new MySqlCommand(query, connection);
+
+            MySqlDataReader reader =
+                command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                tasks.Add(new TaskItem
+                {
+                    Id = Convert.ToInt32(reader["Id"]),
+                    Title = reader["Title"].ToString(),
+                    Description = reader["Description"].ToString(),
+                    ReminderDate =
+                        reader["ReminderDate"] == DBNull.Value
+                        ? null
+                        : Convert.ToDateTime(reader["ReminderDate"]),
+                    IsCompleted =
+                        Convert.ToBoolean(reader["IsCompleted"])
+                });
+            }
+
+            return tasks;
         }
 
-        public void UpdateTask(TaskItem task)
+        // Delete Task
+        public void DeleteTask(int id)
         {
-            // MySQL update logic here
+            using MySqlConnection connection =
+                new MySqlConnection(connectionString);
+
+            connection.Open();
+
+            string query =
+                "DELETE FROM Tasks WHERE Id=@Id";
+
+            MySqlCommand command =
+                new MySqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@Id", id);
+
+            command.ExecuteNonQuery();
+        }
+
+        // Mark Completed
+        public void CompleteTask(int id)
+        {
+            using MySqlConnection connection =
+                new MySqlConnection(connectionString);
+
+            connection.Open();
+
+            string query =
+                @"UPDATE Tasks
+                  SET IsCompleted = 1
+                  WHERE Id=@Id";
+
+            MySqlCommand command =
+                new MySqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@Id", id);
+
+            command.ExecuteNonQuery();
         }
     }
 }

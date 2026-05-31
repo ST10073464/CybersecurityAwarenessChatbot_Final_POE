@@ -97,7 +97,7 @@ namespace CybersecurityAwarenessChatbot.Classes
             if (input == "end" || input == "close" || input == "leave")
             {
                 Application.Current.Shutdown();
-                return null;
+                return "";
             }
             // MEMORY QUESTIONS
             if (input.Contains("what is my name") ||

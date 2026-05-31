@@ -1,4 +1,6 @@
 ﻿using CybersecurityAwarenessChatbot.Classes;
+using CybersecurityAwarenessChatbot.Services;
+using CybersecurityAwarenessChatbot.Models;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
