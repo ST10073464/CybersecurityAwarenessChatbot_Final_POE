@@ -21,7 +21,6 @@ namespace CybersecurityAwarenessChatbot.Services
         {
             using MySqlConnection connection =
                 new MySqlConnection(connectionString);
-            { }
 
             connection.Open();
 

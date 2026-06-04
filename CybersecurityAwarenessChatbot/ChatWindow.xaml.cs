@@ -16,9 +16,11 @@ namespace CybersecurityAwarenessChatbot
 {
     // Main GUI window for SecureWin chatbot.
     // Handles user interaction and displays chat messages.
-    public partial class MainWindow : Window
+    public partial class ChatWindow : Window
     {
         private ChatBot _chatBot;
+
+        private readonly MemoryStore memoryStore = new()    ;
 
         // tracking list of answers
 
@@ -41,7 +43,7 @@ namespace CybersecurityAwarenessChatbot
         private readonly ActivityLogService logService = new();
         private readonly NLPService nlpService = new();
 
-        public MainWindow()
+        public ChatWindow()
         {
             InitializeComponent();
 
