@@ -14,8 +14,9 @@ namespace CybersecurityAwarenessChatbot
         {
             InitializeComponent();
 
-            HeaderText.Text =
-                $"Task Assistant - {memoryStore.UserName}";
+            UserNameText.Text = $"👤 {memoryStore.UserName}";
+
+            HeaderText.Text = $"Task Assistant - {memoryStore.UserName}";
 
             LoadTasks();
         }

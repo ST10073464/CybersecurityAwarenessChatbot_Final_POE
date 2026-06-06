@@ -2,10 +2,6 @@
 using CybersecurityAwarenessChatbot.Models;
 using CybersecurityAwarenessChatbot.Services;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 using System.Windows;
 using System.Windows.Controls;
@@ -46,6 +42,7 @@ namespace CybersecurityAwarenessChatbot
         public ChatWindow()
         {
             InitializeComponent();
+            UserNameText.Text = $"👤 {memoryStore.UserName}";
 
             // Initialize chatbot
             _chatBot = new ChatBot();

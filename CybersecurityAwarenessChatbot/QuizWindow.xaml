@@ -86,11 +86,34 @@
                         Height="40"
                         Margin="5"
                         Click="MenuButton_Click"/>
-                
+
+                <TextBlock x:Name="UserNameText"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           Foreground="White"/>
+
 
             </StackPanel>
 
         </StackPanel>
+
+        <!-- ================================================= -->
+        <!-- FOOTER -->
+        <!-- ================================================= -->
+
+        <Border Grid.Row="3"
+        Background="#10263A"
+        Height="35">
+
+            <TextBlock
+        Text="🛡️ Protecting South African Citizens Online 🛡️"
+        Foreground="White"
+        FontSize="14"
+        FontWeight="Bold"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"/>
+
+        </Border>
 
     </Grid>
 </Window>

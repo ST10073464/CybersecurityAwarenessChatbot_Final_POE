@@ -8,6 +8,8 @@ namespace CybersecurityAwarenessChatbot
     {
         private readonly QuizService quizService;
         private readonly ActivityLogService logService;
+        private readonly MemoryStore memoryStore = new();
+        private readonly string _userName;
 
         private List<int> userAnswers = new();
 
@@ -16,6 +18,8 @@ namespace CybersecurityAwarenessChatbot
         public QuizWindow(string userName)
         {
             InitializeComponent();
+
+            UserNameText.Text = $"👤 {memoryStore.UserName}";
 
             quizService = new QuizService();
             logService = new ActivityLogService();
@@ -113,7 +117,7 @@ namespace CybersecurityAwarenessChatbot
             Option2Button.Visibility = Visibility.Collapsed;
             Option3Button.Visibility = Visibility.Collapsed;
             Option4Button.Visibility = Visibility.Collapsed;
-            
+
 
             string badge;
 
@@ -174,6 +178,19 @@ namespace CybersecurityAwarenessChatbot
             $"{UserName} completed quiz. Score: {quizService.Score}");
         }
 
+        // Reset quiz state but stay in QuizWindow
+
+            protected override void OnClosing(
+        System.ComponentModel.CancelEventArgs e)
+            {
+                e.Cancel = true;
+
+                QuizWindow quizWindow = new QuizWindow(_userName);
+
+                quizWindow.Show();
+
+                Hide();
+            }
         private void BackToQuizButton_Click(object sender, RoutedEventArgs e)
         {
             // Reset quiz state but stay in QuizWindow

@@ -96,6 +96,11 @@
                                FontWeight="Bold"
                                HorizontalAlignment="Center"/>
 
+                    <TextBlock x:Name="UserNameText"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="White"/>
+
                 </StackPanel>
 
                 <!-- ================================================= -->
@@ -289,10 +294,10 @@
                 <!-- ================================================= -->
 
                 <StackPanel Grid.Row="0"
-            Grid.ColumnSpan="2"
-            Orientation="Horizontal"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center">
+                            Grid.ColumnSpan="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
 
                     <Button x:Name="TaskButton"
                             Content="📋 Tasks"
