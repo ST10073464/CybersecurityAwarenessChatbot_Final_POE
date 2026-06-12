@@ -19,7 +19,9 @@ namespace CybersecurityAwarenessChatbot
             InitializeComponent();
             memoryStore = new MemoryStore();
 
-            UserNameText.Text = $"👤 {memoryStore.UserName}";
+            //memoryStore.UserName = formattedName;
+
+            UserNameText.Text = $"👤 {MemoryStore.UserName}";
 
             AsciiArtText.Text = UIHelper.ShowLogo();
 
@@ -46,49 +48,92 @@ namespace CybersecurityAwarenessChatbot
             UserInputTextBox.Focus();
         }
 
-        // Displays bot messages in the landing page chat area.
-        private void AppendBotMessage(string message)
-        {
-            Border bubble = new Border
-            {
-                Background = new SolidColorBrush(Color.FromRgb(16, 38, 58)),
-                CornerRadius = new CornerRadius(15),
-                Padding = new Thickness(12),
-                Margin = new Thickness(5),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                MaxWidth = 700
-            };
-
-            TextBlock text = new TextBlock
-            {
-                Text = $"🤖 SecureWin\n\n{message}",
-                Foreground = Brushes.White,
-                FontSize = 16,
-                TextWrapping =
-                TextWrapping.Wrap
-            };
-
-            bubble.Child = text;
-
-            ChatPanel.Children.Add(bubble);
-        }
-
-        // Displays user message bubble.
+        // Displays username and timestamp, with a double tick indicator for sent messages.
         private void AppendUserMessage(string message)
         {
+            StackPanel container = new StackPanel
+            {
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(5)
+            };
+
+            // Username and timestamp
+            TextBlock header = new TextBlock
+            {
+                Text = $"{MemoryStore.UserName} • {DateTime.Now:HH:mm}",
+                Foreground = Brushes.Gray,
+                FontSize = 13,
+                FontWeight = FontWeights.Bold,
+                HorizontalAlignment = HorizontalAlignment.Right
+            };
+
             Border bubble = new Border
             {
                 Background = new SolidColorBrush(Color.FromRgb(0, 194, 255)),
                 CornerRadius = new CornerRadius(15),
                 Padding = new Thickness(12),
-                Margin = new Thickness(5),
-                HorizontalAlignment = HorizontalAlignment.Right,
                 MaxWidth = 700
+            };
+
+            StackPanel bubbleContent = new StackPanel();
+
+            TextBlock text = new TextBlock
+            {
+                Text = message,
+                Foreground = Brushes.White,
+                FontSize = 16,
+                TextWrapping = TextWrapping.Wrap
+            };
+
+            // Double tick indicator
+            TextBlock ticks = new TextBlock
+            {
+                Text = "✓✓",
+                Foreground = Brushes.White,
+                FontSize = 10,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(0, 5, 0, 0)
+            };
+
+            bubbleContent.Children.Add(text);
+            bubbleContent.Children.Add(ticks);
+
+            bubble.Child = bubbleContent;
+
+            container.Children.Add(header);
+            container.Children.Add(bubble);
+
+            ChatPanel.Children.Add(container);
+        }
+
+        // Displays bot message bubble with header and timestamp, styled differently from user messages.
+        private void AppendBotMessage(string message)
+        {
+            StackPanel container = new StackPanel
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Margin = new Thickness(5)
+            };
+
+            TextBlock header = new TextBlock
+            {
+                Text = $"🤖 SecureWin • {DateTime.Now:HH:mm}",
+                Foreground = Brushes.Gray,
+                FontSize = 13,
+                FontWeight = FontWeights.Bold
+            };
+
+            Border bubble = new Border
+            {
+                Background = new SolidColorBrush(Color.FromRgb(16, 38, 58)),
+                CornerRadius = new CornerRadius(15),
+                Padding = new Thickness(12),
+                MaxWidth = 750
             };
 
             TextBlock text = new TextBlock
             {
-                Text = $"🧑 You [{DateTime.Now:HH:mm}]\n\n{message}",
+                Text = message,
                 Foreground = Brushes.White,
                 FontSize = 16,
                 TextWrapping = TextWrapping.Wrap
@@ -96,10 +141,21 @@ namespace CybersecurityAwarenessChatbot
 
             bubble.Child = text;
 
-            ChatPanel.Children.Add(bubble);
+            container.Children.Add(header);
+            container.Children.Add(bubble);
+
+            ChatPanel.Children.Add(container);
         }
-        
-       // Handles user input
+
+        // Placeholder text visibility based on user input
+        private void UserInputTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            PlaceholderText.Visibility = string.IsNullOrWhiteSpace( UserInputTextBox.Text)
+                ? Visibility.Visible
+                : Visibility.Hidden;
+        }
+
+        // Handles user input
         private void SendMessage()
         {
             string input =UserInputTextBox.Text.Trim();
@@ -125,14 +181,14 @@ namespace CybersecurityAwarenessChatbot
                                  word.Substring(1)));
 
                 // Save globally
-                memoryStore.UserName = formattedName;
+                MemoryStore.UserName = formattedName;
 
                 memoryStore.AddConversation($"User: {formattedName}");
 
                 awaitingUserName = false;
 
                 AppendBotMessage(
-                    $"👋 Welcome {memoryStore.UserName}!\n\n" +
+                    $"👋 Welcome {MemoryStore.UserName}!\n\n" +
                     "I am SecureWin, your Cybersecurity Awareness Assistant.\n\n" +
                     "Please select one of the available options:\n\n" +
                     "Click one of the buttons below to continue.");
@@ -149,16 +205,12 @@ namespace CybersecurityAwarenessChatbot
             ChatScrollViewer.ScrollToBottom();
         }
         // Send button click
-        private void SendButton_Click(
-            object sender,
-            RoutedEventArgs e)
+        private void SendButton_Click( object sender, RoutedEventArgs e)
         {
             SendMessage();
         }
         // Send message when Enter pressed
-        private void UserInputTextBox_KeyDown(
-            object sender,
-            KeyEventArgs e)
+        private void UserInputTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
@@ -166,25 +218,27 @@ namespace CybersecurityAwarenessChatbot
             }
         }
 
+        // Chat button click - opens chat window and closes landing page
         private void ChatButton_Click(object sender, RoutedEventArgs e)
         {
             ChatWindow window = new ChatWindow();
 
-
             window.Show();
 
             Close();
         }
 
+        // Quiz button click - opens quiz window and closes landing page
         private void QuizButton_Click(object sender, RoutedEventArgs e)
         {
-            QuizWindow window = new QuizWindow(memoryStore.UserName);
+            QuizWindow window = new QuizWindow();
 
             window.Show();
 
             Close();
         }
 
+        // Task button click - opens task window and closes landing page
         private void TaskButton_Click(object sender, RoutedEventArgs e)
         {
             TaskWindow window = new TaskWindow();
@@ -194,6 +248,7 @@ namespace CybersecurityAwarenessChatbot
             Close();
         }
 
+        // Exit button click - shuts down the application
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();

@@ -1,119 +1,164 @@
 ﻿<Window x:Class="CybersecurityAwarenessChatbot.QuizWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Cybersecurity Quiz"
-        Height="700"
-        Width="1000"
-        WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize">
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         Title="Quiz Mode"
+         WindowState="Maximized"
+         Background="#07111F"
+         WindowStartupLocation="CenterScreen">
 
-    <Grid Background="#10263A">
+    
+    <Grid Margin="20">
 
-        <StackPanel Margin="30">
+        <!-- ================================================= -->
+        <!-- ROWS -->
+        <!-- ================================================= -->
+
+        <Grid.RowDefinitions>
+
+            <!-- Header -->
+            <RowDefinition Height="Auto"/>
+
+            <!-- Main Content -->
+            <RowDefinition Height="*"/>
+
+            <!-- Footer -->
+            <RowDefinition Height="35"/>
+
+        </Grid.RowDefinitions>
+
+        <!-- ================================================= -->
+        <!-- HEADER -->
+        <!-- ================================================= -->
+
+        <StackPanel Grid.Row="0"
+                    Margin="0,0,0,15">
+
+            <TextBlock x:Name="UserNameText"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       Margin="0,0,0,10"/>
 
             <TextBlock Text="🎮 Cybersecurity Quiz"
                        FontSize="28"
                        FontWeight="Bold"
-                       Foreground="White"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,20"/>
+                       Foreground="White"/>
 
-            <Border Background="#1A3A57"
-                    CornerRadius="15"
-                    Padding="20">
+            <TextBlock x:Name="ProgressText"
+                       FontSize="16"
+                       Foreground="#00E5FF"
+                       Margin="0,5,0,0"/>
 
-                <StackPanel>
+        </StackPanel>
 
-                    <TextBlock x:Name="QuestionText"
-                               FontSize="20"
-                               Foreground="White"
-                               TextWrapping="Wrap"
-                               Margin="0,0,0,20"/>
+        <!-- ================================================= -->
+        <!-- MAIN CONTENT -->
+        <!-- ================================================= -->
 
-                    <Button x:Name="Option1Button"
-                            Height="45"
-                            Margin="0,5"
-                            Click="Option_Click"/>
+        <Border Grid.Row="1"
+                Background="White"
+                CornerRadius="10"
+                Padding="20">
 
-                    <Button x:Name="Option2Button"
-                            Height="45"
-                            Margin="0,5"
-                            Click="Option_Click"/>
+            <Grid>
 
-                    <Button x:Name="Option3Button"
-                            Height="45"
-                            Margin="0,5"
-                            Click="Option_Click"/>
+                <Grid.RowDefinitions>
 
-                    <Button x:Name="Option4Button"
-                            Height="45"
-                            Margin="0,5"
-                            Click="Option_Click"/>
+                    <RowDefinition Height="Auto"/>
 
-                    <TextBlock x:Name="ResultText"
-                               Margin="0,20"
+                    <RowDefinition Height="*"/>
+
+                    <RowDefinition Height="Auto"/>
+
+                </Grid.RowDefinitions>
+
+                <!-- QUESTION -->
+
+                <TextBlock x:Name="PlaceholderText"
+                           Text="📝 Answer the cybersecurity questions by selecting one option and clicking Next."
+                           Foreground="Gray"
+                           FontSize="16"
+                           FontStyle="Italic"
+                           Margin="0,0,0,10"/>
+
+
+                <TextBlock x:Name="QuestionText"
+                           Grid.Row="0"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,20"/>
+
+                <!-- ANSWERS -->
+
+                <ListBox x:Name="AnswerListBox"
+                         Grid.Row="1"
+                         FontSize="18"
+                         Margin="0,0,0,20"/>
+
+                <!-- RESULTS -->
+
+                <ScrollViewer Grid.Row="1"
+                              VerticalScrollBarVisibility="Auto">
+
+                    <TextBlock x:Name="ResultsText"
                                FontSize="18"
-                               Foreground="White"
-                               TextWrapping="Wrap"/>
+                               TextWrapping="Wrap"
+                               Visibility="Collapsed"/>
+                </ScrollViewer>
 
-                    <StackPanel x:Name="ResultButtons" Visibility="Collapsed">
-                        <Button x:Name="BackToQuizButton"
-                            Content="⬅ Back to Quiz"
+                <!-- BUTTONS -->
+
+                <StackPanel Grid.Row="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center">
+
+                    <Button x:Name="NextButton"
+                            Content="Next Question"
                             Width="180"
-                            Height="40"
+                            Height="45"
                             Margin="10"
-                           
-                            Click="BackToQuizButton_Click"/>
-                    </StackPanel>
+                            Click="NextButton_Click"/>
+
+                    <Button x:Name="RetryButton"
+                            Content="Retry Wrong Answers"
+                            Width="200"
+                            Height="45"
+                            Margin="10"
+                            Visibility="Collapsed"
+                            Click="RetryButton_Click"/>
+
+                    <Button x:Name="BackButton"
+                            Content="⬅ Back to Menu"
+                            Width="180"
+                            Height="45"
+                            Margin="10"
+                            Visibility="Collapsed"
+                            Click="BackButton_Click"/>
 
                 </StackPanel>
 
-            </Border>
+            </Grid>
 
-
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Center"
-                        Margin="0,20">
-
-                <Button Content="🔄 Retry Quiz"
-                        Width="150"
-                        Height="40"
-                        Margin="5"
-                        Click="RetryButton_Click"/>
-
-                <Button Content="🏠 Main Menu"
-                        Width="150"
-                        Height="40"
-                        Margin="5"
-                        Click="MenuButton_Click"/>
-
-                <TextBlock x:Name="UserNameText"
-                           FontSize="18"
-                           FontWeight="Bold"
-                           Foreground="White"/>
-
-
-            </StackPanel>
-
-        </StackPanel>
+        </Border>
 
         <!-- ================================================= -->
         <!-- FOOTER -->
         <!-- ================================================= -->
 
-        <Border Grid.Row="3"
-        Background="#10263A"
-        Height="35">
+        <Border Grid.Row="2"
+                Background="#10263A">
 
             <TextBlock
-        Text="🛡️ Protecting South African Citizens Online 🛡️"
-        Foreground="White"
-        FontSize="14"
-        FontWeight="Bold"
-        HorizontalAlignment="Center"
-        VerticalAlignment="Center"/>
+                    Text="🛡️ Protecting South African Citizens Online 🛡️"
+                    Foreground="White"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"/>
 
         </Border>
 
     </Grid>
+
 </Window>

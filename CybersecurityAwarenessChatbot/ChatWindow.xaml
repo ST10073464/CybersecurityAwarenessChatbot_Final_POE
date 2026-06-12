@@ -10,8 +10,7 @@
         Width="1600"
         WindowStartupLocation="CenterScreen"
         Background="#07111F"
-        WindowState="Maximized"
-        Loaded="MainWindow_Loaded">
+        WindowState="Maximized">
 
     <!-- ========================================================= -->
     <!-- RESOURCES -->
@@ -78,31 +77,75 @@
                 <!-- ================================================= -->
                 <!-- LEFT SIDE -->
                 <!-- ================================================= -->
+                
+                <Grid Grid.Column="0">
 
-                <StackPanel Grid.Column="0">
+                    <Grid.ColumnDefinitions>
 
-                    <TextBlock Text="🔒 SECUREWIN CYBERSECURITY ASSISTANT 🔒"
-                               Foreground="#00E5FF"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               HorizontalAlignment="Center"
-                               Margin="0,0,0,5"/>
+                        <!-- USER -->
+                        <ColumnDefinition Width="220"/>
 
-                    <TextBlock x:Name="AsciiArtText"
-                               Text="SECUREWIN"
-                               Foreground="#00E5FF"
-                               FontFamily="Consolas"
-                               FontSize="10"
-                               FontWeight="Bold"
-                               HorizontalAlignment="Center"/>
+                        <!-- ASCII ART -->
+                        <ColumnDefinition Width="*"/>
 
-                    <TextBlock x:Name="UserNameText"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               Foreground="White"/>
+                    </Grid.ColumnDefinitions>
 
-                </StackPanel>
+                    <!-- ================================================= -->
+                    <!-- USER PANEL -->
+                    <!-- ================================================= -->
 
+                    <Border Grid.Column="0"
+                            Background="#0D1B2A"
+                            CornerRadius="12"
+                            Padding="10"
+                            Margin="0,0,10,0"
+                            VerticalAlignment="Stretch">
+
+                        <StackPanel VerticalAlignment="Center">
+
+                            <TextBlock Text="👤 USER LOGGED IN"
+                                       Foreground="#00E5FF"
+                                       FontSize="14"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center"/>
+
+                            <TextBlock x:Name="UserNameText"
+                                       Text="Guest"
+                                       Foreground="White"
+                                       FontSize="18"
+                                       FontWeight="Bold"
+                                       TextWrapping="Wrap"
+                                       TextAlignment="Center"
+                                       Margin="0,10,0,0"/>
+
+                        </StackPanel>
+
+                    </Border>
+
+                    <!-- ================================================= -->
+                    <!-- ASCII ART -->
+                    <!-- ================================================= -->
+
+                    <StackPanel Grid.Column="1">
+
+                        <TextBlock Text="🔒 SECUREWIN CYBERSECURITY ASSISTANT 🔒"
+                                   Foreground="#00E5FF"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,5"/>
+
+                        <TextBlock x:Name="AsciiArtText"
+                                   Foreground="#00E5FF"
+                                   FontFamily="Consolas"
+                                   FontSize="10"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"/>
+
+                    </StackPanel>
+
+                </Grid>
+                
                 <!-- ================================================= -->
                 <!-- RIGHT SIDE -->
                 <!-- ================================================= -->
@@ -275,7 +318,6 @@
                              BorderThickness="2"
                              CaretBrush="Black"
                              VerticalAlignment="Center"
-                             TextChanged="UserInputTextBox_TextChanged"
                              KeyDown="UserInputTextBox_KeyDown"/>
 
                     <!-- Placeholder Text -->
@@ -299,29 +341,12 @@
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">
 
-                    <Button x:Name="TaskButton"
-                            Content="📋 Tasks"
-                            Click="TaskButton_Click"
-                            Width="140"
-                            Height="35"
-                            Margin="5"
-                            Style="{StaticResource CyberButton}"/>
 
-                    <Button x:Name="QuizButton"
-                            Content="🎮 Quiz"
-                            Click="QuizButton_Click"
-                            Width="140"
-                            Height="35"
-                            Margin="5"
-                            Style="{StaticResource CyberButton}"/>
-
-                    <Button x:Name="ActivityButton"
-                            Content="📊 Activity Log"
-                            Click="ActivityButton_Click"
-                            Width="160"
-                            Height="35"
-                            Margin="5"
-                            Style="{StaticResource CyberButton}"/>
+                    <Button x:Name="BackButton"
+                            Content="⬅ Back"
+                            Width="120"
+                            Height="40"
+                            Click="BackButton_Click"/>
 
                 </StackPanel>
 

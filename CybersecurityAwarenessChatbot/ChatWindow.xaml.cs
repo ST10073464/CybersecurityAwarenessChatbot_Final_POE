@@ -16,190 +16,71 @@ namespace CybersecurityAwarenessChatbot
     {
         private ChatBot _chatBot;
 
-        private readonly MemoryStore memoryStore = new()    ;
+        private readonly MemoryStore memoryStore = new();
 
-        // tracking list of answers
-
-        private List<int> wrongQuestionIndexes = new();
-
-        // Menu state tracking
-        private bool isInMenuMode = true;
-
-        // Stores selected task for delete/complete operations
-        private int selectedTaskId = -1;
-
-        private TaskItem pendingTask = null;
-        private bool awaitingReminder = false;
-
-        // Tracks quiz state
-        private bool quizInProgress = false;
-
-        private readonly TaskService taskService = new();
-        private readonly QuizService quizService = new();
-        private readonly ActivityLogService logService = new();
-        private readonly NLPService nlpService = new();
-
+        // Constructor
         public ChatWindow()
         {
             InitializeComponent();
-            UserNameText.Text = $"👤 {memoryStore.UserName}";
+
+            // Show username in header
+            UserNameText.Text = $"👤 {MemoryStore.UserName}";
 
             // Initialize chatbot
             _chatBot = new ChatBot();
 
-            // Disable textbox and buttons during startup greeting
-            UserInputTextBox.IsEnabled = false;
-            SendButton.IsEnabled = false;
-            TaskButton.IsEnabled = false;
-            QuizButton.IsEnabled = false;
-            ActivityButton.IsEnabled = false;
-
             // Load ASCII art
             AsciiArtText.Text = UIHelper.ShowLogo();
 
-            // Run startup sequence
-            Loaded += MainWindow_Loaded;
+            Loaded += ChatWindow_Loaded;
+
         }
 
-        // SHOW MAIN MENU (NUMBERED)
-        private string ShowMainMenu()
+        // Chat mode Startup
+        private void ChatWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            return
-                "🔐 SECUREWIN MAIN MENU\n\n" +
-                "1. 💬 Chat\n" +
-                "2. 🎮 Quiz\n" +
-                "3. 📋 Tasks\n" +
-                "4. 📊 Activity Log\n" +
-                "5. ❌ End Session\n\n" +
-                "Type a number to continue.";
-        }
+            // Refresh username display.
+            UserNameText.Text = $"👤 {MemoryStore.UserName}";
 
-        private bool _isGreetingPlayed = false;
-        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-
-            // Check if it already ran
-            if (_isGreetingPlayed) return;
-            _isGreetingPlayed = true;
-
-            // Play greeting voice
-            await Task.Run(() => VoicePlayer.PlayGreeting());
-
-            // Play a quick system notification ping
-            System.Media.SystemSounds.Asterisk.Play();
-
-            // Show chatbot greeting after audio
-            //AppendBotMessage(_chatBot.GetGreeting());
-
-            // ⏳ Small delay for UX
-            await Task.Delay(800);
-           
-            AppendBotMessage(ShowMainMenu());
-
-            isInMenuMode = true;
-
-            // Enable user interaction
-            UserInputTextBox.IsEnabled = true;
-            SendButton.IsEnabled = true;
-            TaskButton.IsEnabled = true;
-            QuizButton.IsEnabled = true;
-            ActivityButton.IsEnabled = true;
-
-            // Focus textbox automatically
-            UserInputTextBox.Focus();
-        }
-
-        private void TaskButton_Click(object sender, RoutedEventArgs e)
-        {
-            ShowTasks();
-        }
-
-        private void ViewTasks_Click(object sender, RoutedEventArgs e)
-        {
-            List<TaskItem> tasks =
-                taskService.GetTasks();
-
-            if (tasks.Count == 0)
-            {
-                AppendBotMessage("No tasks found.");
-                return;
-            }
-
-            string output = "";
-
-            foreach (TaskItem task in tasks)
-            {
-                output += task + "\n\n";
-            }
-
-            AppendBotMessage(output);
-        }
-
-        // DELETE TASK
-        private void DeleteTask_Click(object sender, RoutedEventArgs e)
-        {
-            if (selectedTaskId == -1)
-            {
-                AppendBotMessage(
-                    "⚠ Please select or view a task first.");
-                return;
-            }
-
-            taskService.DeleteTask(selectedTaskId);
-
-            logService.AddLog(
-                $"Deleted Task {selectedTaskId}");
-
+            // Display welcome message with topics.
             AppendBotMessage(
-                $"🗑 Task {selectedTaskId} has been deleted successfully.");
-
-            selectedTaskId = -1;
+                $"👋 Welcome {MemoryStore.UserName} to the Cybersecurity Chatbot Assistant!\n\n" +
+                $"💬 Chat Mode Activated\n\n" +
+                $"You can ask me anything about cybersecurity.\n\n" +
+                $"Topics include:\n\n" +
+                $"🔒 Passwords\n" +
+                $"🎣 Phishing\n" +
+                $"🛡️ Privacy\n" +
+                $"💻 Malware\n" +
+                $"⚠️ Scams");
         }
 
-        // COMPLETE TASK
-        private void CompleteTask_Click(object sender, RoutedEventArgs e)
+        // Send user message when Send button is clicked.
+        private void SendMessage()
         {
-            if (selectedTaskId == -1)
-            {
-                AppendBotMessage(
-                    "⚠ Please select or view a task first.");
+            string input = UserInputTextBox.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(input))
                 return;
-            }
 
-            taskService.CompleteTask(selectedTaskId);
+            VoicePlayer.PlaySound();
 
-            logService.AddLog(
-                $"Completed Task {selectedTaskId}");
+            AppendUserMessage(input);
 
-            AppendBotMessage(
-                $"✅ Task {selectedTaskId} marked as completed.");
+            string response = _chatBot.ProcessInput(input);
 
-            selectedTaskId = -1;
-        }
-
-        // SHOW ALL TASKS IN CHAT
-        private void ShowTasks()
-        {
-            List<TaskItem> tasks = taskService.GetTasks();
-
-            if (tasks.Count == 0)
+            if (response.StartsWith("__CLEAR_CHAT__"))
             {
-                AppendBotMessage("📋 No cybersecurity tasks found.");
-                return;
+                ChatPanel.Children.Clear();
+
+                response = response.Replace("__CLEAR_CHAT__", "").Trim();
             }
 
-            AppendBotMessage("📋 TASK LIST LOADED:");
+            AppendBotMessage(response);
 
-            foreach (TaskItem task in tasks)
-            {
-                AppendTaskMessage(task); // 👈 clickable UI per task
-            }
-        }
+            UserInputTextBox.Clear();
 
-        // Handles send button click.
-        private void SendButton_Click(object sender, RoutedEventArgs e)
-        {
-            SendMessage();
+            ChatScrollViewer.ScrollToBottom();
         }
 
         // Allows Enter key to send messages.
@@ -211,398 +92,105 @@ namespace CybersecurityAwarenessChatbot
             }
         }
 
-        // CHECK QUIZ ANSWER
-        private void CheckQuizAnswer(string input)
+        // Send button click event handler
+        private void SendButton_Click(object sender, RoutedEventArgs e)
         {
-            if (quizService.CurrentQuestionIndex >= quizService.Questions.Count)
-                return;
-
-            QuizQuestion question =
-                quizService.Questions[quizService.CurrentQuestionIndex];
-
-            if (int.TryParse(input, out int answer))
-            {
-                answer--; // convert to 0-based index
-
-                if (answer == question.CorrectAnswer)
-                {
-                    quizService.Score++;
-
-                    AppendBotMessage(
-                        $"✅ Correct!\n\n{question.Explanation}");
-                }
-                else
-                {
-                    AppendBotMessage(
-                        $"❌ Incorrect.\n\n{question.Explanation}");
-
-                    wrongQuestionIndexes.Add(quizService.CurrentQuestionIndex);
-                }
-
-                quizService.CurrentQuestionIndex++;
-
-                // NEXT QUESTION
-                if (quizService.CurrentQuestionIndex < quizService.Questions.Count)
-                {
-                    QuizQuestion next =
-                        quizService.Questions[quizService.CurrentQuestionIndex];
-
-                    string response =
-                        $"📘 Question {quizService.CurrentQuestionIndex + 1}\n\n" +
-                        next.Question + "\n\n";
-
-                    for (int i = 0; i < next.Options.Count; i++)
-                    {
-                        response += $"{i + 1}. {next.Options[i]}\n";
-                    }
-
-                    AppendBotMessage(response);
-                }
-                else
-                {
-                    ShowQuizResults();
-                }
-            }
+            SendMessage();
         }
 
-        // GET QUIZ BADGE BASED ON SCORE
-        private string GetQuizBadge(int score, int total)
+        // Back button click event handler - returns to the landing page and clears chat history.
+        private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            double percentage = (double)score / total * 100;
+            LandingPage landing = new LandingPage();
 
-            if (percentage == 100)
-                return "🏆 PERFECT - Cybersecurity Expert";
-            else if (percentage >= 70)
-                return "🥈 GOOD - Strong Awareness";
-            else
-                return "🥉 TRY AGAIN - Needs Improvement";
-        }
+            landing.Show();
 
-        // Sends user message to chatbot.
-        // Sends user message to chatbot.
-        private void SendMessage()
-        {
-            string input = (UserInputTextBox.Text ?? "").Trim();
-
-            if (string.IsNullOrWhiteSpace(input))
-                return;
-
-            VoicePlayer.PlaySound();
-
-            AppendUserMessage(input);
-            UserInputTextBox.Clear();
-
-            string response = "";
-
-            // =========================
-            // MENU HANDLING FIRST
-            // =========================
-            if (isInMenuMode)
-            {
-                switch (input)
-                {
-                    case "1":
-                        isInMenuMode = false;
-                        response = "💬 Chat mode activated.\n\nAsk me anything about cybersecurity.";
-                        break;
-
-                    case "2":
-                        isInMenuMode = false;
-                        QuizButton_Click(null, null);
-                        return;
-
-                    case "3":
-                        isInMenuMode = false;
-                        ShowTasks();
-                        response = "📋 Task menu opened.";
-                        break;
-
-                    case "4":
-                        isInMenuMode = false;
-                        ActivityButton_Click(null, null);
-                        response = "📊 Activity log displayed.";
-                        break;
-
-                    case "5":
-                        Application.Current.Shutdown();
-                        return;
-
-                    default:
-                        response = "⚠ Please select a valid option (1–5).";
-                        break;
-                }
-
-                AppendBotMessage(response);
-                AppendBotMessage(ShowMainMenu());
-                return;
-            }
-
-            // =========================
-            // QUIZ MODE
-            // =========================
-            if (quizInProgress)
-            {
-                CheckQuizAnswer(input);
-                return;
-            }
-
-            // =========================
-            // NLP TASK DETECTION
-            // =========================
-            string intent = nlpService.DetectTaskIntent(input);
-
-            switch (intent)
-            {
-                case "ADD_TASK":
-
-                    TaskItem task = new TaskItem
-                    {
-                        Title = input,
-                        Description = "Cybersecurity task created via chatbot",
-                        ReminderDate = DateTime.Now.AddDays(7),
-                        IsCompleted = false
-                    };
-
-                    taskService.AddTask(task);
-                    logService.AddLog($"Task Added: {task.Title}");
-
-                    response =
-                        $"✅ Task Added\n\nTitle: {task.Title}\nReminder: {task.ReminderDate:d}";
-                    break;
-
-                case "REMINDER":
-                    logService.AddLog("Reminder Created");
-                    response = "⏰ Reminder saved successfully.";
-                    break;
-
-                case "QUIZ":
-                    QuizButton_Click(null, null);
-                    return;
-
-                case "LOG":
-                    ActivityButton_Click(null, null);
-                    return;
-
-                default:
-                    response = _chatBot.ProcessInput(input) ?? "";
-                    break;
-            }
-
-            AppendBotMessage(response);
-
-            // always show menu again after action
-            AppendBotMessage(ShowMainMenu());
-        }
-
-        // SHOW FINAL QUIZ RESULTS
-        private void ShowQuizResults()
-        {
-            QuizQuestion question = quizService.Questions[quizService.CurrentQuestionIndex];
-
-            int total = quizService.Questions.Count;
-
-            int score = quizService.Score;
-
-            string badge = GetQuizBadge(score, total);
-
-            string result =
-                "🏆 QUIZ COMPLETED\n\n" +
-                $"Score: {score}/{total}\n" +
-                $"Badge: {badge}\n\n";
-
-            for (int i = 0; i < quizService.Questions.Count; i++)
-            {
-                QuizQuestion q = quizService.Questions[i];
-
-                result +=
-                    $"Q{i + 1}: {q.Question}\n" +
-                    $"✔ Correct Answer: {q.Options[q.CorrectAnswer]}\n\n";
-            }
-
-            if (score < total)
-            {
-                result += "🔁 Type 'retry wrong' to retry only incorrect answers.";
-            }
-
-            else
-            {
-                AppendBotMessage(
-                    $"❌ Incorrect.\n\n{question.Explanation}");
-
-                wrongQuestionIndexes.Add(quizService.CurrentQuestionIndex);
-            }
-
-            AppendBotMessage(result);
-            quizInProgress = false;
-        }
-
-        // DISPLAY TASK WITH CLICKABLE ID
-        private void AppendTaskMessage(TaskItem task)
-        {
-            Border bubble = new Border
-            {
-                Background = new SolidColorBrush(Color.FromRgb(16, 38, 58)),
-                CornerRadius = new CornerRadius(15),
-                Padding = new Thickness(12),
-                Margin = new Thickness(5),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                MaxWidth = 750
-            };
-
-            StackPanel panel = new StackPanel();
-
-            // CLICKABLE TASK ID
-            Button idButton = new Button
-            {
-                Content = $"🆔 Task ID: {task.Id}",
-                FontSize = 14,
-                Margin = new Thickness(0, 0, 0, 5),
-                Padding = new Thickness(5),
-                Tag = task.Id
-            };
-
-            idButton.Click += TaskId_Click;
-
-            TextBlock text = new TextBlock
-            {
-                Text =
-                    $"📌 Title: {task.Title}\n" +
-                    $"📝 Description: {task.Description}\n" +
-                    $"⏰ Reminder: {task.ReminderDate:d}\n" +
-                    $"✅ Completed: {(task.IsCompleted ? "Yes" : "No")}",
-                Foreground = Brushes.White,
-                FontSize = 14,
-                TextWrapping = TextWrapping.Wrap
-            };
-
-            panel.Children.Add(idButton);
-            panel.Children.Add(text);
-
-            bubble.Child = panel;
-
-            ChatPanel.Children.Add(bubble);
-        }
-
-        // TASK ID CLICK HANDLER
-
-        private void TaskId_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn && btn.Tag is int taskId)
-            {
-                selectedTaskId = taskId;
-
-                AppendBotMessage($"🆔 Task {taskId} selected.\nYou can now delete or complete it.");
-            }
-        }
-
-        private void QuizButton_Click(object sender, RoutedEventArgs e)
-        {
-            quizService.CurrentQuestionIndex = 0;
-            quizService.Score = 0;
-
-            quizInProgress = true;
-
-            QuizQuestion question =
-                quizService.Questions[0];
-
-            string response =
-                "🎮 CYBERSECURITY QUIZ STARTED\n\n" +
-                question.Question + "\n\n";
-
-            for (int i = 0; i < question.Options.Count; i++)
-            {
-                response += $"{i + 1}. {question.Options[i]}\n";
-            }
-
-            logService.AddLog("Quiz Started");
-
-            AppendBotMessage(response);
-        }
-
-        private void ActivityButton_Click(object sender, RoutedEventArgs e)
-        {
-            List<ActivityLogItem> logs =
-                logService.GetRecentLogs();
-
-            if (logs.Count == 0)
-            {
-                AppendBotMessage(
-                    "📊 No activity recorded yet.");
-                return;
-            }
-
-            string output =
-                "📊 ACTIVITY LOG\n\n";
-
-            foreach (ActivityLogItem log in logs)
-            {
-                output +=
-                    $"{log.TimeStamp:HH:mm} - {log.Action}\n";
-            }
-
-            AppendBotMessage(output);
-        }
-
-
-        // Handles placeholder text behavior.
-        private void UserInputTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            PlaceholderText.Visibility =
-                string.IsNullOrWhiteSpace(UserInputTextBox.Text)
-                ? Visibility.Visible
-                : Visibility.Hidden;
+            Close();
         }
 
         // Displays user message bubble.
         private void AppendUserMessage(string message)
         {
-            Border bubble = new Border
+            StackPanel container = new()
             {
-                Background = new SolidColorBrush(Color.FromRgb(0, 194, 255)),
-                CornerRadius = new CornerRadius(15),
-                Padding = new Thickness(12),
-                Margin = new Thickness(5),
                 HorizontalAlignment = HorizontalAlignment.Right,
-                MaxWidth = 700
+                Margin = new Thickness(5)
             };
 
-            TextBlock text = new TextBlock
+            TextBlock header = new()
             {
-                Text = $"🧑 You [{DateTime.Now:HH:mm}]\n\n{message}",
-                Foreground = Brushes.White,
-                FontSize = 16,
-                TextWrapping = TextWrapping.Wrap
+                Text = $"{MemoryStore.UserName} • {DateTime.Now:HH:mm}",
+                Foreground = Brushes.LightGray,
+                FontWeight = FontWeights.Bold
             };
 
-            bubble.Child = text;
+            Border bubble = new()
+            {
+                Background = new SolidColorBrush( Color.FromRgb(0, 194, 255)),
+                CornerRadius = new CornerRadius(15),
+                Padding = new Thickness(12)
+            };
 
-            ChatPanel.Children.Add(bubble);
+            StackPanel content = new();
+
+            content.Children.Add(new TextBlock
+                {
+                    Text = message,
+                    Foreground = Brushes.White,
+                    FontSize = 16
+                });
+
+            content.Children.Add(new TextBlock
+                {
+                    Text = "✓✓ Sent",
+                    FontSize = 10,
+                    Foreground = Brushes.White,
+                    HorizontalAlignment =  HorizontalAlignment.Right
+                });
+
+            bubble.Child = content;
+
+            container.Children.Add(header);
+            container.Children.Add(bubble);
+
+            ChatPanel.Children.Add(container);
         }
 
         // Displays bot message bubble.
         private void AppendBotMessage(string message)
         {
-            Border bubble = new Border
+            StackPanel container = new()
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Margin = new Thickness(5)
+            };
+
+            TextBlock header = new()
+            {
+                Text =  $"🤖 Cybersecurity Assistant • {DateTime.Now:HH:mm}",
+                Foreground =  Brushes.LightGray,
+                FontWeight = FontWeights.Bold
+            };
+
+            Border bubble = new()
             {
                 Background = new SolidColorBrush(Color.FromRgb(16, 38, 58)),
                 CornerRadius = new CornerRadius(15),
-                Padding = new Thickness(12),
-                Margin = new Thickness(5),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                MaxWidth = 750
+                Padding = new Thickness(12)
             };
 
-            TextBlock text = new TextBlock
-            {
-                Text = $"🤖 SecureWin [{DateTime.Now:HH:mm}]\n\n{message}",
-                Foreground = Brushes.White,
-                FontSize = 16,
-                TextWrapping = TextWrapping.Wrap
-            };
+            bubble.Child =  new TextBlock
+                {
+                    Text = message,
+                    Foreground = Brushes.White,
+                    FontSize = 16,
+                    TextWrapping = TextWrapping.Wrap
+                };
 
-            bubble.Child = text;
+            container.Children.Add(header);
+            container.Children.Add(bubble);
 
-            ChatPanel.Children.Add(bubble);
+            ChatPanel.Children.Add(container);
         }
 
     }

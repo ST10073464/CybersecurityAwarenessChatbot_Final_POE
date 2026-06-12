@@ -9,16 +9,21 @@ namespace CybersecurityAwarenessChatbot.Classes
     public class MemoryStore
     {
         // User's name.
-        public string UserName { get; set; } = "";
+       // public string UserName { get; set; } = "";
+
+        public static string UserName { get; set; } = "";
 
         // User's favourite cybersecurity topic.
         public string FavouriteTopic { get; set; } = "";
+
+        // Use's Username as a static property to make it accessible across the application
+        public static List<string> ConversationHistory = new();
 
         // Stores the previous topic.
         public string LastTopic { get; set; } = "";
 
         // Stores conversation history.
-        public List<string> ConversationHistory { get; set; }
+        //public List<string> ConversationHistory { get; set; }
 
         // Constructor
         public MemoryStore()
