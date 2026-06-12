@@ -13,6 +13,7 @@ namespace CybersecurityAwarenessChatbot.Classes
 
         public int Score { get; set; }
 
+        // Constructor initializes the quiz questions
         public QuizService()
         {
             Questions = new List<QuizQuestion>()

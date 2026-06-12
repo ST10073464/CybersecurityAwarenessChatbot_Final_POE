@@ -93,6 +93,13 @@ namespace CybersecurityAwarenessChatbot
             }
         }
 
+        // Placeholder text visibility based on user input
+        private void UserInputTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            PlaceholderText.Visibility = string.IsNullOrWhiteSpace(UserInputTextBox.Text)
+                ? Visibility.Visible
+                : Visibility.Hidden;
+        }
         // Send button click event handler
         private void SendButton_Click(object sender, RoutedEventArgs e)
         {

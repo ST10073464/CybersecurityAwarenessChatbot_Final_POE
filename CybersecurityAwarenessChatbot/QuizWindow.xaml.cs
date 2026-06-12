@@ -68,7 +68,7 @@ namespace CybersecurityAwarenessChatbot
                         Tag = i,
                         FontSize = 18,
                         Margin = new Thickness(5),
-                        Foreground = Brushes.White,
+                        Foreground = Brushes.Black,
                         GroupName = "QuizOptions"
                     };
 
@@ -111,14 +111,31 @@ namespace CybersecurityAwarenessChatbot
             QuizQuestion question =
                 quizService.Questions[quizService.CurrentQuestionIndex];
 
-            // Correct answer
+            // Correct answer selected
             if (selectedIndex == question.CorrectAnswer)
             {
                 quizService.Score++;
+
+                MessageBox.Show(
+                    $"✅ Correct!\n\n" +
+                    $"Answer: {question.Options[question.CorrectAnswer]}\n\n" +
+                    $"{question.Explanation}",
+                    "Correct Answer",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
             }
             else
             {
-                wrongQuestionIndexes.Add( quizService.CurrentQuestionIndex);
+                wrongQuestionIndexes.Add(quizService.CurrentQuestionIndex);
+
+                MessageBox.Show(
+                    $"❌ Incorrect!\n\n" +
+                    $"Correct Answer:\n" +
+                    $"{question.Options[question.CorrectAnswer]}\n\n" +
+                    $"{question.Explanation}",
+                    "Incorrect Answer",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
             }
 
             // Move to next question
@@ -132,6 +149,9 @@ namespace CybersecurityAwarenessChatbot
         // =====================================================
         private void ShowResults()
         {
+            // Hide quiz controls
+            PlaceholderText.Visibility = Visibility.Collapsed;
+
             QuestionText.Visibility = Visibility.Collapsed;
 
             OptionsPanel.Visibility =  Visibility.Collapsed;
@@ -173,9 +193,7 @@ namespace CybersecurityAwarenessChatbot
             BackButton.Visibility = Visibility.Visible;
         }
 
-        // =====================================================
-        // QUIZ BADGES
-        // =====================================================
+        // Quiz badge based on score percentage
         private string GetBadge()
         {
             double percentage = (double)quizService.Score / quizService.Questions.Count * 100;
@@ -189,12 +207,8 @@ namespace CybersecurityAwarenessChatbot
             return "🥉 TRY AGAIN";
         }
 
-        // =====================================================
-        // RETRY INCORRECT QUESTIONS
-        // =====================================================
-        private void RetryButton_Click(
-            object sender,
-            RoutedEventArgs e)
+        // Retry quiz with only wrong questions
+        private void RetryButton_Click(object sender, RoutedEventArgs e)
         {
             if (wrongQuestionIndexes.Count == 0)
             {
@@ -233,18 +247,15 @@ namespace CybersecurityAwarenessChatbot
 
             NextButton.Visibility = Visibility.Visible;
 
+            PlaceholderText.Visibility = Visibility.Visible;
+
             LoadQuestion();
         }
 
-        // =====================================================
-        // BACK TO LANDING PAGE
-        // =====================================================
-        private void BackButton_Click(
-            object sender,
-            RoutedEventArgs e)
+        // Back to landing page
+        private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            LandingPage landing =
-                new LandingPage();
+            LandingPage landing = new LandingPage();
 
             landing.Show();
 

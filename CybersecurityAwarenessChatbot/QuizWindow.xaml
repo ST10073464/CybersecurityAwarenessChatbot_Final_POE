@@ -6,7 +6,6 @@
          Background="#07111F"
          WindowStartupLocation="CenterScreen">
 
-    
     <Grid Margin="20">
 
         <!-- ================================================= -->
@@ -71,29 +70,49 @@
                     <RowDefinition Height="Auto"/>
 
                 </Grid.RowDefinitions>
+                <!-- ================================================= -->
+                <!-- QUESTION AREA -->
+                <!-- ================================================= -->
 
-                <!-- QUESTION -->
+                <Grid>
 
-                <TextBlock x:Name="PlaceholderText"
-                           Text="📝 Answer the cybersecurity questions by selecting one option and clicking Next."
-                           Foreground="Gray"
-                           FontSize="16"
-                           FontStyle="Italic"
-                           Margin="0,0,0,10"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <!-- Question -->
+                        <RowDefinition Height="*"/>
+                        <!-- Options -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Buttons -->
+                    </Grid.RowDefinitions>
 
+                    <!-- Question Area -->
+                    <StackPanel Grid.Row="0"
+                Margin="10">
 
-                <TextBlock x:Name="QuestionText"
-                           Grid.Row="0"
-                           FontSize="24"
-                           FontWeight="Bold"
-                           TextWrapping="Wrap"
-                           Margin="0,0,0,20"/>
+                        <TextBlock x:Name="PlaceholderText"
+                                   Text="📝 Answer the cybersecurity questions by selecting one option and clicking Next."
+                                   Foreground="Gray"
+                                   FontSize="16"
+                                   FontStyle="Italic"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,10"/>
 
-                <!-- ANSWERS -->
+                        <TextBlock x:Name="QuestionText"
+                                   Foreground="Black"
+                                   FontSize="24"
+                                   FontWeight="Bold"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
 
-                <!-- Quiz Options -->
-                <StackPanel x:Name="OptionsPanel"
-                            Margin="10"/>
+                    <!-- Radio Buttons -->
+                    <ScrollViewer Grid.Row="1">
+
+                        <StackPanel x:Name="OptionsPanel"
+                    Margin="10"/>
+
+                    </ScrollViewer>
+
+                </Grid>
 
                 <!-- RESULTS -->
 

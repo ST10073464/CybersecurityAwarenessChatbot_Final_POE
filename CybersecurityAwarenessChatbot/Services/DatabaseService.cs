@@ -18,9 +18,7 @@ namespace CybersecurityAwarenessChatbot.Services
         // Path to JSON file
         private readonly string filePath = "Data/tasks.json";
 
-        // =====================================
-        // ADD TASK
-        // =====================================
+        // Add Task
         public void AddTask(TaskItem task)
         {
             List<TaskItem> tasks = GetTasks();
@@ -36,9 +34,7 @@ namespace CybersecurityAwarenessChatbot.Services
             SaveTasks(tasks);
         }
 
-        // =====================================
-        // GET TASKS
-        // =====================================
+        // Get Tasks
         public List<TaskItem> GetTasks()
         {
             if (!File.Exists(filePath))
@@ -53,9 +49,7 @@ namespace CybersecurityAwarenessChatbot.Services
                    ?? new List<TaskItem>();
         }
 
-        // =====================================
-        // DELETE TASK
-        // =====================================
+        // Delete Task
         public void DeleteTask(int id)
         {
             List<TaskItem> tasks =
@@ -72,9 +66,7 @@ namespace CybersecurityAwarenessChatbot.Services
             }
         }
 
-        // =====================================
-        // COMPLETE TASK
-        // =====================================
+        // Complete Task
         public void CompleteTask(int id)
         {
             List<TaskItem> tasks =
@@ -91,9 +83,7 @@ namespace CybersecurityAwarenessChatbot.Services
             }
         }
 
-        // =====================================
-        // SAVE JSON
-        // =====================================
+        // Save JSON
         private void SaveTasks(
             List<TaskItem> tasks)
         {

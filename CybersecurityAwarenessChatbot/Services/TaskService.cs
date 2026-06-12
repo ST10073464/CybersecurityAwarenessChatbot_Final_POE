@@ -7,6 +7,7 @@ using CybersecurityAwarenessChatbot.Models;
 
 namespace CybersecurityAwarenessChatbot.Services
 {
+    // TaskService handles task management operations.
     public class TaskService
     {
         private readonly DatabaseService database;
