@@ -1,6 +1,12 @@
-﻿using CybersecurityAwarenessChatbot.Classes;
+﻿/*
+    Erwin Mashobane
+    ST10073464
+*/
+
+using CybersecurityAwarenessChatbot.Classes;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace CybersecurityAwarenessChatbot
 {
@@ -9,14 +15,13 @@ namespace CybersecurityAwarenessChatbot
         // Quiz service
         private readonly QuizService quizService;
 
-        private readonly MemoryStore memoryStore = new();
-
-        // Stores wrong answers for retry
+        // Stores wrong answers
         private readonly List<int> wrongQuestionIndexes;
 
-        // Current retry mode
+        // Retry mode flag
         private bool retryMode = false;
 
+        // Constructor
         public QuizWindow()
         {
             InitializeComponent();
@@ -25,7 +30,9 @@ namespace CybersecurityAwarenessChatbot
 
             wrongQuestionIndexes = new List<int>();
 
-            UserNameText.Text = $"👤 {MemoryStore.UserName}";
+            // Display username
+            UserNameText.Text =
+                $"👤 {MemoryStore.UserName}";
 
             LoadQuestion();
         }
@@ -35,43 +42,68 @@ namespace CybersecurityAwarenessChatbot
         // =====================================================
         private void LoadQuestion()
         {
-            if (quizService.CurrentQuestionIndex >=
-                quizService.Questions.Count)
+            // Quiz finished
+            if (quizService.CurrentQuestionIndex >= quizService.Questions.Count)
             {
                 ShowResults();
-
                 return;
             }
 
             QuizQuestion question = quizService.Questions[quizService.CurrentQuestionIndex];
 
-            QuestionText.Text = question.Question;
+            // Display question
+            QuestionText.Text =
+                question.Question;
 
-            AnswerListBox.Items.Clear();
+            // Clear previous radio buttons
+            OptionsPanel.Children.Clear();
 
-            foreach (string option
-                in question.Options)
+            // Create radio buttons
+            for (int i = 0; i < question.Options.Count; i++)
             {
-                AnswerListBox.Items.Add(option);
+                RadioButton option =
+                    new RadioButton
+                    {
+                        Content = question.Options[i],
+                        Tag = i,
+                        FontSize = 18,
+                        Margin = new Thickness(5),
+                        Foreground = Brushes.White,
+                        GroupName = "QuizOptions"
+                    };
+
+                OptionsPanel.Children.Add(option);
             }
 
+            // Progress display
             ProgressText.Text =
-                        $"Question " +
-                        $"{quizService.CurrentQuestionIndex + 1}" +
-                        $" of {quizService.Questions.Count}";
+                $"Question " +
+                $"{quizService.CurrentQuestionIndex + 1} " +
+                $"of {quizService.Questions.Count}";
         }
 
         // =====================================================
-        // NEXT BUTTON
+        // NEXT QUESTION
         // =====================================================
-        private void NextButton_Click(
-            object sender,
-            RoutedEventArgs e)
+        private void NextButton_Click(object sender, RoutedEventArgs e)
         {
-            if (AnswerListBox.SelectedIndex < 0)
+            int selectedIndex = -1;
+
+            // Find selected radio button
+            foreach (RadioButton rb in OptionsPanel.Children)
             {
-                MessageBox.Show(
-                    "Please select an answer.");
+                if (rb.IsChecked == true)
+                {
+                    selectedIndex = (int)rb.Tag;
+
+                    break;
+                }
+            }
+
+            // No answer selected
+            if (selectedIndex == -1)
+            {
+                MessageBox.Show("Please select an answer.");
 
                 return;
             }
@@ -79,15 +111,17 @@ namespace CybersecurityAwarenessChatbot
             QuizQuestion question =
                 quizService.Questions[quizService.CurrentQuestionIndex];
 
-            if (AnswerListBox.SelectedIndex == question.CorrectAnswer)
+            // Correct answer
+            if (selectedIndex == question.CorrectAnswer)
             {
                 quizService.Score++;
             }
             else
             {
-                wrongQuestionIndexes.Add(quizService.CurrentQuestionIndex);
+                wrongQuestionIndexes.Add( quizService.CurrentQuestionIndex);
             }
 
+            // Move to next question
             quizService.CurrentQuestionIndex++;
 
             LoadQuestion();
@@ -100,24 +134,26 @@ namespace CybersecurityAwarenessChatbot
         {
             QuestionText.Visibility = Visibility.Collapsed;
 
-            AnswerListBox.Visibility = Visibility.Collapsed;
+            OptionsPanel.Visibility =  Visibility.Collapsed;
 
             NextButton.Visibility = Visibility.Collapsed;
 
             string badge = GetBadge();
 
             string results =
-                            $"🏁 Quiz Complete\n\n" +
+                $"🏁 Quiz Complete\n\n" +
 
-                            $"👤 User: {MemoryStore.UserName}\n\n" +
+                $"👤 User: " +
+                $"{MemoryStore.UserName}\n\n" +
 
-                            $"📊 Score: " +
-                            $"{quizService.Score}/" +
-                            $"{quizService.Questions.Count}\n\n" +
+                $"📊 Score: " +
+                $"{quizService.Score}/" +
+                $"{quizService.Questions.Count}\n\n" +
 
-                            $"🏆 Badge: {badge}\n\n" +
+                $"🏆 Badge: " +
+                $"{badge}\n\n" +
 
-                            $"📖 Correct Answers:\n\n";
+                $"📖 Correct Answers:\n\n";
 
             foreach (QuizQuestion q
                 in quizService.Questions)
@@ -142,21 +178,19 @@ namespace CybersecurityAwarenessChatbot
         // =====================================================
         private string GetBadge()
         {
-            double percent =
-                (double)quizService.Score /
-                quizService.Questions.Count * 100;
+            double percentage = (double)quizService.Score / quizService.Questions.Count * 100;
 
-            if (percent == 100)
+            if (percentage == 100)
                 return "🥇 PERFECT";
 
-            if (percent >= 70)
+            if (percentage >= 70)
                 return "🥈 GOOD";
 
             return "🥉 TRY AGAIN";
         }
 
         // =====================================================
-        // RETRY WRONG QUESTIONS
+        // RETRY INCORRECT QUESTIONS
         // =====================================================
         private void RetryButton_Click(
             object sender,
@@ -164,17 +198,17 @@ namespace CybersecurityAwarenessChatbot
         {
             if (wrongQuestionIndexes.Count == 0)
             {
-                MessageBox.Show(
-                    "You answered all questions correctly!");
+                MessageBox.Show( "You answered all questions correctly!");
 
                 return;
             }
 
             List<QuizQuestion> retryQuestions = new List<QuizQuestion>();
 
-            foreach (int index in wrongQuestionIndexes)
+            foreach (int index
+                in wrongQuestionIndexes)
             {
-                retryQuestions.Add(quizService.Questions[index]);
+                retryQuestions.Add( quizService.Questions[index]);
             }
 
             quizService.Questions = retryQuestions;
@@ -195,7 +229,7 @@ namespace CybersecurityAwarenessChatbot
 
             QuestionText.Visibility = Visibility.Visible;
 
-            AnswerListBox.Visibility = Visibility.Visible;
+            OptionsPanel.Visibility = Visibility.Visible;
 
             NextButton.Visibility = Visibility.Visible;
 
@@ -203,18 +237,18 @@ namespace CybersecurityAwarenessChatbot
         }
 
         // =====================================================
-        // BACK TO MENU
+        // BACK TO LANDING PAGE
         // =====================================================
         private void BackButton_Click(
             object sender,
             RoutedEventArgs e)
         {
-            LandingPage landing = new LandingPage();
+            LandingPage landing =
+                new LandingPage();
 
             landing.Show();
 
             Close();
         }
     }
-
 }
