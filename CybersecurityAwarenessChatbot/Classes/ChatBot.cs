@@ -3,9 +3,6 @@
     ST10073464
 */
 
-using System.Windows;
-using CybersecurityAwarenessChatbot.Classes;
-
 namespace CybersecurityAwarenessChatbot.Classes
 {
     // Main chatbot engine.

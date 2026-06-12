@@ -1,4 +1,9 @@
-﻿using CybersecurityAwarenessChatbot.Classes;
+﻿/*
+    Erwin Mashobane
+    ST10073464
+*/
+
+using CybersecurityAwarenessChatbot.Classes;
 using CybersecurityAwarenessChatbot.Models;
 using CybersecurityAwarenessChatbot.Services;
 using System.Windows;
@@ -11,6 +16,7 @@ namespace CybersecurityAwarenessChatbot
 
         private readonly MemoryStore memoryStore = new();
 
+        // Constructor
         public TaskWindow()
         {
             InitializeComponent();
@@ -18,7 +24,7 @@ namespace CybersecurityAwarenessChatbot
             UserNameText.Text = $"👤 {MemoryStore.UserName}";
         }
 
-        // ADD TASK
+        // Add Task
         private void AddTask_Click(object sender, RoutedEventArgs e)
         {
             TaskItem task = new TaskItem
@@ -31,21 +37,18 @@ namespace CybersecurityAwarenessChatbot
 
             taskService.AddTask(task);
 
-            MessageBox.Show(
-                "Task added successfully.");
+            MessageBox.Show("Task added successfully.");
 
             LoadTasks();
         }
 
-        // VIEW TASKS
-        private void ViewTasks_Click(
-            object sender,
-            RoutedEventArgs e)
+        // View Tasks
+        private void ViewTasks_Click(object sender, RoutedEventArgs e)
         {
             LoadTasks();
         }
 
-        // LOAD TASKS
+        // Load tasks into the ListBox
         private void LoadTasks()
         {
             TaskListBox.Items.Clear();
@@ -60,7 +63,7 @@ namespace CybersecurityAwarenessChatbot
             }
         }
 
-        // COMPLETE TASK
+        // Complete tasks
         private void CompleteTask_Click(object sender, RoutedEventArgs e)
         {
             if (TaskListBox.SelectedIndex < 0)
@@ -75,7 +78,7 @@ namespace CybersecurityAwarenessChatbot
             LoadTasks();
         }
 
-        // Delete TASK
+        // Delete task
         private void DeleteTask_Click(object sender, RoutedEventArgs e)
         {
             if (TaskListBox.SelectedIndex < 0)
@@ -89,7 +92,7 @@ namespace CybersecurityAwarenessChatbot
             LoadTasks();
         }
 
-        // BACK TO LANDING PAGE
+        // Back to landing page
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             LandingPage page = new LandingPage();
