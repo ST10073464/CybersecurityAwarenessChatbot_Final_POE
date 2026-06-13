@@ -148,12 +148,12 @@
                         
                     </Button.Template>
 
-                    <TextBlock Text = "➤"
+                        <TextBlock Text = "➤"
                                FontSize = "18"
                                FontWeight = "Bold"
                                Foreground = "White"/>
 
-                </Button>
+                    </Button>
 
             </Grid>
 
