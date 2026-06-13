@@ -15,6 +15,8 @@ namespace CybersecurityAwarenessChatbot
         // Quiz service
         private readonly QuizService quizService;
 
+        private readonly ChatBot _chatBot = new();
+
         // Stores wrong answers
         private readonly List<int> wrongQuestionIndexes;
 

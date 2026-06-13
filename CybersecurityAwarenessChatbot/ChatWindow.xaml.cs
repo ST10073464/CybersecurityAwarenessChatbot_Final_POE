@@ -15,9 +15,7 @@ namespace CybersecurityAwarenessChatbot
     // Handles user interaction and displays chat messages.
     public partial class ChatWindow : Window
     {
-        private ChatBot _chatBot;
-
-        private readonly MemoryStore memoryStore = new();
+        private readonly ChatBot _chatBot = new();
 
         // Constructor
         public ChatWindow()
@@ -30,9 +28,7 @@ namespace CybersecurityAwarenessChatbot
             // Initialize chatbot
             _chatBot = new ChatBot();
 
-            // Load ASCII art
-            //AsciiArtText.Text = UIHelper.ShowLogo();
-
+            // Load event handler for chat mode startup
             Loaded += ChatWindow_Loaded;
 
         }

@@ -38,18 +38,10 @@ namespace CybersecurityAwarenessChatbot.Classes
             };
         }
 
-        // Greeting with usename entered in the landing page
-        public string GetGreeting()
-        {
-            return $"👋 Welcome {MemoryStore.UserName} to the Cybersecurity Chatbot Assistant!\n\n" +
-                   $"💬 Chat Mode Activated\n\n" +
-                   $"You can ask me anything about cybersecurity.";
-        }
-
         // Process user messages and generate responses based on keywords, sentiment, and memory
         public string ProcessInput(string input)
         {
-            input = input.ToLower().Trim();
+            input = input.ToLower().Trim();  
 
             // Save user input to memory
             memoryStore.AddConversation($"User: {input}");
@@ -99,17 +91,13 @@ namespace CybersecurityAwarenessChatbot.Classes
             }
 
             // Sentiment analysis to detect user emotions and adjust responses accordingly, providing empathy and support based on the detected sentiment
-            Sentiment sentiment =
-                sentimentDetector.Detect(input);
+            Sentiment sentiment = sentimentDetector.Detect(input);
             
-            string keywordResponse =
-                keywordResponder.GetResponse(input);
+            string keywordResponse = keywordResponder.GetResponse(input);
 
-            string sentimentResponse =
-                sentimentDetector.GetSentimentResponse(MemoryStore.UserName, sentiment);
+            string sentimentResponse = sentimentDetector.GetSentimentResponse(MemoryStore.UserName, sentiment);
 
-            string tipResponse =
-                sentimentDetector.GetCybersecurityTip(MemoryStore.UserName, sentiment);
+            string tipResponse = sentimentDetector.GetCybersecurityTip(MemoryStore.UserName, sentiment);
 
             // Keyword response with optional sentiment and tip. Only include sentiment and tip if they exist to avoid empty sections in the response.
 

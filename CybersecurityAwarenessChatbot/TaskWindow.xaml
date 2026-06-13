@@ -1,105 +1,107 @@
-﻿<Window x:Class="CybersecurityAwarenessChatbot.TaskWindow"
-     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-     Title="Task Mode"
-     WindowState="Maximized"
-     Background="#07111F">
+﻿<Window x:Class = "CybersecurityAwarenessChatbot.TaskWindow"
+     xmlns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+     xmlns:x = "http://schemas.microsoft.com/winfx/2006/xaml"
+     Title = "Task Mode"
+     WindowState = "Maximized"
+     Background = "#07111F">
 
     <Grid Margin="20">
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            
+            <RowDefinition Height = "Auto"/>
+            
+            <RowDefinition Height = "*"/>
+            
+            <RowDefinition Height = "Auto"/>
+            
         </Grid.RowDefinitions>
 
         <!-- HEADER -->
-        <StackPanel Grid.Row="0">
+        <StackPanel Grid.Row = "0">
 
             <TextBlock x:Name="UserNameText"
-                   FontSize="18"
-                   FontWeight="Bold"
-                   Foreground="White"
-                   Margin="0,0,0,10"/>
+                       FontSize = "18"
+                       FontWeight = "Bold"
+                       Foreground = "LightGray"
+                       Margin="0,0,0,10"/>
 
             <TextBlock Text="📋 Cybersecurity Task Manager"
-                   FontSize="24"
-                   FontWeight="Bold"
-                   Foreground="White"/>
+                       FontSize = "24"
+                       FontWeight = "Bold"
+                       Foreground = "LightGray"/>
         </StackPanel>
 
         <!-- CONTENT -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row = "1">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="350"/>
-                <ColumnDefinition Width="*"/>
+                
+                <ColumnDefinition Width = "350"/>
+                
+                <ColumnDefinition Width = "*"/>
+                
             </Grid.ColumnDefinitions>
 
             <!-- LEFT PANEL -->
-            <StackPanel Grid.Column="0"
-                    Margin="10">
+            <StackPanel Grid.Column = "0"
+                        Margin = "10">
 
-                <TextBox x:Name="TitleTextBox"
-                         Height="40"
-                         Margin="0,5"
-                         Text="Task Title"/>
+                <TextBox x:Name = "TitleTextBox"
+                         Height = "40"
+                         Margin = "0,5"
+                         Text = "Task Title"/>
 
-                <TextBox x:Name="DescriptionTextBox"
-                         Height="100"
-                         AcceptsReturn="True"
-                         TextWrapping="Wrap"
-                         Margin="0,5"/>
+                <TextBox x:Name = "DescriptionTextBox"
+                         Height = "100"
+                         AcceptsReturn = "True"
+                         TextWrapping = "Wrap"
+                         Margin = "0,5"/>
 
-                <DatePicker x:Name="ReminderDatePicker"
-                            Margin="0,5"/>
+                <DatePicker x:Name = "ReminderDatePicker"
+                            Margin = "0,5"/>
 
-                <Button Content="➕ Add Task"
-                        Height="40"
-                        Margin="0,5"
-                        Click="AddTask_Click"/>
+                <Button Content = "➕ Add Task"
+                        Height = "40"
+                        Margin = "0,5"
+                        Click = "AddTask_Click"/>
 
-                <Button Content="📋 View Tasks"
-                        Height="40"
-                        Margin="0,5"
-                        Click="ViewTasks_Click"/>
+                <Button Content = "📋 View Tasks"
+                        Height = "40"
+                        Margin = "0,5"
+                        Click = "ViewTasks_Click"/>
 
-                <Button Content="✅ Complete Task"
-                        Height="40"
-                        Margin="0,5"
-                        Click="CompleteTask_Click"/>
+                <Button Content = "✅ Complete Task"
+                        Height = "40"
+                        Margin = "0,5"
+                        Click = "CompleteTask_Click"/>
 
-                <Button Content="🗑 Delete Task"
-                        Height="40"
-                        Margin="0,5"
-                        Click="DeleteTask_Click"/>
+                <Button Content = "🗑 Delete Task"
+                        Height = "40"
+                        Margin = "0,5"
+                        Click = "DeleteTask_Click"/>
 
                 <Button Content="⬅ Back"
-                        Height="40"
-                        Margin="0,5"
-                        Click="Back_Click"/>
+                        Height = "40"
+                        Margin = "0,5"
+                        Click = "Back_Click"/>
 
             </StackPanel>
 
             <!-- TASK LIST -->
-            <ListBox x:Name="TaskListBox"
-                     Grid.Column="1"
-                     Margin="10"/>
+            <ListBox x:Name = "TaskListBox"
+                     Grid.Column = "1"
+                     Margin = "10"/>
         </Grid>
 
         <!-- FOOTER -->
-        <Border Grid.Row="2"
-                Background="#10263A"
-                Height="35">
-
-            <TextBlock
-                    Text="🛡️ Protecting South African Citizens Online 🛡️"
-                    Foreground="White"
-                    FontSize="14"
-                    FontWeight="Bold"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"/>
-        </Border>
+            <TextBlock Grid.Row = "2"
+                       Text = "🛡️ Protecting South African Citizens Online 🛡️"
+                       Foreground = "White"
+                       FontSize = "14"
+                       FontWeight = "Bold"
+                       HorizontalAlignment = "Center"
+                       VerticalAlignment = "Center"/>
 
     </Grid>
    

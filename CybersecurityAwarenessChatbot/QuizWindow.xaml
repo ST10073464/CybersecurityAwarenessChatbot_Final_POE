@@ -55,7 +55,7 @@
         <!-- ================================================= -->
 
         <Border Grid.Row = "1"
-                Background = "White"
+                Background = "LightGray"
                 CornerRadius = "10"
                 Padding = "20">
 
@@ -168,18 +168,17 @@
         <!-- FOOTER -->
         <!-- ================================================= -->
 
-        <Border Grid.Row = "2"
-                Background = "#10263A">
+        
 
-            <TextBlock
-                    Text = "🛡️ Protecting South African Citizens Online 🛡️"
-                    Foreground = "White"
-                    FontSize = "14"
-                    FontWeight = "Bold"
-                    HorizontalAlignment = "Center"
-                    VerticalAlignment = "Center"/>
+            <TextBlock Grid.Row = "2"
+                       Text = "🛡️ Protecting South African Citizens Online 🛡️"
+                       Foreground = "White"
+                       FontSize = "14"
+                       FontWeight = "Bold"
+                       HorizontalAlignment = "Center"
+                       VerticalAlignment = "Center"/>
 
-        </Border>
+       
 
     </Grid>
 

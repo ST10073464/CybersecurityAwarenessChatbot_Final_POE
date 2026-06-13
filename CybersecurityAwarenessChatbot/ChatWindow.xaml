@@ -1,16 +1,16 @@
-﻿<Window x:Class="CybersecurityAwarenessChatbot.ChatWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CybersecurityAwarenessChatbot"
-        mc:Ignorable="d"
-        Title="SecureWin Cybersecurity Assistant"
-        Height="950"
-        Width="1600"
-        WindowStartupLocation="CenterScreen"
-        Background="#07111F"
-        WindowState="Maximized">
+﻿<Window x:Class = "CybersecurityAwarenessChatbot.ChatWindow"
+        xmlns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x = "http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d = "http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc = "http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local = "clr-namespace:CybersecurityAwarenessChatbot"
+        mc:Ignorable = "d"
+        Title = "SecureWin Cybersecurity Assistant"
+        Height = "950"
+        Width = "1600"
+        WindowStartupLocation = "CenterScreen"
+        Background = "#07111F"
+        WindowState = "Maximized">
 
     <!-- ========================================================= -->
     <!-- RESOURCES -->
@@ -19,14 +19,20 @@
     <Window.Resources>
 
         <!-- SEND BUTTON STYLE -->
-        <Style x:Key="CyberButton" TargetType="Button">
+        <Style x:Key = "CyberButton" TargetType="Button">
 
-            <Setter Property="Background" Value="#00C2FF"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="FontSize" Value="18"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property = "Background"
+                    Value = "#00C2FF"/>
+            <Setter Property = "Foreground" 
+                    Value = "White"/>
+            <Setter Property = "FontWeight" 
+                    Value = "Bold"/>
+            <Setter Property = "FontSize" 
+                    Value = "18"/>
+            <Setter Property = "Cursor" 
+                    Value = "Hand"/>
+            <Setter Property = "BorderThickness" 
+                    Value = "0"/>
 
         </Style>
 
@@ -36,18 +42,18 @@
     <!-- MAIN GRID -->
     <!-- ========================================================= -->
 
-    <Grid Margin="12">
+    <Grid Margin = "12">
 
         <Grid.RowDefinitions>
 
             <!-- HEADER -->
-            <RowDefinition Height="150"/>
+            <RowDefinition Height = "150"/>
 
             <!-- CHAT -->
-            <RowDefinition Height="*"/>
+            <RowDefinition Height = "*"/>
 
             <!-- INPUT -->
-            <RowDefinition Height="180"/>
+            <RowDefinition Height = "180"/>
 
         </Grid.RowDefinitions>
 
@@ -55,18 +61,18 @@
         <!-- HEADER -->
         <!-- ========================================================= -->
 
-        <Border Grid.Row="0"
-                Background="#081520">
+        <Border Grid.Row = "0"
+                Background = "#081520">
 
             <Grid>
 
                 <Grid.ColumnDefinitions>
 
                     <!-- LEFT -->
-                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width = "3*"/>
 
                     <!-- RIGHT -->
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width = "2*"/>
 
                 </Grid.ColumnDefinitions>
 
@@ -74,15 +80,15 @@
                 <!-- LEFT SIDE -->
                 <!-- ================================================= -->
 
-                <Grid Grid.Column="0">
+                <Grid Grid.Column = "0">
 
                     <Grid.ColumnDefinitions>
 
                         <!-- USER -->
-                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width = "220"/>
 
                         <!-- ASCII ART -->
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width = "*"/>
 
                     </Grid.ColumnDefinitions>
 
@@ -90,28 +96,28 @@
                     <!-- USER PANEL -->
                     <!-- ================================================= -->
 
-                    <Border Grid.Column="0"
-                            Background="#0D1B2A"
-                            CornerRadius="12"
-                            Padding="10"
-                            Margin="0,0,10,0"
-                            VerticalAlignment="Stretch">
+                    <Border Grid.Column = "0"
+                            Background  = "#0D1B2A"
+                            CornerRadius =   "12"
+                            Padding = "10"
+                            Margin = "0,0,10,0"
+                            VerticalAlignment = "Stretch">
 
-                        <StackPanel VerticalAlignment="Center">
+                        <StackPanel VerticalAlignment = "Center">
 
-                            <TextBlock Foreground="#00E5FF"
-                                       FontSize="14"
-                                       FontWeight="Bold"
-                                       HorizontalAlignment="Center"/>
+                            <TextBlock Foreground = "#00E5FF"
+                                       FontSize = "14"
+                                       FontWeight = "Bold"
+                                       HorizontalAlignment = "Center"/>
 
-                            <TextBlock x:Name="UserNameText"
-                                       Text="Guest"
-                                       Foreground="White"
-                                       FontSize="18"
-                                       FontWeight="Bold"
-                                       TextWrapping="Wrap"
-                                       TextAlignment="Center"
-                                       Margin="0,10,0,0"/>
+                            <TextBlock x:Name = "UserNameText"
+                                       Text = "Guest"
+                                       Foreground = "White"
+                                       FontSize = "18"
+                                       FontWeight = "Bold"
+                                       TextWrapping = "Wrap"
+                                       TextAlignment = "Center"
+                                       Margin = "0,10,0,0"/>
 
                         </StackPanel>
 
@@ -121,7 +127,7 @@
                     <!-- Chat mode -->
                     <!-- ================================================= -->
 
-                    <StackPanel Grid.Column="1">
+                    <StackPanel Grid.Column = "1">
 
                         <TextBlock Text = "🔒 SECUREWIN CYBERSECURITY ASSISTANT 🔒"
                                    Foreground = "#00E5FF"
@@ -145,87 +151,89 @@
                 <!-- RIGHT SIDE -->
                 <!-- ================================================= -->
 
-                <Border Grid.Column="1"
-                        Background="#0D1B2A"
-                        CornerRadius="15"
-                        Margin="10,0,0,0"
-                        Padding="10">
+                <Border Grid.Column = "1"
+                        Background = "#0D1B2A"
+                        CornerRadius = "15"
+                        Margin = "10,0,0,0"
+                        Padding = "10">
 
                     <StackPanel>
 
                         <TextBlock Text="🛡️ AVAILABLE FEATURES"
-                                   Foreground="White"
-                                   FontSize="16"
-                                   FontWeight="Bold"
-                                   Margin="0,0,0,10"/>
+                                   Foreground = "White"
+                                   FontSize = "16"
+                                   FontWeight = "Bold"
+                                   Margin = "0,0,0,10"/>
 
                         <Grid>
 
                             <Grid.ColumnDefinitions>
 
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width = "*"/>
+                                
+                                <ColumnDefinition Width = "*"/>
+                                
+                                <ColumnDefinition Width = "*"/>
 
                             </Grid.ColumnDefinitions>
 
                             <!-- COLUMN 1 -->
-                            <StackPanel Grid.Column="0">
+                            <StackPanel Grid.Column = "0">
 
-                                <TextBlock Text="✅ Malware Protection"
-                                           Foreground="White"
-                                           FontSize="12"
-                                           Margin="0,4"/>
+                                <TextBlock Text = "✅ Malware Protection"
+                                           Foreground = "White"
+                                           FontSize = "12"
+                                           Margin = "0,4"/>
 
-                                <TextBlock Text="✅ VPN Security"
-                                           Foreground="White"
-                                           FontSize="12"
-                                           Margin="0,4"/>
+                                <TextBlock Text = "✅ VPN Security"
+                                           Foreground = "White"
+                                           FontSize = "12"
+                                           Margin = "0,4"/>
 
-                                <TextBlock Text="✅ Ransomware Safety"
-                                           Foreground="White"
-                                           FontSize="12"
-                                           Margin="0,4"/>
+                                <TextBlock Text = "✅ Ransomware Safety"
+                                           Foreground = "White"
+                                           FontSize = "12"
+                                           Margin = "0,4"/>
 
                             </StackPanel>
 
                             <!-- COLUMN 2 -->
                             <StackPanel Grid.Column="1">
 
-                                <TextBlock Text="✅ Sentiment Detection"
-                                           Foreground="White"
-                                           FontSize="12"
-                                           Margin="0,4"/>
+                                <TextBlock Text = "✅ Sentiment Detection"
+                                           Foreground = "White"
+                                           FontSize = "12"
+                                           Margin = "0,4"/>
 
-                                <TextBlock Text="✅ Smart Conversations"
-                                           Foreground="White"
-                                           FontSize="12"
-                                           Margin="0,4"/>
+                                <TextBlock Text = "✅ Smart Conversations"
+                                           Foreground = "White"
+                                           FontSize = "12"
+                                           Margin = "0,4"/>
 
-                                <TextBlock Text="✅ Emoji Messaging"
-                                           Foreground="White"
-                                           FontSize="12"
-                                           Margin="0,4"/>
+                                <TextBlock Text = "✅ Emoji Messaging"
+                                           Foreground = "White"
+                                           FontSize = "12"
+                                           Margin = "0,4"/>
 
                             </StackPanel>
 
                             <!-- COLUMN 3 -->
                             <StackPanel Grid.Column="2">
 
-                                <TextBlock Text="✅ Password Safety Tips"
-                                           Foreground="White"
-                                           FontSize="12"
-                                           Margin="0,4"/>
+                                <TextBlock Text = "✅ Password Safety Tips"
+                                           Foreground = "White"
+                                           FontSize = "12"
+                                           Margin = "0,4"/>
 
-                                <TextBlock Text="✅ Phishing Detection"
-                                           Foreground="White"
-                                           FontSize="12"
-                                           Margin="0,4"/>
+                                <TextBlock Text = "✅ Phishing Detection"
+                                           Foreground = "White"
+                                           FontSize = "12"
+                                           Margin = "0,4"/>
 
-                                <TextBlock Text="✅ Scam Awareness"
-                                           Foreground="White"
-                                           FontSize="12"
-                                           Margin="0,4"/>
+                                <TextBlock Text = "✅ Scam Awareness"
+                                           Foreground = "White"
+                                           FontSize = "12"
+                                           Margin = "0,4"/>
 
                             </StackPanel>
 
@@ -246,9 +254,7 @@
         <Border Grid.Row = "1"
                     Margin = "0,12"
                     Background = "LightGray"
-                    CornerRadius = "15"
-                    BorderBrush = "#00C2FF"
-                    BorderThickness = "1"
+                    CornerRadius = "15"                              
                     Padding = "10">
 
             <Grid>
@@ -283,8 +289,7 @@
                         Margin = "5"
                         Background = "White"
                         CornerRadius = "30"
-                        BorderBrush = "#00C2FF"
-                        BorderThickness = "2"
+                       
                         Height = "60"
                         VerticalAlignment = "Center">
 

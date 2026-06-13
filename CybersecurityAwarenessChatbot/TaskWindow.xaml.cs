@@ -14,6 +14,8 @@ namespace CybersecurityAwarenessChatbot
     {
         private readonly TaskService taskService = new TaskService();
 
+        private readonly ChatBot _chatBot = new();
+
         private readonly MemoryStore memoryStore = new();
 
         // Constructor
