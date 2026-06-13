@@ -31,7 +31,7 @@ namespace CybersecurityAwarenessChatbot
             _chatBot = new ChatBot();
 
             // Load ASCII art
-            AsciiArtText.Text = UIHelper.ShowLogo();
+            //AsciiArtText.Text = UIHelper.ShowLogo();
 
             Loaded += ChatWindow_Loaded;
 
@@ -46,7 +46,6 @@ namespace CybersecurityAwarenessChatbot
             // Display welcome message with topics.
             AppendBotMessage(
                 $"👋 Welcome {MemoryStore.UserName} to the Cybersecurity Chatbot Assistant!\n\n" +
-                $"💬 Chat Mode Activated\n\n" +
                 $"You can ask me anything about cybersecurity.\n\n" +
                 $"Topics include:\n\n" +
                 $"🔒 Passwords\n" +

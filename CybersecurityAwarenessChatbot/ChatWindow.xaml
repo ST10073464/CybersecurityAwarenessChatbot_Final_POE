@@ -103,8 +103,7 @@
 
                         <StackPanel VerticalAlignment="Center">
 
-                            <TextBlock Text="👤 USER LOGGED IN"
-                                       Foreground="#00E5FF"
+                            <TextBlock Foreground="#00E5FF"
                                        FontSize="14"
                                        FontWeight="Bold"
                                        HorizontalAlignment="Center"/>
@@ -123,24 +122,24 @@
                     </Border>
 
                     <!-- ================================================= -->
-                    <!-- ASCII ART -->
+                    <!-- Chat mode -->
                     <!-- ================================================= -->
 
                     <StackPanel Grid.Column="1">
 
-                        <TextBlock Text="🔒 SECUREWIN CYBERSECURITY ASSISTANT 🔒"
-                                   Foreground="#00E5FF"
-                                   FontSize="18"
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Center"
-                                   Margin="0,0,0,5"/>
+                        <TextBlock Text = "🔒 SECUREWIN CYBERSECURITY ASSISTANT 🔒"
+                                   Foreground = "#00E5FF"
+                                   FontSize = "18"
+                                   FontWeight = "Bold"
+                                   HorizontalAlignment = "Center"
+                                   Margin = "0,0,0,5"/>
 
-                        <TextBlock x:Name="AsciiArtText"
-                                   Foreground="#00E5FF"
-                                   FontFamily="Consolas"
-                                   FontSize="10"
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text = "💬 Chat Mode Activated"
+                                   Foreground = "#00E5FF"
+                                   FontFamily = "Consolas"
+                                   FontSize = "18"
+                                   FontWeight = "Bold"
+                                   HorizontalAlignment = "Center"/>
 
                     </StackPanel>
 
@@ -269,22 +268,22 @@
         <!-- INPUT AREA -->
         <!-- ========================================================= -->
 
-        <Border Grid.Row="2"
-                Background="#081520"
-                CornerRadius="18"
-                BorderBrush="#00C2FF"
-                BorderThickness="1"
-                Padding="15">
+        <Border Grid.Row = "2"
+                Background = "#081520"
+                CornerRadius = "18"
+                BorderBrush = "#00C2FF"
+                BorderThickness = "1"
+                Padding = "15">
 
             <Grid>
 
                 <Grid.RowDefinitions>
                     
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height = "Auto"/>
                     
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height = "*"/>
                     
-                    <RowDefinition Height="35"/>
+                    <RowDefinition Height = "35"/>
                     
                 </Grid.RowDefinitions>
 
@@ -292,16 +291,10 @@
                 <!-- BACK BUTTON -->
                 <!-- =============================================== -->
 
-                <StackPanel Grid.Row="0"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            Margin="0,0,0,10">
-
-                    <Button x:Name="BackButton"
-                            Content="⬅ Back"
-                            Width="120"
-                            Height="40"
-                            Click="BackButton_Click"/>
+                <StackPanel Grid.Row = "0"
+                            Orientation = "Horizontal"
+                            HorizontalAlignment = "Center"
+                            Margin = "0,0,0,10">
 
                 </StackPanel>
 
@@ -313,10 +306,10 @@
 
                     <!-- Input Border -->
                     <Border Background="White"
-                            CornerRadius="25"
+                            CornerRadius="30"
                             BorderBrush="#00C2FF"
                             BorderThickness="1"
-                            Height="45">
+                            Height="60">
 
                         <Grid>
 
@@ -343,11 +336,11 @@
 
                             <!-- Circular Send Button -->
                             <Button x:Name="SendButton"
-                                    Width="43"
-                                    Height="43"
+                                    Width="50"
+                                    Height="50"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Center"
-                                    Margin="0,0,-2,0"
+                                    Margin="0,0,5,0"
                                     Click="SendButton_Click"
                                     Cursor="Hand">
 
@@ -386,13 +379,18 @@
                 <!-- FOOTER -->
                 <!-- =============================================== -->
 
-                <TextBlock Grid.Row="2"
-                           Text="🛡️ Protecting South African Citizens Online 🛡️"
-                           Foreground="White"
-                           FontSize="14"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
+                <TextBlock Grid.Row = "2"
+                           Text = "🛡️ Protecting South African Citizens Online 🛡️"
+                           Foreground = "White"
+                           FontSize = "14"
+                           FontWeight = "Bold"
+                           HorizontalAlignment = "Center"
+                           VerticalAlignment = "Center"/>
+
+                <Button Content = "⬅ Back"
+                        Width = "120"
+                        Height = "40"
+                        Click = "BackButton_Click"/>
 
             </Grid>
 

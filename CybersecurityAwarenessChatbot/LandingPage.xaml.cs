@@ -14,23 +14,44 @@ namespace CybersecurityAwarenessChatbot
     public partial class LandingPage : Window
     {
         private readonly MemoryStore memoryStore;
+
         // Tracks whether username has been entered
         private bool awaitingUserName = true;
 
         // Prevent greeting from playing twice
         private bool _isGreetingPlayed = false;
+
+        // Constructor 
         public LandingPage()
         {
             InitializeComponent();
+
             memoryStore = new MemoryStore();
-
-            //memoryStore.UserName = formattedName;
-
-            UserNameText.Text = $"👤 {MemoryStore.UserName}";
 
             AsciiArtText.Text = UIHelper.ShowLogo();
 
             Loaded += LandingPage_Loaded;
+
+            if (!string.IsNullOrWhiteSpace(MemoryStore.UserName))
+            {
+                ShowLoggedInView();
+            }
+        }
+
+        private void ShowLoggedInView()
+        {
+            UserInputTextBox.Text = $"👤 {MemoryStore.UserName}";
+
+            WelcomeText.Text = $"👋 Welcome {MemoryStore.UserName}\n\n" +
+                               "Please select one of the options below.";
+
+            WelcomeText.Visibility = Visibility.Visible;
+
+            ChatArea.Visibility = Visibility.Collapsed;
+
+            InputArea.Visibility = Visibility.Collapsed;
+
+            ModeButtonsPanel.Visibility = Visibility.Visible;
         }
 
         // Landing page startup
@@ -163,7 +184,7 @@ namespace CybersecurityAwarenessChatbot
         // Handles user input
         private void SendMessage()
         {
-            string input =UserInputTextBox.Text.Trim();
+            string input = UserInputTextBox.Text.Trim();
 
             if (string.IsNullOrWhiteSpace(input))
                 return;
@@ -188,15 +209,28 @@ namespace CybersecurityAwarenessChatbot
                 // Save globally
                 MemoryStore.UserName = formattedName;
 
+                // Hide chat area
+                ChatArea.Visibility = Visibility.Collapsed;
+
+                // Hide input area
+                InputArea.Visibility = Visibility.Collapsed;
+
+                // Show welcome message
+                WelcomeText.Text =
+                    $"👋 Welcome {MemoryStore.UserName}\n\n" +
+                    "Please select one of the options below.";
+
+                WelcomeText.Visibility = Visibility.Visible;
+
+                // Show mode buttons
+                ModeButtonsPanel.Visibility = Visibility.Visible;
+
+                // Show mode buttons
+                ModeButtonsPanel.Visibility = Visibility.Visible;
+
                 memoryStore.AddConversation($"User: {formattedName}");
 
                 awaitingUserName = false;
-
-                AppendBotMessage(
-                    $"👋 Welcome {MemoryStore.UserName}!\n\n" +
-                    "I am SecureWin, your Cybersecurity Awareness Assistant.\n\n" +
-                    "Please select one of the available options:\n\n" +
-                    "Click one of the buttons below to continue.");
 
                 UserInputTextBox.Clear();
 
@@ -209,11 +243,13 @@ namespace CybersecurityAwarenessChatbot
 
             ChatScrollViewer.ScrollToBottom();
         }
+
         // Send button click
         private void SendButton_Click( object sender, RoutedEventArgs e)
         {
             SendMessage();
         }
+
         // Send message when Enter pressed
         private void UserInputTextBox_KeyDown(object sender, KeyEventArgs e)
         {
@@ -252,6 +288,63 @@ namespace CybersecurityAwarenessChatbot
 
             Close();
         }
+
+        // End current session and allow another user to log in.
+        private void LeaveSessionButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show(
+                                    "Are you sure you want to leave this session?",
+                                    "Leave Session",
+                                    MessageBoxButton.YesNo,
+                                    MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                ResetLandingPage();
+            }
+        }
+
+        // Reset the landing page for a new user.
+        private void ResetLandingPage()
+        {
+            // Clear stored user
+            MemoryStore.UserName = "";
+
+            // Allow username entry again
+            awaitingUserName = true;
+
+            // Show chat area
+            ChatArea.Visibility = Visibility.Visible;
+
+            // Show input area
+            InputArea.Visibility = Visibility.Visible;
+
+            // Hide welcome text
+            WelcomeText.Visibility = Visibility.Collapsed;
+
+            // Hide buttons until new user enters name
+            ModeButtonsPanel.Visibility = Visibility.Collapsed;
+
+            // Clear conversation display
+            ChatPanel.Children.Clear();
+
+            // Clear input
+            UserInputTextBox.Clear();
+
+            // Reset username label
+            UserInputTextBox.Text = $"{MemoryStore.UserName}";
+
+            // Show initial greeting
+            AppendBotMessage(
+                "Welcome to SecureWin Cybersecurity Awareness Assistant.\n\n" +
+                "Please enter your name to continue.");
+
+            UserInputTextBox.Focus();
+        }
+
+
 
         // Exit button click - shuts down the application
         private void ExitButton_Click(object sender, RoutedEventArgs e)

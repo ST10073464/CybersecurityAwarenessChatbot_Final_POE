@@ -252,6 +252,15 @@ namespace CybersecurityAwarenessChatbot
             LoadQuestion();
         }
 
+        private void LeaveSession_Click(object sender, RoutedEventArgs e)
+        {
+            LandingPage landing = new LandingPage();
+
+            landing.Show();
+
+            Close();
+        }
+
         // Back to landing page
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
