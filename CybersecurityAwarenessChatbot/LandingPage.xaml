@@ -8,16 +8,16 @@
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized"
         Loaded="LandingPage_Loaded">
-    
+
     <Grid Margin="20">
 
         <Grid.RowDefinitions>
 
-            <!-- Logo -->
+            <!-- Header -->
             <RowDefinition Height = "150"/>
 
             <!-- Chat Area -->
-            <RowDefinition Height = "180"/>
+            <RowDefinition Height = "300"/>
 
             <!-- Input Area -->
             <RowDefinition Height = "Auto"/>
@@ -27,8 +27,12 @@
 
             <!-- Footer -->
             <RowDefinition Height = "35"/>
-            
+
         </Grid.RowDefinitions>
+
+        <!-- ================================================= -->
+        <!-- TITLE -->
+        <!-- ================================================= -->
 
         <TextBlock Text = "🔒 SECUREWIN CYBERSECURITY ASSISTANT 🔒"
                     Foreground = "#00E5FF"
@@ -36,6 +40,10 @@
                     FontWeight = "Bold"
                     HorizontalAlignment = "Center"
                     Margin = "0,0,0,5"/>
+
+        <!-- ================================================= -->
+        <!-- ASCII LOGO -->
+        <!-- ================================================= -->
 
         <TextBlock x:Name="AsciiArtText"
                     Grid.Row="0"
@@ -49,117 +57,129 @@
         <!-- Chat Area -->
         <!-- ================================================= -->
 
-        <Border x:Name="ChatArea"
-                Grid.Row="1"
-                Margin = "10"
-                CornerRadius = "10"
-                Background = "White"
-                BorderBrush = "Gray"
+        <Border x:Name = "ChatArea" 
+                Grid.Row = "1" 
+                Width = "500" 
+                Height = "300" 
+                HorizontalAlignment = "Center" 
+                Background = "LightGray" 
+                CornerRadius = "20" 
+                BorderBrush = "#D0D0D0" 
                 BorderThickness = "1">
 
-            <ScrollViewer x:Name = "ChatScrollViewer"
-                          VerticalScrollBarVisibility = "Auto">
-
-                <StackPanel x:Name = "ChatPanel"
-                            Margin = "10"/>
-
-            </ScrollViewer>
-
+            <Grid>
+                
+                <Grid.RowDefinitions>
+                    
+                    <RowDefinition Height = "*"/>
+                    
+                    <RowDefinition Height = "80"/>
+                    
+                </Grid.RowDefinitions>
+                
+                <!-- CHAT CONTENT -->
+                
+                <Grid Grid.Row = "0">
+                    
+                    <ScrollViewer x:Name="ChatScrollViewer" 
+                                  VerticalScrollBarVisibility="Auto">
+                        
+                        <StackPanel x:Name="ChatPanel" 
+                                    Margin="15"/>
+                        
+                    </ScrollViewer>
+                  
+                   
+                </Grid>
+                
+                <!-- INPUT AREA -->
+                
+                <Border x:Name ="InputArea" 
+                        Grid.Row = "1" 
+                        Margin = "10" 
+                        Background = "White" 
+                        BorderBrush = "#00C2FF" 
+                        Height="60"
+                        BorderThickness = "1"
+                        CornerRadius = "30">
+                    
+                    <Grid>
+                        <TextBox x:Name="UserInputTextBox" 
+                                 BorderThickness = "0" 
+                                 Background = "Transparent" 
+                                 FontSize = "18" 
+                                 Padding="20,0,70,0"
+                                 VerticalContentAlignment = "Center" 
+                                 TextChanged = "UserInputTextBox_TextChanged" 
+                                 KeyDown = "UserInputTextBox_KeyDown"/>
+                        
+                        <TextBlock x:Name = "PlaceholderText" 
+                                   Text ="Enter your name..." 
+                                   Foreground = "Gray" 
+                                   FontSize = "16" 
+                                   Margin = "20,0,0,0" 
+                                   VerticalAlignment = "Center" 
+                                   IsHitTestVisible = "False"/>
+                        
+                        <Button x:Name = "SendButton" 
+                                Width = "50" Height = "50" 
+                                HorizontalAlignment = "Right" 
+                                VerticalAlignment = "Center" 
+                                Margin = "0,0,5,0" 
+                                Cursor = "Hand" 
+                                Click = "SendButton_Click">
+                            
+                            <Button.ToolTip>
+                                
+                                <ToolTip Content="Send Prompt"/>
+                                
+                            </Button.ToolTip>
+                            
+                            <Button.Template>
+                                
+                                <ControlTemplate TargetType = "Button">
+                                    
+                                    <Border Background = "#00C2FF" 
+                                            CornerRadius = "25">
+                                        
+                                        <ContentPresenter HorizontalAlignment = "Center" 
+                                                          VerticalAlignment = "Center"/>
+                                        
+                                    </Border>
+                                    
+                                </ControlTemplate>
+                                
+                            </Button.Template>
+                            
+                            <TextBlock Text = "➤" 
+                                       Foreground ="White" 
+                                       FontWeight = "Bold" 
+                                       FontSize = "18"/>
+                            
+                        </Button>
+                        
+                    </Grid>
+                    
+                </Border>
+                
+            </Grid>
+            
         </Border>
-        
+
         <!-- ================================================= -->
         <!-- WELCOME MESSAGE -->
         <!-- ================================================= -->
 
-        <TextBlock x:Name="WelcomeText"
-           Grid.Row="1"
-           Visibility="Collapsed"
-           Foreground="White"
-           FontSize="30"
-           FontWeight="Bold"
-           TextAlignment="Center"
-           HorizontalAlignment="Center"
-           VerticalAlignment="Center"
-           TextWrapping="Wrap"/>
-
-        <!-- ================================================= -->
-        <!-- INPUT AREA -->
-        <!-- ================================================= -->
-
-        <Grid Grid.Row="2">
-
-            <Border x:Name="InputArea"
-                Margin = "10"
-                Background = "White"
-                CornerRadius = "30"
-                BorderBrush = "#00C2FF"
-                BorderThickness = "2"
-                Height = "60">
-
-            <Grid>
-
-                <TextBox x:Name = "UserInputTextBox"
-                         BorderThickness = "0"
-                         Background = "Transparent"
-                         FontSize = "18"
-                         Padding = "20,0,80,0"
-                         VerticalContentAlignment = "Center"
-                         TextChanged = "UserInputTextBox_TextChanged"
-                         KeyDown = "UserInputTextBox_KeyDown"/>
-
-                <TextBlock x:Name = "PlaceholderText"
-                           Text = "Enter your name..."
-                           Foreground = "Gray"
-                           FontSize = "16"
-                           Margin = "20,0,0,0"
-                           VerticalAlignment = "Center"
-                           IsHitTestVisible = "False"/>
-
-                    <Button x:Name = "SendButton"
-                        Width = "50"
-                        Height = "50"
-                        HorizontalAlignment = "Right"
-                        VerticalAlignment = "Center"
-                        Margin = "0,0,5,0"
-                        Click = "SendButton_Click"
-                        Cursor="Hand">
-
-                        <Button.ToolTip>
-
-                            <ToolTip Content="Send Prompt"/>
-
-                        </Button.ToolTip>
-
-
-                        <Button.Template>
-                        
-                        <ControlTemplate TargetType = "Button">
-                            
-                            <Border Background = "#00C2FF"
-                                    CornerRadius = "25"
-                                    BorderThickness="1">
-                                
-                                    <ContentPresenter HorizontalAlignment = "Center"
-                                                  VerticalAlignment = "Center"/>
-                                
-                            </Border>
-                            
-                        </ControlTemplate>
-                        
-                    </Button.Template>
-
-                        <TextBlock Text = "➤"
-                               FontSize = "18"
-                               FontWeight = "Bold"
-                               Foreground = "White"/>
-
-                    </Button>
-
-            </Grid>
-
-        </Border>
-
-        </Grid>
+        <TextBlock x:Name = "WelcomeText"
+                    Grid.Row = "1"
+                    Visibility = "Collapsed"
+                    Foreground = "White"
+                    FontSize = "30"
+                    FontWeight = "Bold"
+                    TextAlignment = "Center"
+                    HorizontalAlignment = "Center"
+                    VerticalAlignment = "Center"
+                    TextWrapping = "Wrap"/>
 
         <!-- ================================================= -->
         <!-- BUTTONS + FOOTER -->
@@ -170,28 +190,28 @@
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center"
                     Visibility="Collapsed">
-            
+
             <StackPanel Grid.Row = "3"
                         Orientation = "Horizontal"
                         HorizontalAlignment = "Center"
                         VerticalAlignment = "Center"
                         Margin = "10">
 
-            <Button x:Name = "ChatButton"
+                <Button x:Name = "ChatButton"
                     Content = "Chat Mode"
                     Width = "220"
                     Height = "60"
                     Margin = "10"
                     Click = "ChatButton_Click"/>
 
-            <Button x:Name = "QuizButton"
+                <Button x:Name = "QuizButton"
                     Content = "Quiz Mode"
                     Width = "220"
                     Height = "60"
                     Margin = "10"
                     Click = "QuizButton_Click"/>
 
-            <Button x:Name = "TaskButton"
+                <Button x:Name = "TaskButton"
                     Content = "Task Mode"
                     Width = "220"
                     Height = "60"
@@ -212,17 +232,17 @@
                     Margin = "10"
                     Click = "ExitButton_Click"/>
 
-        </StackPanel>
+            </StackPanel>
 
-        <!-- ================================================= -->
-        <!-- FOOTER -->
-        <!-- ================================================= -->
+            <!-- ================================================= -->
+            <!-- FOOTER -->
+            <!-- ================================================= -->
 
-        <Border Grid.Row = "3"
+            <Border Grid.Row = "3"
                 Background = "#10263A"
                 Height = "35">
 
-            <TextBlock
+                <TextBlock
                     Text = "🛡️ Protecting South African Citizens Online 🛡️"
                     Foreground = "White"
                     FontSize = "14"
@@ -230,10 +250,10 @@
                     HorizontalAlignment = "Center"
                     VerticalAlignment = "Center"/>
 
-        </Border>
+            </Border>
 
         </StackPanel>
 
-    </Grid>   
+    </Grid>
 
 </Window>

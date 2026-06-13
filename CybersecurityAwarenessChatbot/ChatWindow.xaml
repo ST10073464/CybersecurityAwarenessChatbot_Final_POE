@@ -56,11 +56,7 @@
         <!-- ========================================================= -->
 
         <Border Grid.Row="0"
-                Background="#081520"
-                BorderBrush="#00C2FF"
-                BorderThickness="1"
-                CornerRadius="18"
-                Padding="10">
+                Background="#081520">
 
             <Grid>
 
@@ -134,7 +130,7 @@
                                    HorizontalAlignment = "Center"
                                    Margin = "0,0,0,5"/>
 
-                        <TextBlock Text = "💬 Chat Mode Activated"
+                        <TextBlock Text = "💬 Cybersecurity Chat"
                                    Foreground = "#00E5FF"
                                    FontFamily = "Consolas"
                                    FontSize = "18"
@@ -244,36 +240,134 @@
         </Border>
 
         <!-- ========================================================= -->
-        <!-- CHAT AREA -->
+        <!-- CHAT AREA + INPUT AREA -->
         <!-- ========================================================= -->
 
-        <Border Grid.Row="1"
-                Margin="0,12"
-                Background="White"
-                CornerRadius="15"
-                BorderBrush="#00C2FF"
-                BorderThickness="1"
-                Padding="10">
+        <Border Grid.Row = "1"
+                    Margin = "0,12"
+                    Background = "LightGray"
+                    CornerRadius = "15"
+                    BorderBrush = "#00C2FF"
+                    BorderThickness = "1"
+                    Padding = "10">
 
-            <ScrollViewer x:Name="ChatScrollViewer"
-                          VerticalScrollBarVisibility="Auto">
+            <Grid>
 
-                <StackPanel x:Name="ChatPanel"/>
+                <Grid.RowDefinitions>
 
-            </ScrollViewer>
+                    <!-- Messages -->
+                    <RowDefinition Height = "*"/>
+
+                    <!-- Input -->
+                    <RowDefinition Height = "80"/>
+
+                </Grid.RowDefinitions>
+
+                <!-- ================================================= -->
+                <!-- CHAT MESSAGES -->
+                <!-- ================================================= -->
+
+                <ScrollViewer Grid.Row = "0"
+                              x:Name = "ChatScrollViewer"
+                              VerticalScrollBarVisibility = "Auto">
+
+                    <StackPanel x:Name = "ChatPanel"/>
+
+                </ScrollViewer>
+
+                <!-- ================================================= -->
+                <!-- INPUT AREA -->
+                <!-- ================================================= -->
+
+                <Border Grid.Row = "1"
+                        Margin = "5"
+                        Background = "White"
+                        CornerRadius = "30"
+                        BorderBrush = "#00C2FF"
+                        BorderThickness = "2"
+                        Height = "60"
+                        VerticalAlignment = "Center">
+
+                    <Grid>
+
+                        <!-- User Input -->
+
+                        <TextBox x:Name = "UserInputTextBox"
+                                 Background = "Transparent"
+                                 BorderThickness = "0"
+                                 FontSize = "18"
+                                 Padding = "20,0,70,0"
+                                 VerticalContentAlignment = "Center"
+                                 Foreground = "Black"
+                                 CaretBrush = "Black"
+                                 KeyDown="UserInputTextBox_KeyDown"
+                                 TextChanged="UserInputTextBox_TextChanged"/>
+
+                        <!-- Placeholder -->
+
+                        <TextBlock x:Name = "PlaceholderText"
+                           Text = "Ask SecureWin anything about cybersecurity..."
+                           Foreground = "Gray"
+                           FontSize = "16"
+                           Margin = "20,0,0,0"
+                           VerticalAlignment = "Center"
+                           IsHitTestVisible = "False"/>
+
+                        <!-- Send Button -->
+
+                        <Button x:Name = "SendButton"
+                                Width = "50"
+                                Height = "50"
+                                HorizontalAlignment = "Right"
+                                VerticalAlignment = "Center"
+                                Margin = "0,0,5,0"
+                                Cursor = "Hand"
+                                Click = "SendButton_Click">
+
+                            <Button.ToolTip>
+
+                                <ToolTip Content = "Send Message"/>
+
+                            </Button.ToolTip>
+
+                            <Button.Template>
+
+                                <ControlTemplate TargetType = "Button">
+
+                                    <Border Background = "#00C2FF"
+                                            CornerRadius = "25"
+                                            BorderBrush = "White"
+                                            BorderThickness = "1">
+
+                                        <ContentPresenter HorizontalAlignment = "Center"
+                                                  VerticalAlignment = "Center"/>
+
+                                    </Border>
+
+                                </ControlTemplate>
+                            </Button.Template>
+
+                            <TextBlock Text = "➤"
+                               FontSize = "18"
+                               FontWeight = "Bold"
+                               Foreground = "White"/>
+
+                        </Button>
+
+                    </Grid>
+
+                </Border>
+
+            </Grid>
 
         </Border>
 
         <!-- ========================================================= -->
-        <!-- INPUT AREA -->
+        <!-- FOOTER AREA -->
         <!-- ========================================================= -->
 
         <Border Grid.Row = "2"
-                Background = "#081520"
-                CornerRadius = "18"
-                BorderBrush = "#00C2FF"
-                BorderThickness = "1"
-                Padding = "15">
+                Background = "#081520">
 
             <Grid>
 
@@ -281,116 +375,29 @@
                     
                     <RowDefinition Height = "Auto"/>
                     
-                    <RowDefinition Height = "*"/>
-                    
-                    <RowDefinition Height = "35"/>
+                    <RowDefinition Height = "Auto"/>
                     
                 </Grid.RowDefinitions>
 
-                <!-- =============================================== -->
                 <!-- BACK BUTTON -->
-                <!-- =============================================== -->
 
-                <StackPanel Grid.Row = "0"
-                            Orientation = "Horizontal"
-                            HorizontalAlignment = "Center"
-                            Margin = "0,0,0,10">
+                <Button Grid.Row = "0"
+                        Content = "⬅ Back"
+                        Width = "140"
+                        Height = "40"
+                        HorizontalAlignment = "Center"
+                        Margin = "0,0,0,10"
+                        Click = "BackButton_Click"/>
 
-                </StackPanel>
+                <!-- FOOTER TEXT -->
 
-                <!-- =============================================== -->
-                <!-- CHAT INPUT -->
-                <!-- =============================================== -->
-
-                <Grid Grid.Row="1">
-
-                    <!-- Input Border -->
-                    <Border Background="White"
-                            CornerRadius="30"
-                            BorderBrush="#00C2FF"
-                            BorderThickness="1"
-                            Height="60">
-
-                        <Grid>
-
-                            <!-- Text Input -->
-                            <TextBox x:Name="UserInputTextBox"
-                                     Background="Transparent"
-                                     BorderThickness="0"
-                                     FontSize="18"
-                                     Padding="20,0,70,0"
-                                     VerticalContentAlignment="Center"
-                                     Foreground="Black"
-                                     CaretBrush="Black"
-                                     KeyDown="UserInputTextBox_KeyDown"
-                                     TextChanged="UserInputTextBox_TextChanged"/>
-
-                            <!-- Placeholder -->
-                            <TextBlock x:Name="PlaceholderText"
-                                       Text="Ask SecureWin anything about cybersecurity..."
-                                       Foreground="Gray"
-                                       FontSize="16"
-                                       Margin="20,0,0,0"
-                                       VerticalAlignment="Center"
-                                       IsHitTestVisible="False"/>
-
-                            <!-- Circular Send Button -->
-                            <Button x:Name="SendButton"
-                                    Width="50"
-                                    Height="50"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    Margin="0,0,5,0"
-                                    Click="SendButton_Click"
-                                    Cursor="Hand">
-
-                                <Button.ToolTip>
-                                    
-                                    <ToolTip Content="Send Prompt"/>
-                                    
-                                </Button.ToolTip>
-
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="#00C2FF"
-                                                CornerRadius="35"
-                                                BorderBrush="White"
-                                                BorderThickness="1">
-                                            <ContentPresenter HorizontalAlignment="Center"
-                                                              VerticalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-
-                                <TextBlock Text="➤"
-                                           FontSize="18"
-                                           FontWeight="Bold"
-                                           Foreground="White"/>
-
-                            </Button>
-
-                        </Grid>
-
-                    </Border>
-
-                </Grid>
-
-                <!-- =============================================== -->
-                <!-- FOOTER -->
-                <!-- =============================================== -->
-
-                <TextBlock Grid.Row = "2"
+                <TextBlock Grid.Row = "1"
                            Text = "🛡️ Protecting South African Citizens Online 🛡️"
                            Foreground = "White"
                            FontSize = "14"
                            FontWeight = "Bold"
                            HorizontalAlignment = "Center"
                            VerticalAlignment = "Center"/>
-
-                <Button Content = "⬅ Back"
-                        Width = "120"
-                        Height = "40"
-                        Click = "BackButton_Click"/>
 
             </Grid>
 

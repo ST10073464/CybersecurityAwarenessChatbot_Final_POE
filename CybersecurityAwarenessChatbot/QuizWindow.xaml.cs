@@ -19,7 +19,7 @@ namespace CybersecurityAwarenessChatbot
         private readonly List<int> wrongQuestionIndexes;
 
         // Retry mode flag
-        private bool retryMode = false;
+        //private bool retryMode = false;
 
         // Constructor
         public QuizWindow()
@@ -233,7 +233,7 @@ namespace CybersecurityAwarenessChatbot
 
             wrongQuestionIndexes.Clear();
 
-            retryMode = true;
+            //retryMode = true;
 
             ResultsText.Visibility = Visibility.Collapsed;
 
