@@ -16,6 +16,11 @@ namespace CybersecurityAwarenessChatbot.Models
         public DateTime? ReminderDate { get; set; }
 
         public bool IsCompleted { get; set; }
+
+        public override string ToString()
+        {
+            return $"{(IsCompleted ? "✅" : "⏳")} {Title} - {Description}";
+        }
     }
 
 }

@@ -266,9 +266,9 @@ namespace CybersecurityAwarenessChatbot
         // Back to landing page
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            LandingPage landing = new LandingPage();
+            ChatWindow chatWindow = new ChatWindow();
 
-            landing.Show();
+            chatWindow.Show();
 
             Close();
         }

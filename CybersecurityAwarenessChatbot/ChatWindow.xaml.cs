@@ -49,6 +49,80 @@ namespace CybersecurityAwarenessChatbot
                 $"🛡️ Privacy\n" +
                 $"💻 Malware\n" +
                 $"⚠️ Scams");
+
+            ShowMainMenuButtons();
+        }
+
+        // Creates styled menu buttons for main topics.
+        private void ShowMainMenuButtons()
+        {
+            WrapPanel panel = new WrapPanel
+            {
+                Margin = new Thickness(10),
+                HorizontalAlignment = HorizontalAlignment.Left
+            };
+
+            Button quizButton =
+                CreateMenuButton("🎮 Quiz Mode");
+
+            Button taskButton =
+                CreateMenuButton("📋 Task Mode");
+
+            Button logButton =
+                CreateMenuButton("📑 Activity Log");
+
+            quizButton.Click += QuizButton_Click;
+            taskButton.Click += TaskButton_Click;
+            logButton.Click += ActivityLogButton_Click;
+
+            panel.Children.Add(quizButton);
+            panel.Children.Add(taskButton);
+            panel.Children.Add(logButton);
+
+            ChatPanel.Children.Add(panel);
+        }
+
+        // Event handlers for menu buttons
+        private Button CreateMenuButton(string text)
+        {
+            return new Button
+            {
+                Content = text,
+                Width = 180,
+                Height = 45,
+                Margin = new Thickness(5),
+                Background = Brushes.DeepSkyBlue,
+                Foreground = Brushes.White,
+                FontWeight = FontWeights.Bold,
+                Cursor = Cursors.Hand
+            };
+        }
+
+        private void QuizButton_Click(object sender, RoutedEventArgs e)
+        {
+            QuizWindow quizWindow = new QuizWindow();
+
+            quizWindow.Show();
+
+            Close();
+        }
+
+        private void TaskButton_Click(object sender, RoutedEventArgs e)
+        {
+            TaskWindow taskWindow = new TaskWindow();
+
+            taskWindow.Show();
+
+            Close();
+        }
+
+        private void ActivityLogButton_Click(object sender, RoutedEventArgs e)
+        {
+            ActivityLogService logWindow = new ActivityLogService();
+
+            //logWindow.Show();
+
+            Close();
         }
 
         // Send user message when Send button is clicked.
