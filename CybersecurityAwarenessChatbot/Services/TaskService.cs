@@ -118,13 +118,13 @@ namespace CybersecurityAwarenessChatbot.Classes
         }
 
         // Reminders Due Today
-        public List<TaskItem> GetDueReminders()
-        {
-            return LoadTasks().Where(t =>
-                    !t.IsCompleted &&
-                    t.ReminderDate.HasValue &&
-                    t.ReminderDate.Value.Date <= DateTime.Today).ToList();
-        }
+       // public List<TaskItem> GetDueReminders()
+       // {
+       //     //return LoadTasks().Where(t =>
+                    //!t.IsCompleted &&
+                    //t.ReminderDate.HasValue &&
+        //            //t.ReminderDate.Value.Date <= DateTime.Today).ToList();
+       // }
 
         // view TASKS as text summary
         public string GetTaskSummary()

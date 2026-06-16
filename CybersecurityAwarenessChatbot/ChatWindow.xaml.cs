@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CybersecurityAwarenessChatbot
 {
@@ -27,130 +28,110 @@ namespace CybersecurityAwarenessChatbot
 
             // Initialize chatbot
             _chatBot = new ChatBot();
+           
+            AsciiArtText.Text = UIHelper.ShowLogo();
 
-            // Load event handler for chat mode startup
             Loaded += ChatWindow_Loaded;
 
         }
 
-        // Chat mode Startup
-        private void ChatWindow_Loaded(object sender, RoutedEventArgs e)
+        // Opens task management windows based on mode (ADD, VIEW, DELETE, COMPLETE).
+        private void OpenTaskWindow(string mode)
         {
-            // Refresh username display.
-            UserNameText.Text = $"👤 {MemoryStore.UserName}";
-
-            // Display welcome message with topics.
-            AppendBotMessage(
-                $"👋 Welcome {MemoryStore.UserName} to the Cybersecurity Chatbot Assistant!\n\n" +
-                $"You can ask me anything about cybersecurity.\n\n" +
-                $"Topics include:\n\n" +
-                $"🔒 Passwords\n" +
-                $"🎣 Phishing\n" +
-                $"🛡️ Privacy\n" +
-                $"💻 Malware\n" +
-                $"⚠️ Scams");
-
-            ShowMainMenuButtons();
-        }
-
-        // Creates styled menu buttons for main topics.
-        private void ShowMainMenuButtons()
-        {
-            WrapPanel panel = new WrapPanel
-            {
-                Margin = new Thickness(10),
-                HorizontalAlignment = HorizontalAlignment.Left
-            };
-
-            Button quizButton =
-                CreateMenuButton("🎮 Quiz Mode");
-
-            Button taskButton =
-                CreateMenuButton("📋 Task Mode");
-
-            Button logButton =
-                CreateMenuButton("📑 Activity Log");
-
-            quizButton.Click += QuizButton_Click;
-            taskButton.Click += TaskButton_Click;
-            logButton.Click += ActivityLogButton_Click;
-
-            panel.Children.Add(quizButton);
-            panel.Children.Add(taskButton);
-            panel.Children.Add(logButton);
-
-            ChatPanel.Children.Add(panel);
-        }
-
-        // Event handlers for menu buttons
-        private Button CreateMenuButton(string text)
-        {
-            return new Button
-            {
-                Content = text,
-                Width = 180,
-                Height = 45,
-                Margin = new Thickness(5),
-                Background = Brushes.DeepSkyBlue,
-                Foreground = Brushes.White,
-                FontWeight = FontWeights.Bold,
-                Cursor = Cursors.Hand
-            };
-        }
-
-        private void QuizButton_Click(object sender, RoutedEventArgs e)
-        {
-            QuizWindow quizWindow = new QuizWindow();
-
-            quizWindow.Show();
-
-            Close();
-        }
-
-        private void TaskButton_Click(object sender, RoutedEventArgs e)
-        {
-            TaskWindow taskWindow = new TaskWindow();
+            TaskWindow taskWindow = new TaskWindow(mode);
 
             taskWindow.Show();
 
             Close();
         }
 
-        private void ActivityLogButton_Click(object sender, RoutedEventArgs e)
+        // On window load, display welcome message and activity log summary.
+        private void ChatWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            ActivityLogService logWindow = new ActivityLogService();
 
-            //logWindow.Show();
+            AppendBotMessage(_chatBot.ProcessInput(""));
 
-            Close();
         }
-
         // Send user message when Send button is clicked.
         private void SendMessage()
         {
-            string input = UserInputTextBox.Text.Trim();
+            string input = UserInputTextBox.Text.ToLower().Trim();
 
             if (string.IsNullOrWhiteSpace(input))
                 return;
 
-            VoicePlayer.PlaySound();
-
+            // Show user message
             AppendUserMessage(input);
 
+            // Process through chatbot
             string response = _chatBot.ProcessInput(input);
-
-            if (response.StartsWith("__CLEAR_CHAT__"))
-            {
-                ChatPanel.Children.Clear();
-
-                response = response.Replace("__CLEAR_CHAT__", "").Trim();
-            }
-
-            AppendBotMessage(response);
 
             UserInputTextBox.Clear();
 
-            ChatScrollViewer.ScrollToBottom();
+            switch (response)
+            {
+                case "__OPEN_TASK_ADD__":
+
+                    ActivityLogService.Add("Opened Add Task");
+
+                    new TaskWindow("ADD").Show();
+
+                    Close();
+
+                    return;
+
+                case "__OPEN_TASK_VIEW__":
+
+                    ActivityLogService.Add("Viewed Tasks");
+
+                    new TaskWindow("VIEW").Show();
+
+                    Close();
+
+                    return;
+
+                case "__OPEN_TASK_DELETE__":
+
+                    ActivityLogService.Add("Delete Task Requested");
+
+                    new TaskWindow("DELETE").Show();
+
+                    Close();
+
+                    return;
+
+                case "__OPEN_TASK_COMPLETE__":
+
+                    ActivityLogService.Add("Complete Task Requested");
+
+                    new TaskWindow("COMPLETE").Show();
+
+                    Close();
+
+                    return;
+
+                case "__OPEN_QUIZ__":
+
+                    ActivityLogService.Add("Quiz Started");
+
+                    new QuizWindow().Show();
+
+                    Close();
+
+                    return;
+
+                case "__SHOW_ACTIVITY_LOG__":
+
+                    AppendBotMessage(ActivityLogService.GetSummary());
+
+                    return;
+            }
+
+            // Normal chatbot response
+            if (!string.IsNullOrWhiteSpace(response))
+            {
+                AppendBotMessage(response);
+            }
         }
 
         // Allows Enter key to send messages.
@@ -175,57 +156,57 @@ namespace CybersecurityAwarenessChatbot
             SendMessage();
         }
 
-        // Back button click event handler - returns to the landing page and clears chat history.
-        private void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            LandingPage landing = new LandingPage();
-
-            landing.Show();
-
-            Close();
-        }
-
-        // Displays user message bubble.
+        // Displays username and timestamp, with a double tick indicator for sent messages.
         private void AppendUserMessage(string message)
         {
-            StackPanel container = new()
+            StackPanel container = new StackPanel
             {
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Margin = new Thickness(5)
             };
 
-            TextBlock header = new()
+            // Username and timestamp
+            TextBlock header = new TextBlock
             {
                 Text = $"{MemoryStore.UserName} • {DateTime.Now:HH:mm}",
-                Foreground = Brushes.LightGray,
-                FontWeight = FontWeights.Bold
+                Foreground = Brushes.Gray,
+                FontSize = 13,
+                FontWeight = FontWeights.Bold,
+                HorizontalAlignment = HorizontalAlignment.Right
             };
 
-            Border bubble = new()
+            Border bubble = new Border
             {
-                Background = new SolidColorBrush( Color.FromRgb(0, 194, 255)),
+                Background = new SolidColorBrush(Color.FromRgb(0, 194, 255)),
                 CornerRadius = new CornerRadius(15),
-                Padding = new Thickness(12)
+                Padding = new Thickness(12),
+                MaxWidth = 700
             };
 
-            StackPanel content = new();
+            StackPanel bubbleContent = new StackPanel();
 
-            content.Children.Add(new TextBlock
-                {
-                    Text = message,
-                    Foreground = Brushes.White,
-                    FontSize = 16
-                });
+            TextBlock text = new TextBlock
+            {
+                Text = message,
+                Foreground = Brushes.White,
+                FontSize = 16,
+                TextWrapping = TextWrapping.Wrap
+            };
 
-            content.Children.Add(new TextBlock
-                {
-                    Text = "✓✓ Sent",
-                    FontSize = 10,
-                    Foreground = Brushes.White,
-                    HorizontalAlignment =  HorizontalAlignment.Right
-                });
+            // Double tick indicator
+            TextBlock ticks = new TextBlock
+            {
+                Text = "✓✓",
+                Foreground = Brushes.White,
+                FontSize = 10,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(0, 5, 0, 0)
+            };
 
-            bubble.Child = content;
+            bubbleContent.Children.Add(text);
+            bubbleContent.Children.Add(ticks);
+
+            bubble.Child = bubbleContent;
 
             container.Children.Add(header);
             container.Children.Add(bubble);
@@ -236,38 +217,64 @@ namespace CybersecurityAwarenessChatbot
         // Displays bot message bubble.
         private void AppendBotMessage(string message)
         {
-            StackPanel container = new()
+            StackPanel container = new StackPanel
             {
                 HorizontalAlignment = HorizontalAlignment.Left,
                 Margin = new Thickness(5)
             };
 
-            TextBlock header = new()
+            TextBlock header = new TextBlock
             {
-                Text =  $"🤖 Cybersecurity Assistant • {DateTime.Now:HH:mm}",
-                Foreground =  Brushes.LightGray,
+                Text = $"🤖 Cybersecurity Assistant • {DateTime.Now:HH:mm}",
+                Foreground = Brushes.Gray,
+                FontSize = 13,
                 FontWeight = FontWeights.Bold
             };
 
-            Border bubble = new()
+            Border bubble = new Border
             {
                 Background = new SolidColorBrush(Color.FromRgb(16, 38, 58)),
                 CornerRadius = new CornerRadius(15),
-                Padding = new Thickness(12)
+                Padding = new Thickness(12),
+                MaxWidth = 750
             };
 
-            bubble.Child =  new TextBlock
-                {
-                    Text = message,
-                    Foreground = Brushes.White,
-                    FontSize = 16,
-                    TextWrapping = TextWrapping.Wrap
-                };
+            TextBlock text = new TextBlock
+            {
+                Text = message,
+                Foreground = Brushes.White,
+                FontSize = 16,
+                TextWrapping = TextWrapping.Wrap
+            };
+
+            bubble.Child = text;
 
             container.Children.Add(header);
             container.Children.Add(bubble);
 
             ChatPanel.Children.Add(container);
+        }
+
+        // End current session and allow another user to log in.
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show(
+                                      "Are you sure you want to leave this session?",
+                                      "Leave Session",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                MemoryStore.UserName = "";
+
+                LandingPage landing = new LandingPage();
+
+                landing.Show();
+
+                Close();
+            }
+
         }
 
     }

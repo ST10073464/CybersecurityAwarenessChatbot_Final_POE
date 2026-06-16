@@ -3,29 +3,34 @@
     ST10073464
 */
 
-using CybersecurityAwarenessChatbot.Models;
-
 namespace CybersecurityAwarenessChatbot.Classes
 {
-    public class ActivityLogService
+    // Simple in-memory activity log service to track user actions
+    public static class ActivityLogService
     {
-        private readonly List<ActivityLogItem> logs = new();
+        public static List<string> Actions = new();
 
-        public void AddLog(string action)
+        public static void Add(string action)
         {
-            logs.Add(new ActivityLogItem
-            {
-                TimeStamp = DateTime.Now,
-                Action = action
-            });
+            Actions.Add(action);
         }
 
-        public List<ActivityLogItem> GetRecentLogs()
+        public static string GetSummary()
         {
-            return logs
-                .OrderByDescending(x => x.TimeStamp)
-                .Take(10)
-                .ToList();
+            if (Actions.Count == 0)
+            {
+                return "No recent actions.";
+            }
+
+            string result =
+                "📋 Here’s a summary of recent actions:\n\n";
+
+            for (int i = 0; i < Actions.Count; i++)
+            {
+                result += $"{i + 1}. {Actions[i]}\n";
+            }
+
+            return result;
         }
     }
 }

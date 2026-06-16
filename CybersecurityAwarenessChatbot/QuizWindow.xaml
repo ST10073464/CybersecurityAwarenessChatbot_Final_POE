@@ -1,162 +1,100 @@
-﻿<Window x:Class = "CybersecurityAwarenessChatbot.QuizWindow"
-         xmlns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-         xmlns:x = "http://schemas.microsoft.com/winfx/2006/xaml"
-         Title = "Quiz Mode"
-         WindowState = "Maximized"
-         Background = "#07111F"
-         WindowStartupLocation = "CenterScreen">
+﻿<Window x:Class="CybersecurityAwarenessChatbot.QuizWindow"
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+     Title="Cybersecurity Quiz"
+     WindowState="Maximized"
+     Background="#07111F"
+     WindowStartupLocation="CenterScreen">
 
-    <Grid Margin = "20">
-
-        <!-- ================================================= -->
-        <!-- ROWS -->
-        <!-- ================================================= -->
+    <Grid>
 
         <Grid.RowDefinitions>
-
-            <!-- Header -->
-            <RowDefinition Height = "Auto"/>
-
-            <!-- Main Content -->
-            <RowDefinition Height = "*"/>
-
-            <!-- Footer -->
-            <RowDefinition Height = "35"/>
-
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
 
-        <!-- ================================================= -->
         <!-- HEADER -->
-        <!-- ================================================= -->
 
-        <StackPanel Grid.Row = "0"
-                    Margin = "0,0,0,15">
-
-            <TextBlock x:Name = "UserNameText"
-                       FontSize = "18"
-                       FontWeight = "Bold"
-                       Foreground = "White"
-                       Margin = "0,0,0,10"/>
-
-            <TextBlock Text = "🎮 Cybersecurity Quiz"
-                       FontSize = "28"
-                       FontWeight = "Bold"
-                       Foreground = "White"/>
-
-            <TextBlock x:Name="ProgressText"
-                       FontSize = "16"
-                       Foreground = "#00E5FF"
-                       Margin = "0,5,0,0"/>
-
-        </StackPanel>
-
-        <!-- ================================================= -->
-        <!-- MAIN CONTENT -->
-        <!-- ================================================= -->
-
-        <Border Grid.Row = "1"
-                Background = "LightGray"
-                CornerRadius = "10"
-                Padding = "20">
+        <Border Grid.Row="0"
+             Background="#10263A">
 
             <Grid>
 
-                <Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="250"/>
+                </Grid.ColumnDefinitions>
 
-                    <RowDefinition Height = "Auto"/>
+                <!-- BACK -->
 
-                    <RowDefinition Height = "*"/>
+                
 
-                    <RowDefinition Height = "Auto"/>
+                <Button x:Name="BackButton"
+                        Width="50"
+                        Height="50"
+                        Content="⬅"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment = "Center"
+                        Margin="0,0,5,0"
+                        Cursor = "Hand"
+                        Click="BackButton_Click">
 
-                </Grid.RowDefinitions>
-                <!-- ================================================= -->
-                <!-- QUESTION AREA -->
-                <!-- ================================================= -->
+                    <Button.ToolTip>
 
-                <Grid>
+                        <ToolTip Content = "Back to Chat"/>
 
-                    <Grid.RowDefinitions>
+                    </Button.ToolTip>
 
-                        <!-- Question -->
-                        <RowDefinition Height = "Auto"/>
 
-                        <!-- Options -->
-                        <RowDefinition Height = "*"/>
+                    <Button.Template>
 
-                        <!-- Buttons -->
-                        <RowDefinition Height = "Auto"/>
+                        <ControlTemplate TargetType = "Button">
+
+                            <Border Background = "#00C2FF"
+                                    CornerRadius = "15">
+
+                                <ContentPresenter HorizontalAlignment = "Center"
+                                                  VerticalAlignment = "Center"/>
+
+                            </Border>
+
+                        </ControlTemplate>
                         
-                    </Grid.RowDefinitions>
+                    </Button.Template>
 
-                    <!-- Question Area -->
-                    <StackPanel Grid.Row = "0"
-                                Margin = "10">
+                  
+                </Button>
 
-                        <TextBlock x:Name = "PlaceholderText"
-                                   Text = "📝 Answer the cybersecurity questions by selecting one option and clicking Next."
-                                   Foreground = "Gray"
-                                   FontSize = "16"
-                                   FontStyle = "Italic"
-                                   TextWrapping = "Wrap"
-                                   Margin = "0,0,0,10"/>
+                <!-- TITLE -->
 
-                        <TextBlock x:Name = "QuestionText"
-                                   Foreground = "Black"
-                                   FontSize = "24"
-                                   FontWeight = "Bold"
-                                   TextWrapping = "Wrap"/>
-                    </StackPanel>
+                <TextBlock Grid.Column="1"
+                        Text="🎮 CYBERSECURITY QUIZ CHALLENGE"
+                        FontSize="28"
+                        FontWeight="Bold"
+                        Foreground="#00E5FF"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"/>
 
-                    <!-- Radio Buttons -->
-                    <ScrollViewer Grid.Row = "1">
+                <!-- USER -->
 
-                        <StackPanel x:Name = "OptionsPanel"
-                                    Margin = "10"/>
+                <StackPanel Grid.Column="2"
+                         Orientation="Horizontal"
+                         HorizontalAlignment="Right"
+                         Margin="15">
 
-                    </ScrollViewer>
+                    <Ellipse Width="14"
+                          Height="14"
+                          Fill="LimeGreen"
+                          VerticalAlignment="Center"/>
 
-                </Grid>
-
-                <!-- RESULTS -->
-
-                <ScrollViewer Grid.Row = "1"
-                              VerticalScrollBarVisibility = "Auto">
-
-                    <TextBlock x:Name = "ResultsText"
-                               FontSize = "18"
-                               TextWrapping = "Wrap"
-                               Visibility="Collapsed"/>
-                </ScrollViewer>
-
-                <!-- BUTTONS -->
-
-                <StackPanel Grid.Row = "2"
-                            Orientation = "Horizontal"
-                            HorizontalAlignment = "Center">
-
-                    <Button x:Name = "NextButton"
-                            Content = "Next Question"
-                            Width = "120"
-                            Height = "40"
-                            Margin = "10"
-                            Click = "NextButton_Click"/>
-
-                    <Button x:Name = "RetryButton"
-                            Content = "Retry Wrong Answers"
-                            Width = "120"
-                            Height = "40"
-                            Margin = "10"
-                            Visibility = "Collapsed"
-                            Click = "RetryButton_Click"/>
-
-                    <Button x:Name = "BackButton"
-                            Content = "⬅ Back"
-                            Width = "120"
-                            Height = "40"
-                            Margin = "10"
-                            Visibility = "Collapsed"
-                            Click = "BackButton_Click"/>
+                    <TextBlock x:Name="UserNameText"
+                            Foreground="White"
+                            FontSize="16"
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"/>
 
                 </StackPanel>
 
@@ -164,22 +102,294 @@
 
         </Border>
 
-        <!-- ================================================= -->
+
+
+        <!-- ============================================= -->
+        <!-- MAIN CONTENT -->
+        <!-- ============================================= -->
+
+        <Grid Grid.Row="1">
+
+            <Grid.ColumnDefinitions>
+
+                <!-- Hints -->
+                <ColumnDefinition Width="250"/>
+
+                <!-- Quiz -->
+                <ColumnDefinition Width="*"/>
+
+                <!-- Advice -->
+                <ColumnDefinition Width="250"/>
+
+            </Grid.ColumnDefinitions>
+
+            <!-- ============================================= -->
+            <!-- LEFT PANEL -->
+            <!-- ============================================= -->
+
+            <Border Grid.Column="0"
+                Margin="5"
+                Background="#10263A"
+                CornerRadius="12">
+
+                <StackPanel Margin="15">
+
+                    <TextBlock Text="🎯 Quiz Tips"
+                           Foreground="#00E5FF"
+                           FontSize="20"
+                           FontWeight="Bold"/>
+
+                    <TextBlock Margin="0,15,0,0"
+                           Foreground="White"
+                           TextWrapping="Wrap">
+
+                            • Read each question carefully.
+
+                            • Think before answering.
+
+                            • Focus on cybersecurity concepts.
+
+                            • Watch for phishing clues.
+
+                            • Use elimination for difficult questions.
+
+                            • Learn from explanations.
+
+                            • Improve your online safety skills.
+
+                    </TextBlock>
+
+                </StackPanel>
+
+            </Border>
+
+            <!-- ============================================= -->
+            <!-- QUIZ PANEL -->
+            <!-- ============================================= -->
+
+            <Border Grid.Column="1"
+                    Margin="10"
+                    Background="LightGray"
+                    CornerRadius="15"
+                    Padding="20">
+
+                <Grid>
+
+                    <Grid.RowDefinitions>
+
+                        <RowDefinition Height="Auto"/>
+                        
+                        <RowDefinition Height="Auto"/>
+                        
+                        <RowDefinition Height="*"/>
+                        
+                        <RowDefinition Height="Auto"/>
+
+                    </Grid.RowDefinitions>
+
+                    <!-- Progress -->
+
+                    <TextBlock x:Name="ProgressText"
+                               Grid.Row="0"
+                               Foreground="#00C2FF"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="0,0,0,10"/>
+
+                    <!-- Score -->
+
+                    <TextBlock x:Name="ScoreText"
+                               Grid.Row="1"
+                               Foreground="Green"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="0,0,0,20"/>
+
+                    <!-- ================================================= -->
+                    <!-- QUESTION / RESULTS AREA -->
+                    <!-- ================================================= -->
+
+                    <Grid Grid.Row="2">
+
+                        <Grid.RowDefinitions>
+                            
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            
+                        </Grid.RowDefinitions>
+
+                        <!-- Question -->
+                        <TextBlock x:Name="QuestionText"
+                                   Grid.Row="0"
+                                   FontSize="24"
+                                   FontWeight="Bold"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,20"/>
+
+                        <!-- Scrollable Content -->
+                        <ScrollViewer Grid.Row="1"
+                                      VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled">
+
+                            <StackPanel>
+
+                                <!-- Quiz Options -->
+                                <StackPanel x:Name="OptionsPanel"/>
+
+                                <!-- Results -->
+                                <TextBlock x:Name="ResultsText"
+                                           FontSize="18"
+                                           Margin="0,20,0,0"
+                                           Visibility="Collapsed"
+                                           TextWrapping="Wrap"/>
+
+                            </StackPanel>
+
+                        </ScrollViewer>
+
+                    </Grid>
+                    <!-- Buttons -->
+
+                    <StackPanel Grid.Row="3"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Margin="0,20,0,0">
+
+                        <Button x:Name="NextButton"
+                            Content="Next Question"
+                            Background="white"
+                            Width="150"
+                            Height="45"
+                            Margin="10"
+                            Click="NextButton_Click"/>
+
+                        <Button x:Name="RetryButton"
+                            Content="Retry Wrong Answers"
+                                Background="White"
+                            Width="170"
+                            Height="45"
+                            Margin="10"
+                            Visibility="Collapsed"
+                            Click="RetryButton_Click"/>
+
+                        <Button x:Name="ViewAnswersButton"
+                                Content="View Answers"
+                                Width="150"
+                                Height="40"
+                                Margin="10"
+                                Visibility="Collapsed"
+                                Click="ViewAnswersButton_Click"/>
+
+                        <Button x:Name="TryAgainButton"
+                                Content="Try Full Quiz Again"
+                                Width="150"
+                                Height="40"
+                                Margin="10"
+                                Visibility="Collapsed"
+                                Click="TryAgainButton_Click"/>
+
+                      </StackPanel>
+
+                </Grid>
+
+            </Border>
+
+            <!-- ============================================= -->
+            <!-- Right PANEL -->
+            <!-- ============================================= -->
+
+            <Border Grid.Column="2"
+                Margin="5"
+                Background="#10263A"
+                CornerRadius="12">
+
+                <StackPanel Margin="15">
+
+                    <TextBlock Text="🛡️ Stay Safe Online"
+                           Foreground="#00E5FF"
+                           FontSize="20"
+                           FontWeight="Bold"/>
+
+                    <TextBlock Margin="0,15,0,0"
+                           Foreground="White"
+                           TextWrapping="Wrap">
+
+                            ✔ Use strong passwords
+
+                            ✔ Enable Two-Factor Authentication
+
+                            ✔ Never share OTP codes
+
+                            ✔ Check website URLs
+
+                            ✔ Update software regularly
+
+                            ✔ Avoid suspicious downloads
+
+                            ✔ Use antivirus protection
+
+                            ✔ Report phishing attempts
+
+                            ✔ Secure social media accounts
+
+                            ✔ Be cautious on public Wi-Fi
+
+                    </TextBlock>
+
+                    <Border Grid.Column="1"
+        Background="#0D1B2A"
+        CornerRadius="10"
+        Padding="10"
+        Margin="10,0,0,0">
+
+                        <StackPanel>
+
+                            <TextBlock Text="📜 QUIZ ACTIVITY"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   Foreground="White"
+                   Margin="0,0,0,10"/>
+
+                            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      Height="400">
+
+                                <TextBlock x:Name="ActivityLogText"
+                       Foreground="White"
+                       FontSize="14"
+                       TextWrapping="Wrap"/>
+
+                            </ScrollViewer>
+
+                        </StackPanel>
+
+                    </Border>
+
+
+                </StackPanel>
+                
+
+            </Border>
+            
+            
+
+        </Grid>
+
+        <!-- ============================================= -->
         <!-- FOOTER -->
-        <!-- ================================================= -->
+        <!-- ============================================= -->
 
-        
 
-            <TextBlock Grid.Row = "2"
-                       Text = "🛡️ Protecting South African Citizens Online 🛡️"
-                       Foreground = "White"
-                       FontSize = "14"
-                       FontWeight = "Bold"
-                       HorizontalAlignment = "Center"
-                       VerticalAlignment = "Center"/>
+        <Border Grid.Row="3"
+                Background="#10263A">
 
-       
+            <TextBlock Text="🛡️ Protecting South African Citizens Online 🛡️ Copyright Erwin Mashobane"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+
+        </Border>
 
     </Grid>
 
 </Window>
+

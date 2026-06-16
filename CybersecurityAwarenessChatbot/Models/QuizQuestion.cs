@@ -14,5 +14,18 @@ namespace CybersecurityAwarenessChatbot.Classes
         public int CorrectAnswer { get; set; }
 
         public string Explanation { get; set; }
+
+        public void ShuffleOptions()
+        {
+            string correct =  Options[CorrectAnswer];
+
+            Random rnd = new Random();
+
+            Options = Options
+                .OrderBy(x => rnd.Next())
+                .ToList();
+
+            CorrectAnswer = Options.IndexOf(correct);
+        }
     }
 }

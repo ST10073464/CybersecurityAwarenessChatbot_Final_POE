@@ -17,18 +17,16 @@
             <RowDefinition Height = "150"/>
 
             <!-- Chat Area -->
-            <RowDefinition Height = "300"/>
+            <RowDefinition Height = "*"/>
 
             <!-- Input Area -->
-            <RowDefinition Height = "Auto"/>
-
-            <!-- Buttons -->
-            <RowDefinition Height = "Auto"/>
+            <RowDefinition Height = "80"/>
 
             <!-- Footer -->
             <RowDefinition Height = "35"/>
 
         </Grid.RowDefinitions>
+
 
         <!-- ================================================= -->
         <!-- TITLE -->
@@ -194,27 +192,7 @@
                 HorizontalAlignment = "Center"
                 Margin = "10">
 
-                <Button x:Name = "ChatButton"
-                Content = "💬 Chat Mode"
-                Width = "220"
-                Height = "60"
-                Margin = "10"
-                Click = "ChatButton_Click"/>
-
-                <Button x:Name = "QuizButton"
-                Content = "📝 Quiz Mode"
-                Width = "220"
-                Height = "60"
-                Margin = "10"
-                Click = "QuizButton_Click"/>
-
-                <Button x:Name = "TaskButton"
-                Content = "📋 Task Mode"
-                Width = "220"
-                Height = "60"
-                Margin = "10"
-                Click = "TaskButton_Click"/>
-
+               
             </StackPanel>
 
             <!-- Second Row -->
@@ -239,15 +217,23 @@
             </StackPanel>
 
             <!-- Footer -->
-            <TextBlock Text = "🛡️ Protecting South African Citizens Online 🛡️"
-                           Foreground = "White"
-                           FontSize = "14"
-                           FontWeight = "Bold"
-                           HorizontalAlignment = "Center"
-                           VerticalAlignment = "Center"/>
-            
+            <!-- FOOTER -->
+
+           
+
+
         </StackPanel>
+        <Border Grid.Row="4"
+         Background="#10263A">
+
+            <TextBlock Text="🛡️ Protecting South African Citizens Online 🛡️ Copyright Erwin Mashobane"
+                Foreground="White"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"/>
+
+        </Border>
 
     </Grid>
+    
 
 </Window>

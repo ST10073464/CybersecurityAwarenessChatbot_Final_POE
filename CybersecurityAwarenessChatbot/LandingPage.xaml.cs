@@ -15,52 +15,81 @@ namespace CybersecurityAwarenessChatbot
     {
         private readonly MemoryStore memoryStore = new();
 
+        // Chatbot instance for processing user input
         private readonly ChatBot _chatBot = new();
 
         // Tracks whether username has been entered
         private bool awaitingUserName = true;
+
+        // Flag to ensure greeting is only played once
+        private bool _isGreetingPlayed = false;
 
         // Constructor 
         public LandingPage()
         {
             InitializeComponent();
 
+            // Initialize chatbot
+            _chatBot = new ChatBot();
+
+            // Disable textbox during startup greeting
+            UserInputTextBox.IsEnabled = false;
+            SendButton.IsEnabled = false;
+
             memoryStore = new MemoryStore();
 
+            // Load ASCII art
             AsciiArtText.Text = UIHelper.ShowLogo();
         }
 
-        private void ShowLoggedInView()
-        {
-            UserInputTextBox.Text = $"👤 {MemoryStore.UserName}";
-
-            WelcomeText.Text = $"👋 Welcome {MemoryStore.UserName}\n\n" +
-                               "Please select one of the options below.";
-
-            WelcomeText.Visibility = Visibility.Visible;
-
-            ChatArea.Visibility = Visibility.Collapsed;
-
-            InputArea.Visibility = Visibility.Collapsed;
-
-            ModeButtonsPanel.Visibility = Visibility.Visible;
-        }
-
+        
         // Landing page startup
         private async void LandingPage_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(MemoryStore.UserName))
-            {
-                ShowLoggedInView();
-                return;
-            }
+            // Check if it already ran
+            if (_isGreetingPlayed) return;
+            _isGreetingPlayed = true;
 
+            // Play greeting voice
             await Task.Run(() => VoicePlayer.PlayGreeting());
 
-            AppendBotMessage("🤖 Welcome to SecureWin Cybersecurity Awareness Assistant.\n\n" +
-                             "Please enter your name to continue.");
+            // Play a quick system notification ping
+            System.Media.SystemSounds.Asterisk.Play();
 
+            // Show chatbot greeting after audio
+            AppendBotMessage(_chatBot.GetGreeting());
+
+            // Enable user interaction
+            UserInputTextBox.IsEnabled = true;
+            SendButton.IsEnabled = true;
+
+            // Focus textbox automatically
             UserInputTextBox.Focus();
+
+        }
+
+        // Handles send button click.
+        private void SendButton_Click(object sender, RoutedEventArgs e)
+        {
+            SendMessage();
+        }
+
+        // Handles placeholder text behavior.
+        private void UserInputTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            PlaceholderText.Visibility =
+                string.IsNullOrWhiteSpace(UserInputTextBox.Text)
+                ? Visibility.Visible
+                : Visibility.Hidden;
+        }
+
+        // Allows Enter key to send messages.
+        private void UserInputTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                SendButton_Click(sender, e);
+            }
         }
 
         // Displays username and timestamp, with a double tick indicator for sent messages.
@@ -162,14 +191,6 @@ namespace CybersecurityAwarenessChatbot
             ChatPanel.Children.Add(container);
         }
 
-        // Placeholder text visibility based on user input
-        private void UserInputTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            PlaceholderText.Visibility = string.IsNullOrWhiteSpace( UserInputTextBox.Text)
-                ? Visibility.Visible
-                : Visibility.Hidden;
-        }
-
         // Handles user input
         private void SendMessage()
         {
@@ -185,7 +206,6 @@ namespace CybersecurityAwarenessChatbot
 
             if (awaitingUserName)
             {
-                // Format name
                 string formattedName =
                     string.Join(" ",
                         input.ToLower()
@@ -195,27 +215,7 @@ namespace CybersecurityAwarenessChatbot
                                  char.ToUpper(word[0]) +
                                  word.Substring(1)));
 
-                // Save globally
                 MemoryStore.UserName = formattedName;
-
-                // Hide chat area
-                ChatArea.Visibility = Visibility.Collapsed;
-
-                // Hide input area
-                InputArea.Visibility = Visibility.Collapsed;
-
-                // Show welcome text
-                memoryStore.AddConversation($"User: {formattedName}");
-
-                awaitingUserName = false;  
-
-                WelcomeText.Visibility = Visibility.Visible;
-
-                ChatArea.Visibility = Visibility.Collapsed;
-
-                InputArea.Visibility = Visibility.Collapsed;
-
-                ModeButtonsPanel.Visibility = Visibility.Visible;
 
                 memoryStore.AddConversation($"User: {formattedName}");
 
@@ -223,9 +223,11 @@ namespace CybersecurityAwarenessChatbot
 
                 UserInputTextBox.Clear();
 
-                ChatScrollViewer.ScrollToBottom();
+                ChatWindow chatWindow = new ChatWindow();
 
-                ShowLoggedInView();
+                chatWindow.Show();
+
+                this.Close();
 
                 return;
             }
@@ -233,51 +235,6 @@ namespace CybersecurityAwarenessChatbot
             UserInputTextBox.Clear();
 
             ChatScrollViewer.ScrollToBottom();
-        }
-
-        // Send button click
-        private void SendButton_Click( object sender, RoutedEventArgs e)
-        {
-            SendMessage();
-        }
-
-        // Send message when Enter pressed
-        private void UserInputTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                SendMessage();
-            }
-        }
-
-        // Chat button click - opens chat window and closes landing page
-        private void ChatButton_Click(object sender, RoutedEventArgs e)
-        {
-            ChatWindow window = new ChatWindow();
-
-            window.Show();
-
-            Close();
-        }
-
-        // Quiz button click - opens quiz window and closes landing page
-        private void QuizButton_Click(object sender, RoutedEventArgs e)
-        {
-            QuizWindow window = new QuizWindow();
-
-            window.Show();
-
-            Close();
-        }
-
-        // Task button click - opens task window and closes landing page
-        private void TaskButton_Click(object sender, RoutedEventArgs e)
-        {
-            TaskWindow window = new TaskWindow();
-
-            window.Show();
-
-            Close();
         }
 
         // End current session and allow another user to log in.

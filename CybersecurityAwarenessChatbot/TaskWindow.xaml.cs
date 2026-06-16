@@ -32,15 +32,31 @@ namespace CybersecurityAwarenessChatbot
 
         private TaskItem? pendingTask = null;
 
-        public TaskWindow()
+        private string StartupMode = "";
+
+
+
+        public TaskWindow(string mode = "")
         {
             InitializeComponent();
+
+            taskService = new TaskService();
+
+            StartupMode = mode;
 
             taskService = new TaskService();
 
             tasks = taskService.LoadTasks();
 
             Loaded += TaskWindow_Loaded;
+
+            taskService.AddTask(pendingTask);
+
+
+            //ActivityLogService.Add($"Task added: '{pendingTask.Title}'");
+
+            //ActivityLogService.Add($"Reminder set for '{pendingTask.Title}' on {pendingTask.ReminderDate:d}");
+
         }
 
         private void TaskWindow_Loaded(object sender, RoutedEventArgs e)
@@ -49,7 +65,7 @@ namespace CybersecurityAwarenessChatbot
 
             ShowWelcomeMenu();
 
-            CheckReminders();
+            //CheckReminders();
         }
 
         private void ShowWelcomeMenu()
@@ -110,7 +126,7 @@ namespace CybersecurityAwarenessChatbot
             AppendBotMessage(
                 "Enter the task title you want to delete.");
         }
-        private void CheckReminders()
+        /*private void CheckReminders()
         {
             List<TaskItem> dueTasks = taskService.GetDueReminders();
 
@@ -120,16 +136,7 @@ namespace CybersecurityAwarenessChatbot
                 );
             }
         }
-
-        private void Back_Click(object sender, RoutedEventArgs e)
-        {
-            ChatWindow chatWindow = new ChatWindow();
-
-            chatWindow.Show();
-
-            Close();
-        }
-
+        */
         private void UserInputTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             PlaceholderText.Visibility = string.IsNullOrWhiteSpace(UserInputTextBox.Text)
@@ -160,146 +167,89 @@ namespace CybersecurityAwarenessChatbot
 
             AppendUserMessage(input);
 
-            // ============================================
-            // ADD TASK
-            // ============================================
+            string lowerInput = input.ToLower();
 
-            if (awaitingTaskDetails)
+            // NLP ADD TASK
+
+            if (lowerInput.Contains("add task") ||
+                lowerInput.Contains("create task") ||
+                lowerInput.Contains("new task"))
             {
-                string[] parts = input.Split('|');
+                awaitingTaskDetails = true;
 
-                if (parts.Length < 2)
-                {
-                    AppendBotMessage(
-                        "❌ Invalid format.\n\n" +
-                        "Use:\n\n" +
-                        "Title | Description");
-
-                    UserInputTextBox.Clear();
-                    return;
-                }
-
-                pendingTask = new TaskItem
-                {
-                    Title = parts[0].Trim(),
-                    Description = parts[1].Trim(),
-                    IsCompleted = false
-                };
-
-                awaitingTaskDetails = false;
-                awaitingReminderDate = true;
-
-                ReminderDatePicker.Visibility = Visibility.Visible;
-
-                AppendBotMessage(
-                    "✅ Task created.\n\n" +
-                    "Please select a reminder date using the Date Picker.");
+                AppendBotMessage("Please enter:\n\n" +
+                                 "Title | Description");
 
                 UserInputTextBox.Clear();
                 return;
             }
 
-            // ============================================
-            // SAVE CONFIRMATION
-            // ============================================
+            // NLP VIEW TASKS
 
-            if (awaitingSaveConfirmation && pendingTask != null)
-            {
-                string lower = input.ToLower().Trim();
-
-                if (lower.Contains("yes"))
-                {
-                    taskService.AddTask(pendingTask);
-
-                    AppendBotMessage(
-                        "✅ Task saved successfully.");
-
-                    ShowSavedJsonTask();
-
-                    pendingTask = null;
-                    awaitingSaveConfirmation = false;
-                }
-                else if (lower.Contains("no"))
-                {
-                    awaitingTaskDetails = true;
-                    awaitingSaveConfirmation = false;
-
-                    AppendBotMessage(
-                        "✏️ Please enter the updated task.\n\n" +
-                        "Title | Description");
-                }
-                else
-                {
-                    AppendBotMessage(
-                        "Please reply:\n\n" +
-                        "Yes - Save Task\n" +
-                        "No - Edit Task");
-                }
-
-                UserInputTextBox.Clear();
-                return;
-            }
-
-            // ============================================
-            // COMPLETE TASK
-            // ============================================
-
-            if (currentAction == "COMPLETE")
-            {
-                bool success = taskService.CompleteTask(input);
-
-                AppendBotMessage(
-                    success
-                    ? $"✅ Task '{input}' marked as completed."
-                    : $"❌ Task '{input}' not found.");
-
-                currentAction = "";
-
-                UserInputTextBox.Clear();
-                return;
-            }
-
-            // ============================================
-            // DELETE TASK
-            // ============================================
-
-            if (currentAction == "DELETE")
-            {
-                bool success = taskService.DeleteTask(input);
-
-                AppendBotMessage(
-                    success
-                    ? $"🗑 Task '{input}' deleted."
-                    : $"❌ Task '{input}' not found.");
-
-                currentAction = "";
-
-                UserInputTextBox.Clear();
-                return;
-            }
-
-            // ============================================
-            // VIEW TASKS
-            // ============================================
-
-            if (input.Equals("view tasks",
-                StringComparison.OrdinalIgnoreCase))
+            if (lowerInput.Contains("view task") ||
+                lowerInput.Contains("show task") ||
+                lowerInput.Contains("list task"))
             {
                 AppendBotMessage(taskService.GetTaskSummary());
+
+                UserInputTextBox.Clear();
+                return;
             }
-            else
+
+            // NLP COMPLETE TASK
+
+            if (lowerInput.Contains("complete task") ||
+                lowerInput.Contains("finish task") ||
+                lowerInput.Contains("mark task"))
             {
+                currentAction = "COMPLETE";
+
                 AppendBotMessage(
-                    "Please select an option from the left menu.");
+                    "Enter the title of the task to complete.");
+
+                UserInputTextBox.Clear();
+                return;
             }
+
+            // NLP DELETE TASK
+
+            if (lowerInput.Contains("delete task") ||
+                lowerInput.Contains("remove task") ||
+                lowerInput.Contains("cancel task"))
+            {
+                currentAction = "DELETE";
+
+                AppendBotMessage(
+                    "Enter the title of the task to delete.");
+
+                UserInputTextBox.Clear();
+                return;
+            }
+
+            // SUMMARY
+
+            if (lowerInput.Contains("what have you done") ||
+                lowerInput.Contains("recent actions") ||
+                lowerInput.Contains("activity"))
+            {
+                AppendBotMessage(taskService.GetTaskSummary());
+
+                UserInputTextBox.Clear();
+                return;
+            }
+
+            AppendBotMessage("I didn't quite understand.\n\n" +
+                             "Try:\n" +
+                             "• Add Task\n" +
+                             "• View Tasks\n" +
+                             "• Complete Task\n" +
+                             "• Delete Task");
 
             UserInputTextBox.Clear();
         }
 
         // Event handler for when the user selects a date from the ReminderDatePicker.
-        private void ReminderDatePicker_SelectedDateChanged(
-      object sender,
-      SelectionChangedEventArgs e)
+        private void ReminderDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!awaitingReminderDate || pendingTask == null)
                 return;
@@ -382,12 +332,23 @@ namespace CybersecurityAwarenessChatbot
             ChatScrollViewer.ScrollToBottom();
         }
 
+        // Displays username and timestamp, with a double tick indicator for sent messages.
         private void AppendUserMessage(string message)
         {
             StackPanel container = new StackPanel
             {
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Margin = new Thickness(5)
+            };
+
+            // Username and timestamp
+            TextBlock header = new TextBlock
+            {
+                Text = $"{MemoryStore.UserName} • {DateTime.Now:HH:mm}",
+                Foreground = Brushes.Gray,
+                FontSize = 13,
+                FontWeight = FontWeights.Bold,
+                HorizontalAlignment = HorizontalAlignment.Right
             };
 
             Border bubble = new Border
@@ -398,6 +359,8 @@ namespace CybersecurityAwarenessChatbot
                 MaxWidth = 700
             };
 
+            StackPanel bubbleContent = new StackPanel();
+
             TextBlock text = new TextBlock
             {
                 Text = message,
@@ -406,13 +369,35 @@ namespace CybersecurityAwarenessChatbot
                 TextWrapping = TextWrapping.Wrap
             };
 
-            bubble.Child = text;
+            // Double tick indicator
+            TextBlock ticks = new TextBlock
+            {
+                Text = "✓✓",
+                Foreground = Brushes.White,
+                FontSize = 10,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(0, 5, 0, 0)
+            };
 
+            bubbleContent.Children.Add(text);
+            bubbleContent.Children.Add(ticks);
+
+            bubble.Child = bubbleContent;
+
+            container.Children.Add(header);
             container.Children.Add(bubble);
 
             ChatPanel.Children.Add(container);
+        }
 
-            ChatScrollViewer.ScrollToBottom();
+        // Back to main chat window
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            ChatWindow chatWindow = new ChatWindow();
+
+            chatWindow.Show();
+
+            Close();
         }
     }
 

@@ -29,21 +29,51 @@
 
                 <!-- BACK -->
 
-                <Button Grid.Column="0"
-                        Content="⬅ Back"
-                        Margin="10"
-                        Click="Back_Click"/>
+                <Button x:Name="BackButton"
+                        Width="50"
+                        Height="50"
+                        Content="⬅"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment = "Center"
+                        Margin="0,0,5,0"
+                        Cursor = "Hand"
+                        Click="BackButton_Click">
+
+                    <Button.ToolTip>
+
+                        <ToolTip Content = "Back to Chat"/>
+
+                    </Button.ToolTip>
+
+
+                    <Button.Template>
+
+                        <ControlTemplate TargetType = "Button">
+
+                            <Border Background = "#00C2FF"
+                                    CornerRadius = "15">
+
+                                <ContentPresenter HorizontalAlignment = "Center"
+                                   VerticalAlignment = "Center"/>
+
+                            </Border>
+
+                        </ControlTemplate>
+                        
+                    </Button.Template>
+             
+                </Button>
 
                 <!-- TITLE -->
 
                 <TextBlock Grid.Column="1"
-                           Text="📋 Cybersecurity Task Assistant"
-                           FontSize="24"
+                           Text="📋 CYBERSECURITY TASK ASSISTANT"
+                           FontSize="28"
                            FontWeight="Bold"
-                           Foreground="White"
+                           Foreground="#00E5FF"
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center"/>
-
+                
                 <!-- USER -->
 
                 <StackPanel Grid.Column="2"
@@ -88,11 +118,11 @@
             <!-- LEFT SIDE MENU -->
 
             <Border Grid.Column="0"
-                    Background="white"
+                    Background="#0D1B2A"
                     Margin="10"
                     CornerRadius="10">
 
-                <StackPanel>
+                <StackPanel >
 
                     <TextBlock Text="TASK MENU"
                        FontSize="18"
@@ -103,21 +133,25 @@
                     <TextBlock Text="➕ Add Task"
                                Cursor="Hand"
                                Margin="15"
+                               Foreground="White"
                                MouseDown="AddTaskOption_Click"/>
 
                     <TextBlock Text="📋 View Tasks"
                                Cursor="Hand"
                                Margin="15"
+                               Foreground="White"
                                MouseDown="ViewTasksOption_Click"/>
 
                     <TextBlock Text="✅ Complete Task"
                                Cursor="Hand"
                                Margin="15"
+                               Foreground="White"
                                MouseDown="CompleteTaskOption_Click"/>
 
                     <TextBlock Text="🗑 Delete Task"
                                Cursor="Hand"
                                Margin="15"
+                               Foreground="White"
                                MouseDown="DeleteTaskOption_Click"/>
 
                 </StackPanel>
@@ -235,7 +269,7 @@
             <!-- RIGHT HELP PANEL -->
 
             <Border Grid.Column="2"
-                    Background="white"
+                    Background="#0D1B2A"
                     Margin="10"
                     CornerRadius="10">
 
@@ -244,7 +278,7 @@
                     <TextBlock Text="ℹ TASK HELP"
                                FontSize="18"
                                FontWeight="Bold"
-                               Foreground="Black"
+                               Foreground = "White"
                                Margin="0,0,0,15"/>
 
                     <TextBlock Text="➕ Add Task"
@@ -253,7 +287,7 @@
 
                     <TextBlock Text="Create a cybersecurity task with a title, description and reminder."
                                TextWrapping="Wrap"
-                               Foreground="Black"
+                               Foreground = "White"
                                Margin="0,0,0,15"/>
 
                     <TextBlock Text="📋 View Tasks"
@@ -262,7 +296,7 @@
 
                     <TextBlock Text="Displays all tasks currently stored in the JSON file."
                                TextWrapping="Wrap"
-                               Foreground="Black"
+                               Foreground = "White"
                                Margin="0,0,0,15"/>
 
                     <TextBlock Text="✅ Complete Task"
@@ -271,7 +305,7 @@
 
                     <TextBlock Text="Marks a task as completed while keeping it in storage."
                                TextWrapping="Wrap"
-                               Foreground="Black"
+                               Foreground = "White"
                                Margin="0,0,0,15"/>
 
                     <TextBlock Text="🗑 Delete Task"
@@ -280,11 +314,14 @@
 
                     <TextBlock Text="Permanently removes a task from the JSON file."
                                TextWrapping="Wrap"
-                               Foreground="Black"/>
+                               Foreground = "White"/>
 
                 </StackPanel>
+                
 
             </Border>
+            
+            
 
         </Grid>
 
