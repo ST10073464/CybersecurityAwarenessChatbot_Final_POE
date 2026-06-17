@@ -50,6 +50,9 @@ namespace CybersecurityAwarenessChatbot
         {
 
             AppendBotMessage(_chatBot.ProcessInput(""));
+            
+            // Focus textbox automatically
+            UserInputTextBox.Focus();
 
         }
         // Send user message when Send button is clicked.

@@ -105,13 +105,13 @@
             <Grid.ColumnDefinitions>
 
                 <!-- LEFT MENU -->
-                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="300"/>
 
                 <!-- CHAT -->
                 <ColumnDefinition Width="*"/>
 
                 <!-- RIGHT HELP PANEL -->
-                <ColumnDefinition Width="280"/>
+                <ColumnDefinition Width="300"/>
 
             </Grid.ColumnDefinitions>
 

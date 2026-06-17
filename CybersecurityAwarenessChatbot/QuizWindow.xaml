@@ -113,13 +113,13 @@
             <Grid.ColumnDefinitions>
 
                 <!-- Hints -->
-                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="300"/>
 
                 <!-- Quiz -->
                 <ColumnDefinition Width="*"/>
 
                 <!-- Advice -->
-                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="300"/>
 
             </Grid.ColumnDefinitions>
 
@@ -264,16 +264,17 @@
                             Click="NextButton_Click"/>
 
                         <Button x:Name="RetryButton"
-                            Content="Retry Wrong Answers"
+                                Content="Retry Wrong Answers"
                                 Background="White"
-                            Width="170"
-                            Height="45"
-                            Margin="10"
-                            Visibility="Collapsed"
-                            Click="RetryButton_Click"/>
+                                Width="170"
+                                Height="45"
+                                Margin="10"
+                                Visibility="Collapsed"
+                                Click="RetryButton_Click"/>
 
                         <Button x:Name="ViewAnswersButton"
                                 Content="View Answers"
+                                Background="white"
                                 Width="150"
                                 Height="40"
                                 Margin="10"
@@ -282,6 +283,7 @@
 
                         <Button x:Name="TryAgainButton"
                                 Content="Try Full Quiz Again"
+                                Background="white"
                                 Width="150"
                                 Height="40"
                                 Margin="10"
@@ -299,20 +301,20 @@
             <!-- ============================================= -->
 
             <Border Grid.Column="2"
-                Margin="5"
-                Background="#10263A"
-                CornerRadius="12">
+                    Margin="5"
+                    Background="#10263A"
+                    CornerRadius="12">
 
                 <StackPanel Margin="15">
 
                     <TextBlock Text="🛡️ Stay Safe Online"
-                           Foreground="#00E5FF"
-                           FontSize="20"
-                           FontWeight="Bold"/>
+                               Foreground="#00E5FF"
+                               FontSize="20"
+                               FontWeight="Bold"/>
 
                     <TextBlock Margin="0,15,0,0"
-                           Foreground="White"
-                           TextWrapping="Wrap">
+                               Foreground="White"
+                               TextWrapping="Wrap">
 
                             ✔ Use strong passwords
 
@@ -337,26 +339,26 @@
                     </TextBlock>
 
                     <Border Grid.Column="1"
-        Background="#0D1B2A"
-        CornerRadius="10"
-        Padding="10"
-        Margin="10,0,0,0">
+                            Background="#0D1B2A"
+                            CornerRadius="10"
+                            Padding="10"
+                            Margin="10,0,0,0">
 
                         <StackPanel>
 
                             <TextBlock Text="📜 QUIZ ACTIVITY"
-                   FontSize="16"
-                   FontWeight="Bold"
-                   Foreground="White"
-                   Margin="0,0,0,10"/>
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="White"
+                                       Margin="0,0,0,10"/>
 
                             <ScrollViewer VerticalScrollBarVisibility="Auto"
-                      Height="400">
+                                          Height="400">
 
                                 <TextBlock x:Name="ActivityLogText"
-                       Foreground="White"
-                       FontSize="14"
-                       TextWrapping="Wrap"/>
+                                           Foreground="White"
+                                           FontSize="14"
+                                           TextWrapping="Wrap"/>
 
                             </ScrollViewer>
 

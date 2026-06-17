@@ -115,7 +115,7 @@
         <!-- ================================================= -->
         
         <Grid Grid.Row="1"
-      Margin="10">
+              Margin="10">
 
             <Grid.ColumnDefinitions>
 
@@ -212,9 +212,9 @@
 
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="17*"/>
-                        <ColumnDefinition Width="66*"/>
-                        <ColumnDefinition Width="564*"/>
+                        <ColumnDefinition Width="300"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="300*"/>
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
@@ -253,6 +253,7 @@
                             <TextBlock x:Name="PlaceholderText"
                                        Text="Ask SecureWin anything..."
                                        Foreground="Gray"
+                                       FontSize="16"
                                        Margin="20,0,0,0"
                                        VerticalAlignment="Center"
                                        IsHitTestVisible="False"/>

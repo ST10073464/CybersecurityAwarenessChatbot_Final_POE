@@ -78,7 +78,7 @@ namespace CybersecurityAwarenessChatbot.Classes
                        $"🔒 Passwords, " + $"🎣 Phishing\n\n" +
                        $"You can 📋 Add Task, " + $"📋 Play Quiz, " + $"📋 View your activity\n\n" +
 
-                       $"Tell me what you want to do, and i will gladly assit you.";
+                       $"Tell me what you want to do, and I will gladly assit you.";
                
             }
 
