@@ -378,6 +378,12 @@
                                Margin="0,10,0,0"
                                Text="Never click a link in an email unless you verify the sender first. Phishing attacks often imitate trusted organisations."/>
 
+                    <Button x:Name="ViewLogsButton"
+                            Content="📜 View All Activity Logs"
+                            Height="40"
+                            Margin="0,10,0,0"
+                            Click="ViewLogsButton_Click"/>
+
                 </StackPanel>
 
             </Border>

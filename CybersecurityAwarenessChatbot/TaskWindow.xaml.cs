@@ -52,6 +52,14 @@ namespace CybersecurityAwarenessChatbot
 
             taskService.AddTask(pendingTask);
 
+            ActivityLogService.Add($"Task Created: {pendingTask.Title}");
+
+            ActivityLogService.Add($"Task Deleted: {pendingTask.Title}");
+
+            ActivityLogService.Add($"{MemoryStore.UserName} viewed tasks");
+
+            ActivityLogService.Add($"Reminder Set: {pendingTask.Title} - {pendingTask.ReminderDate:d}");
+
 
             //ActivityLogService.Add($"Task added: '{pendingTask.Title}'");
 
@@ -66,9 +74,17 @@ namespace CybersecurityAwarenessChatbot
             // Focus textbox automatically
             UserInputTextBox.Focus();
 
+            LoadActivityLog();
+
             ShowWelcomeMenu();
 
             //CheckReminders();
+        }
+
+        private void LoadActivityLog()
+        {
+            TaskActivityLogText.Text =
+                ActivityLogService.GetSummary();
         }
 
         private void ShowWelcomeMenu()

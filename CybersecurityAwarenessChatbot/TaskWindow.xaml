@@ -268,60 +268,70 @@
 
             <!-- RIGHT HELP PANEL -->
 
-            <Border Grid.Column="2"
-                    Background="#0D1B2A"
-                    Margin="10"
-                    CornerRadius="10">
+            <Grid>
 
-                <StackPanel Margin="15">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="180"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                    <TextBlock Text="ℹ TASK HELP"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               Foreground = "White"
-                               Margin="0,0,0,15"/>
+                <!-- Task Help -->
 
-                    <TextBlock Text="➕ Add Task"
-                               FontWeight="Bold"
-                               Foreground="#00C2FF"/>
+                <Border Grid.Row="0"
+                        Background="#10263A"
+                        CornerRadius="10"
+                        Margin="5">
 
-                    <TextBlock Text="Create a cybersecurity task with a title, description and reminder."
-                               TextWrapping="Wrap"
-                               Foreground = "White"
-                               Margin="0,0,0,15"/>
+                    <StackPanel Margin="10">
 
-                    <TextBlock Text="📋 View Tasks"
-                               FontWeight="Bold"
-                               Foreground="#00C2FF"/>
+                        <TextBlock Text="📋 TASK HELP"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="#00E5FF"/>
 
-                    <TextBlock Text="Displays all tasks currently stored in the JSON file."
-                               TextWrapping="Wrap"
-                               Foreground = "White"
-                               Margin="0,0,0,15"/>
+                        <TextBlock Text="Add Task"
+                                   Foreground="White"/>
 
-                    <TextBlock Text="✅ Complete Task"
-                               FontWeight="Bold"
-                               Foreground="#00C2FF"/>
+                        <TextBlock Text="View Tasks"
+                                   Foreground="White"/>
 
-                    <TextBlock Text="Marks a task as completed while keeping it in storage."
-                               TextWrapping="Wrap"
-                               Foreground = "White"
-                               Margin="0,0,0,15"/>
+                        <TextBlock Text="Delete Task"
+                                   Foreground="White"/>
 
-                    <TextBlock Text="🗑 Delete Task"
-                               FontWeight="Bold"
-                               Foreground="#00C2FF"/>
+                        <TextBlock Text="Complete Task"
+                                   Foreground="White"/>
 
-                    <TextBlock Text="Permanently removes a task from the JSON file."
-                               TextWrapping="Wrap"
-                               Foreground = "White"/>
+                    </StackPanel>
 
-                </StackPanel>
-                
+                </Border>
 
-            </Border>
-            
-            
+                <!-- Activity Log -->
+
+                <Border Grid.Row="1"
+                        Background="#10263A"
+                        CornerRadius="10"
+                        Margin="5">
+
+                    <StackPanel Margin="10">
+
+                        <TextBlock Text="📜 ACTIVITY LOG"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="#00E5FF"/>
+
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                            <TextBlock x:Name="TaskActivityLogText"
+                                       Foreground="White"
+                                       TextWrapping="Wrap"/>
+
+                        </ScrollViewer>
+
+                    </StackPanel>
+
+                </Border>
+
+            </Grid>
 
         </Grid>
 

@@ -60,6 +60,8 @@ namespace CybersecurityAwarenessChatbot
         {
             string input = UserInputTextBox.Text.ToLower().Trim();
 
+            ActivityLogService.Add($"{MemoryStore.UserName} sent message: {input}");
+
             if (string.IsNullOrWhiteSpace(input))
                 return;
 
@@ -266,6 +268,11 @@ namespace CybersecurityAwarenessChatbot
             {
                 ChatScrollViewer.ScrollToEnd();
             });
+        }
+
+        private void ViewLogsButton_Click(object sender, RoutedEventArgs e)
+        {
+            AppendBotMessage(ActivityLogService.GetSummary());
         }
 
         // End current session and allow another user to log in.
