@@ -120,13 +120,13 @@
             <Grid.ColumnDefinitions>
 
                 <!-- LEFT MENU -->
-                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="300"/>
 
                 <!-- CHAT -->
                 <ColumnDefinition Width="*"/>
 
                 <!-- RIGHT PANEL -->
-                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="350"/>
 
             </Grid.ColumnDefinitions>
             
@@ -388,7 +388,7 @@
         <Border Grid.Row="3"
                             Background="#081520">
 
-            <TextBlock Text="🛡️ Protecting South African Citizens Online • SecureWin 2026"
+            <TextBlock Text="🛡️ Protecting South African Citizens Online • SecureWin 2026 🛡️ Erwin Mashobane"
                                 Foreground="White"
                                 FontSize="14"
                                 FontWeight="Bold"

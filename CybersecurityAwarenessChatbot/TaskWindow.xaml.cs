@@ -62,6 +62,9 @@ namespace CybersecurityAwarenessChatbot
         private void TaskWindow_Loaded(object sender, RoutedEventArgs e)
         {
             UserNameText.Text = $"👤 {MemoryStore.UserName}";
+            
+            // Focus textbox automatically
+            UserInputTextBox.Focus();
 
             ShowWelcomeMenu();
 
@@ -70,10 +73,9 @@ namespace CybersecurityAwarenessChatbot
 
         private void ShowWelcomeMenu()
         {
-            AppendBotMessage(
-                $"👋 Welcome {MemoryStore.UserName}\n\n" +
-                $"Cybersecurity Task Assistant Activated.\n\n" +
-                $"Please choose one of the following options:"
+            AppendBotMessage($"👋 Welcome {MemoryStore.UserName}\n\n" +
+                             $"Cybersecurity Task Assistant Activated.\n\n" +
+                             $"Please choose one of the following options:"
             );
         }
 
@@ -115,16 +117,14 @@ namespace CybersecurityAwarenessChatbot
         {
             currentAction = "COMPLETE";
 
-            AppendBotMessage(
-                "Enter the task title you want to complete.");
+            AppendBotMessage("Enter the task title you want to complete.");
         }
 
         private void DeleteTaskOption_Click(object sender, RoutedEventArgs e)
         {
             currentAction = "DELETE";
 
-            AppendBotMessage(
-                "Enter the task title you want to delete.");
+            AppendBotMessage("Enter the task title you want to delete.");
         }
         /*private void CheckReminders()
         {

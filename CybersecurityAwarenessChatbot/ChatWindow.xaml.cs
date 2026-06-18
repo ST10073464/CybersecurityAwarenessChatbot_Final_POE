@@ -75,7 +75,7 @@ namespace CybersecurityAwarenessChatbot
             {
                 case "__OPEN_TASK_ADD__":
 
-                    ActivityLogService.Add("Opened Add Task");
+                    ActivityLogService.Add($"Opened Add Task by {MemoryStore.UserName} at {DateTime.Now:HH:mm:ss}");
 
                     new TaskWindow("ADD").Show();
 
@@ -85,7 +85,7 @@ namespace CybersecurityAwarenessChatbot
 
                 case "__OPEN_TASK_VIEW__":
 
-                    ActivityLogService.Add("Viewed Tasks");
+                    ActivityLogService.Add($"Viewed Tasks by {MemoryStore.UserName} at {DateTime.Now:HH:mm:ss}");
 
                     new TaskWindow("VIEW").Show();
 
@@ -95,7 +95,7 @@ namespace CybersecurityAwarenessChatbot
 
                 case "__OPEN_TASK_DELETE__":
 
-                    ActivityLogService.Add("Delete Task Requested");
+                    ActivityLogService.Add($"Delete Task Requested by {MemoryStore.UserName} at {DateTime.Now:HH:mm:ss}");
 
                     new TaskWindow("DELETE").Show();
 
@@ -105,7 +105,7 @@ namespace CybersecurityAwarenessChatbot
 
                 case "__OPEN_TASK_COMPLETE__":
 
-                    ActivityLogService.Add("Complete Task Requested");
+                    ActivityLogService.Add($"Complete Task Requested by {MemoryStore.UserName} at {DateTime.Now:HH:mm:ss}");
 
                     new TaskWindow("COMPLETE").Show();
 
@@ -115,7 +115,7 @@ namespace CybersecurityAwarenessChatbot
 
                 case "__OPEN_QUIZ__":
 
-                    ActivityLogService.Add("Quiz Started");
+                    ActivityLogService.Add($"Quiz Started by {MemoryStore.UserName} at {DateTime.Now:HH:mm:ss}");
 
                     new QuizWindow().Show();
 
@@ -123,7 +123,7 @@ namespace CybersecurityAwarenessChatbot
 
                     return;
 
-                case "__SHOW_ACTIVITY_LOG__":
+                case $"__SHOW_ACTIVITY_LOG__" :
 
                     AppendBotMessage(ActivityLogService.GetSummary());
 
@@ -215,6 +215,11 @@ namespace CybersecurityAwarenessChatbot
             container.Children.Add(bubble);
 
             ChatPanel.Children.Add(container);
+
+            Dispatcher.InvokeAsync(() =>
+            {
+                ChatScrollViewer.ScrollToEnd();
+            });
         }
 
         // Displays bot message bubble.
@@ -256,6 +261,11 @@ namespace CybersecurityAwarenessChatbot
             container.Children.Add(bubble);
 
             ChatPanel.Children.Add(container);
+
+            Dispatcher.InvokeAsync(() =>
+            {
+                ChatScrollViewer.ScrollToEnd();
+            });
         }
 
         // End current session and allow another user to log in.

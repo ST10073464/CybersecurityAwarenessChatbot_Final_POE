@@ -330,7 +330,7 @@
         <Border Grid.Row="3"
                 Background="#10263A">
 
-            <TextBlock Text="🛡️ Protecting South African Citizens Online 🛡️ Copyright Erwin Mashobane"
+            <TextBlock Text="🛡️ Protecting South African Citizens Online • SecureWin 2026 🛡️ Erwin Mashobane"
                        Foreground="White"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"/>
