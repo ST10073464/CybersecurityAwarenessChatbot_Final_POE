@@ -3,6 +3,7 @@
     ST10073464
 */
 
+using CybersecurityAwarenessChatbot.Services;
 using System.Windows;
 
 namespace CybersecurityAwarenessChatbot.Classes
@@ -14,6 +15,8 @@ namespace CybersecurityAwarenessChatbot.Classes
         private readonly KeywordResponder keywordResponder;
         private readonly SentimentDetector sentimentDetector;
         private readonly MemoryStore memoryStore;
+
+        private readonly DatabaseService databaseService;
 
         private readonly Random random;
 
@@ -84,67 +87,119 @@ namespace CybersecurityAwarenessChatbot.Classes
 
             memoryStore.AddConversation($"User: {input}");
 
-            // TASK COMMANDS
+            string intent = NLPService.DetectIntent(input);
 
-            if (input.Contains("add task") ||
-                input.Contains("create task") ||
-                input.Contains("new task"))
+            switch (intent)
             {
-                return "__OPEN_TASK_ADD__";
+                case "ADD_TASK":
+
+                    ActivityLogService.Add("TASK",
+                        $"{MemoryStore.UserName} requested to add a task");
+
+                    MemoryStore.TaskWelcomeMessage =
+                        "📋 Add Task\n\n" +
+                        "Please enter the title and description of the task you would like to add.";
+
+                    return "__OPEN_TASK_ADD__";
+
+
+                case "VIEW_TASKS":
+
+                    if (!databaseService.GetTasks().Any())
+                    {
+                        return "⚠ No tasks have been added yet.\n\n" +
+                               "Would you like to add a new task?\n\n" +
+                               "Type: Add Task";
+                    }
+
+                    ActivityLogService.Add("TASK",
+                        $"{MemoryStore.UserName} requested to view tasks");
+
+                    MemoryStore.TaskWelcomeMessage =
+                        "📋 Here are your current tasks.";
+
+                    return "__OPEN_TASK_VIEW__";
+
+
+                case "DELETE_TASK":
+
+                    if (!databaseService.GetTasks().Any())
+                    {
+                        return "⚠ There are no tasks available to delete.\n\n" +
+                               "Would you like to add a task instead?\n\n" +
+                               "Type: Add Task";
+                    }
+
+                    ActivityLogService.Add("TASK",
+                        $"{MemoryStore.UserName} requested to delete a task");
+
+                    MemoryStore.TaskWelcomeMessage =
+                        "🗑 Enter the title of the task you would like to delete.";
+
+                    return "__OPEN_TASK_DELETE__";
+
+
+                case "COMPLETE_TASK":
+
+                    if (!databaseService.GetTasks().Any())
+                    {
+                        return "⚠ No tasks exist to complete.\n\n" +
+                               "Would you like to add a task first?\n\n" +
+                               "Type: Add Task";
+                    }
+
+                    ActivityLogService.Add(
+                        "TASK",
+                        $"{MemoryStore.UserName} requested to complete a task");
+
+                    MemoryStore.TaskWelcomeMessage =
+                        "✅ Enter the title of the task you have completed.";
+
+                    return "__OPEN_TASK_COMPLETE__";
+
+
+                case "QUIZ":
+
+                    ActivityLogService.Add("TASK", $"{MemoryStore.UserName} started the quiz");
+
+                    return "__OPEN_QUIZ__";
+
+
+                case "ACTIVITY_LOG":
+
+                    ActivityLogService.Add("TASK",
+                        $"{MemoryStore.UserName} viewed activity logs");
+
+                    return "__SHOW_ACTIVITY_LOG__";
             }
 
-            if (input.Contains("view task") ||
-                input.Contains("show task") ||
-                input.Contains("list task"))
+            if (input.Equals("leave session") ||
+                input.Equals("logout") ||
+                input.Equals("sign out") ||
+                input.Equals("exit"))
             {
-                return "__OPEN_TASK_VIEW__";
+                ActivityLogService.Add("TASK",
+                    $"{MemoryStore.UserName} left the session");
+
+                return "__LEAVE_SESSION__";
             }
 
-            if (input.Contains("delete task") ||
-                input.Contains("remove task"))
-            {
-                return "__OPEN_TASK_DELETE__";
-            }
+            /* // EXIT OPTIONS
+             if (input == "exit" || input == "quit" || input == "bye")
+             {
+                 awaitingName = true;
+                 LastMatchedKeyword = "";
 
-            if (input.Contains("complete task") ||
-                input.Contains("finish task"))
-            {
-                return "__OPEN_TASK_COMPLETE__";
-            }
+                 return "__CLEAR_CHAT__\n\n👋 Chat ended successfully.\n\nWelcome back!\n\nWhat is your name?";
+             }
 
-            // QUIZ COMMANDS
-
-            if (input.Contains("quiz") ||
-                input.Contains("start quiz") ||
-                input.Contains("play game"))
-            {
-                return "__OPEN_QUIZ__";
-            }
-
-            // ACTIVITY LOG
-
-            if (input.Contains("activity") ||
-                input.Contains("history") ||
-                input.Contains("what have you done for me"))
-            {
-                return "__SHOW_ACTIVITY_LOG__";
-            }
-
-            // EXIT OPTIONS
-            if (input == "exit" || input == "quit" || input == "bye")
-            {
-                awaitingName = true;
-                LastMatchedKeyword = "";
-
-                return "__CLEAR_CHAT__\n\n👋 Chat ended successfully.\n\nWelcome back!\n\nWhat is your name?";
-            }
-
-            // END → close the whole application
-            if (input == "end" || input == "close" || input == "leave")
-            {
-                Application.Current.Shutdown();
-                return null;
-            }
+             // END → close the whole application
+             if (input == "end" || input == "close" || input == "leave")
+             {
+                 Application.Current.Shutdown();
+                 return null;
+             }
+            */
             // MEMORY QUESTIONS
             if (input.Contains("what is my name") ||
                 input.Contains("do you remember my name") ||

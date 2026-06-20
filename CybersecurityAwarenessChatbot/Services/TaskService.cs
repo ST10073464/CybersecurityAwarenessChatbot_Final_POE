@@ -45,16 +45,21 @@ namespace CybersecurityAwarenessChatbot.Classes
         }
 
         // Save TASKS
-        private void SaveTasks(List<TaskItem> tasks)
+        public void SaveTasks(List<TaskItem> tasks)
         {
-            JsonSerializerOptions options = new JsonSerializerOptions
+            string path = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "Data",
+                "tasks.json");
+
+            string json = JsonSerializer.Serialize(
+                tasks,
+                new JsonSerializerOptions
                 {
                     WriteIndented = true
-                };
+                });
 
-            string json = JsonSerializer.Serialize(tasks, options);
-
-            File.WriteAllText(filePath, json);
+            File.WriteAllText(path, json);
         }
 
         // Add TASK
@@ -62,18 +67,13 @@ namespace CybersecurityAwarenessChatbot.Classes
         {
             List<TaskItem> tasks = LoadTasks();
 
+            task.Id = tasks.Count == 0
+                ? 1
+                : tasks.Max(t => t.Id) + 1;
+
             tasks.Add(task);
 
-            string json =
-                JsonSerializer.Serialize(
-                    tasks,
-                    new JsonSerializerOptions
-                    {
-                        WriteIndented = true
-                    });
-
-            File.WriteAllText(filePath, json);
-
+            SaveTasks(tasks);
         }
 
         // Complete TASK
@@ -118,13 +118,13 @@ namespace CybersecurityAwarenessChatbot.Classes
         }
 
         // Reminders Due Today
-       // public List<TaskItem> GetDueReminders()
-       // {
-       //     //return LoadTasks().Where(t =>
-                    //!t.IsCompleted &&
-                    //t.ReminderDate.HasValue &&
-        //            //t.ReminderDate.Value.Date <= DateTime.Today).ToList();
-       // }
+       public List<TaskItem> GetDueReminders()
+       {
+           return LoadTasks().Where(t =>
+                    !t.IsCompleted &&
+                    t.ReminderDate.HasValue &&
+                    t.ReminderDate.Value.Date <= DateTime.Today).ToList();
+       }
 
         // view TASKS as text summary
         public string GetTaskSummary()

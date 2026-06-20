@@ -223,7 +223,7 @@ namespace CybersecurityAwarenessChatbot
 
                 UserInputTextBox.Clear();
 
-                ChatWindow chatWindow = new ChatWindow();
+                MainWindow chatWindow = new MainWindow();
 
                 chatWindow.Show();
 

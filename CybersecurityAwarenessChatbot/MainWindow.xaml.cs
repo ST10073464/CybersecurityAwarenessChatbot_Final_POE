@@ -8,18 +8,18 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using static System.Net.Mime.MediaTypeNames;
+using System.IO;
 
 namespace CybersecurityAwarenessChatbot
 {
     // Main GUI window for SecureWin chatbot.
     // Handles user interaction and displays chat messages.
-    public partial class ChatWindow : Window
+    public partial class MainWindow : Window
     {
-        private readonly ChatBot _chatBot = new();
+        private readonly ChatBot _chatBot;
 
         // Constructor
-        public ChatWindow()
+        public MainWindow()
         {
             InitializeComponent();
 
@@ -31,22 +31,14 @@ namespace CybersecurityAwarenessChatbot
            
             AsciiArtText.Text = UIHelper.ShowLogo();
 
-            Loaded += ChatWindow_Loaded;
+            ActivityLogService.Add("MAIN", $"{MemoryStore.UserName} started chatbot");
 
-        }
+            Loaded += MainWindow_Loaded;
 
-        // Opens task management windows based on mode (ADD, VIEW, DELETE, COMPLETE).
-        private void OpenTaskWindow(string mode)
-        {
-            TaskWindow taskWindow = new TaskWindow(mode);
-
-            taskWindow.Show();
-
-            Close();
         }
 
         // On window load, display welcome message and activity log summary.
-        private void ChatWindow_Loaded(object sender, RoutedEventArgs e)
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
 
             AppendBotMessage(_chatBot.ProcessInput(""));
@@ -58,85 +50,91 @@ namespace CybersecurityAwarenessChatbot
         // Send user message when Send button is clicked.
         private void SendMessage()
         {
-            string input = UserInputTextBox.Text.ToLower().Trim();
-
-            ActivityLogService.Add($"{MemoryStore.UserName} sent message: {input}");
+            string input = UserInputTextBox.Text.Trim();
 
             if (string.IsNullOrWhiteSpace(input))
                 return;
 
-            // Show user message
+            // Log user activity
+            ActivityLogService.Add("MAIN", $"{MemoryStore.UserName} sent message: '{input}'");
+
+            // Display user message
             AppendUserMessage(input);
 
-            // Process through chatbot
-            string response = _chatBot.ProcessInput(input);
-
+            // Clear textbox immediately
             UserInputTextBox.Clear();
+
+            // Process chatbot response
+            string response = _chatBot.ProcessInput(input);
 
             switch (response)
             {
                 case "__OPEN_TASK_ADD__":
 
-                    ActivityLogService.Add($"Opened Add Task by {MemoryStore.UserName} at {DateTime.Now:HH:mm:ss}");
-
                     new TaskWindow("ADD").Show();
-
                     Close();
-
                     return;
 
                 case "__OPEN_TASK_VIEW__":
 
-                    ActivityLogService.Add($"Viewed Tasks by {MemoryStore.UserName} at {DateTime.Now:HH:mm:ss}");
-
                     new TaskWindow("VIEW").Show();
-
                     Close();
-
                     return;
 
                 case "__OPEN_TASK_DELETE__":
 
-                    ActivityLogService.Add($"Delete Task Requested by {MemoryStore.UserName} at {DateTime.Now:HH:mm:ss}");
-
                     new TaskWindow("DELETE").Show();
-
                     Close();
-
                     return;
 
                 case "__OPEN_TASK_COMPLETE__":
 
-                    ActivityLogService.Add($"Complete Task Requested by {MemoryStore.UserName} at {DateTime.Now:HH:mm:ss}");
-
                     new TaskWindow("COMPLETE").Show();
-
                     Close();
-
                     return;
 
                 case "__OPEN_QUIZ__":
 
-                    ActivityLogService.Add($"Quiz Started by {MemoryStore.UserName} at {DateTime.Now:HH:mm:ss}");
-
                     new QuizWindow().Show();
-
                     Close();
+                    return;
+
+                case "__SHOW_ACTIVITY_LOG__":
+
+                    AppendBotMessage(ActivityLogService.GetAllLogs());
+
+                    break;
+
+                case "__LEAVE_SESSION__":
+
+                    MessageBoxResult result =
+                        MessageBox.Show(
+                            "Are you sure you want to leave the session?",
+                            "Leave Session",
+                            MessageBoxButton.YesNo,
+                            MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        MemoryStore.UserName = "";
+
+                        new LandingPage().Show();
+
+                        Close();
+                    }
 
                     return;
 
-                case $"__SHOW_ACTIVITY_LOG__" :
-
-                    AppendBotMessage(ActivityLogService.GetSummary());
-
-                    return;
             }
 
-            // Normal chatbot response
-            if (!string.IsNullOrWhiteSpace(response))
+            // Scroll to latest message
+            Dispatcher.InvokeAsync(() =>
             {
-                AppendBotMessage(response);
-            }
+                ChatScrollViewer.ScrollToEnd();
+            });
+
+            // Return focus to textbox
+            UserInputTextBox.Focus();
         }
 
         // Allows Enter key to send messages.
@@ -144,7 +142,8 @@ namespace CybersecurityAwarenessChatbot
         {
             if (e.Key == Key.Enter)
             {
-                SendButton_Click(sender, e);
+                e.Handled = true;
+                SendMessage();
             }
         }
 
@@ -155,6 +154,7 @@ namespace CybersecurityAwarenessChatbot
                 ? Visibility.Visible
                 : Visibility.Hidden;
         }
+
         // Send button click event handler
         private void SendButton_Click(object sender, RoutedEventArgs e)
         {
@@ -270,32 +270,42 @@ namespace CybersecurityAwarenessChatbot
             });
         }
 
-        private void ViewLogsButton_Click(object sender, RoutedEventArgs e)
+        private void ShowSavedJsonTask()
         {
-            AppendBotMessage(ActivityLogService.GetSummary());
-        }
+            string path = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "Data",
+                "tasks.json");
 
-        // End current session and allow another user to log in.
-        private void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBoxResult result = MessageBox.Show(
-                                      "Are you sure you want to leave this session?",
-                                      "Leave Session",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
+            if (!File.Exists(path))
             {
-                MemoryStore.UserName = "";
+                AppendBotMessage("❌ No saved task file found.");
 
-                LandingPage landing = new LandingPage();
-
-                landing.Show();
-
-                Close();
+                return;
             }
 
+            string json = File.ReadAllText(path);
+
+            if (string.IsNullOrWhiteSpace(json) || json == "[]")
+            {
+                AppendBotMessage("📁 No tasks have been saved yet.");
+
+                return;
+            }
+
+            AppendBotMessage(
+                "📁 SAVED TASKS (JSON)\n\n" +
+                json);
         }
 
+        private void ViewJsonTasksButton_Click(object sender, RoutedEventArgs e)
+        {
+            ShowSavedJsonTask();
+        }
+
+        private void ViewLogsButton_Click(object sender, RoutedEventArgs e)
+        {
+            AppendBotMessage("📋 RECENT ACTIVITY\n\n" + ActivityLogService.GetAllLogs());
+        }
     }
 }

@@ -4,6 +4,7 @@
 */
 
 using CybersecurityAwarenessChatbot.Classes;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -45,6 +46,12 @@ namespace CybersecurityAwarenessChatbot
             UserNameText.Text = $"👤 {MemoryStore.UserName}";
 
             ResultsScrollViewer.PreviewMouseWheel += ResultsScrollViewer_PreviewMouseWheel;
+
+            ActivityLogService.Add("QUIZ", $"{MemoryStore.UserName} started quiz");
+
+            QuizActivityLogText.Text = ActivityLogService.GetLogs("QUIZ");
+
+            Closing += QuizWindow_Closing;
 
             LoadActivityLog();
 
@@ -172,7 +179,7 @@ namespace CybersecurityAwarenessChatbot
 
                 totalCorrectAnswers++;
 
-                ActivityLogService.Add($"Question {quizService.CurrentQuestionIndex + 1}: Correct");
+                ActivityLogService.Add("QUIZ", $"Question {quizService.CurrentQuestionIndex + 1}: Correct");
 
                 MessageBox.Show($"✅ Correct!\n\n" +
                                 $"Answer: {question.Options[question.CorrectAnswer]}\n\n" +
@@ -188,7 +195,7 @@ namespace CybersecurityAwarenessChatbot
 
                 totalWrongAnswers++;
 
-                ActivityLogService.Add($"Question {quizService.CurrentQuestionIndex + 1}: Incorrect");
+                ActivityLogService.Add("QUIZ", $"Question {quizService.CurrentQuestionIndex + 1}: Incorrect");
 
                 MessageBox.Show($"❌ Incorrect!\n\n" +
                                 $"Correct Answer:\n{question.Options[question.CorrectAnswer]}\n\n" +
@@ -253,7 +260,7 @@ namespace CybersecurityAwarenessChatbot
                     ViewAnswersButton.Visibility = Visibility.Visible;
                     TryAgainButton.Visibility = Visibility.Visible;
 
-                    ActivityLogService.Add($"{MemoryStore.UserName} achieved a PERFECT SCORE ({correct}/{quizService.Questions.Count})");
+                    ActivityLogService.Add("QUIZ", $"{MemoryStore.UserName} achieved a PERFECT SCORE ({correct}/{quizService.Questions.Count})");
                 }
                 else
                 {
@@ -263,7 +270,7 @@ namespace CybersecurityAwarenessChatbot
                     RetryButton.Visibility = Visibility.Visible;
                     ViewAnswersButton.Visibility = Visibility.Visible;
 
-                    ActivityLogService.Add($"{MemoryStore.UserName} completed quiz ({correct}/{quizService.Questions.Count})");
+                    ActivityLogService.Add("QUIZ", $"Quiz completed: {totalCorrectAnswers}/{totalQuestions}");
                 }
 
                 return;
@@ -289,6 +296,8 @@ namespace CybersecurityAwarenessChatbot
                     $"🏆 Badge: {badge}\n\n" +
                     $"{motivation}\n\n";
 
+                ActivityLogService.Add("QUIZ", $"Quiz retry started at {DateTime.Now:HH:mm:ss}");
+
                 // PERFECT AFTER RETRY
                 if (finalCorrect == totalQuestions)
                 {
@@ -301,7 +310,7 @@ namespace CybersecurityAwarenessChatbot
 
                     TryAgainButton.Visibility = Visibility.Visible;
 
-                    ActivityLogService.Add($"{MemoryStore.UserName} achieved PERFECT SCORE after retry");
+                    ActivityLogService.Add("QUIZ", $"{MemoryStore.UserName} achieved PERFECT SCORE after retry");
                 }
                 else
                 {
@@ -430,7 +439,7 @@ namespace CybersecurityAwarenessChatbot
 
             ResultsText.Visibility = Visibility.Collapsed;
 
-            ActivityLogService.Add($"Quiz Retry Started at {DateTime.Now:HH:mm:ss}");
+            ActivityLogService.Add("QUIZ", $"Quiz Retry Started at {DateTime.Now:HH:mm:ss}");
 
             LoadQuestion();
         }
@@ -473,20 +482,27 @@ namespace CybersecurityAwarenessChatbot
 
             ResultsText.Visibility = Visibility.Collapsed;
 
-            ActivityLogService.Add($"Full Quiz Restarted at {DateTime.Now:HH:mm:ss}");
+            ActivityLogService.Add("QUIZ", $"Full Quiz Restarted at {DateTime.Now:HH:mm:ss}");
 
             LoadQuestion();
         }
 
         private void LoadActivityLog()
         {
-            ActivityLogText.Text = ActivityLogService.GetSummary();
+            QuizActivityLogText.Text = ActivityLogService.GetAllLogs();
+        }
+
+        private void QuizWindow_Closing(object sender, CancelEventArgs e)
+        {
+            ActivityLogService.Add(
+                "QUIZ",
+                $"{MemoryStore.UserName} closed Quiz Window");
         }
 
         // Back to main chat window
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            ChatWindow chatWindow = new ChatWindow();
+            MainWindow chatWindow = new MainWindow();
 
             chatWindow.Show();
 

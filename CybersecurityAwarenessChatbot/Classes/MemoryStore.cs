@@ -25,6 +25,8 @@ namespace CybersecurityAwarenessChatbot.Classes
         // Stores conversation history.
         //public List<string> ConversationHistory { get; set; }
 
+        public static string TaskWelcomeMessage { get; set; } = "";
+
         // Constructor
         public MemoryStore()
         {

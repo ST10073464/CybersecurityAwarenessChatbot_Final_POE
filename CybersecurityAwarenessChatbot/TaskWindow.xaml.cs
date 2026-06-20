@@ -5,12 +5,14 @@
 
 using CybersecurityAwarenessChatbot.Classes;
 using CybersecurityAwarenessChatbot.Models;
+using CybersecurityAwarenessChatbot.Services;
+using System.ComponentModel;
+using System.IO;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.IO;
-using System.Text.Json;
 
 namespace CybersecurityAwarenessChatbot
 {
@@ -22,6 +24,16 @@ namespace CybersecurityAwarenessChatbot
 
         private string currentAction = "";
 
+        private string pendingTitle = "";
+
+        private string pendingDescription = "";
+
+        private bool waitingForDescription = false;
+
+        private bool waitingForReminderChoice = false;
+
+        private bool waitingForReminderDate = false;
+
         private bool awaitingTaskDetails = false;
 
         private bool awaitingReminderResponse = false;
@@ -30,19 +42,18 @@ namespace CybersecurityAwarenessChatbot
 
         private bool awaitingSaveConfirmation;
 
-        private TaskItem? pendingTask = null;
+        //private TaskItem? pendingTask = null;
 
-        private string StartupMode = "";
+        private string currentMode = "";
 
+        private TaskItem pendingTask;
 
-
+        // Constructor.
         public TaskWindow(string mode = "")
         {
             InitializeComponent();
 
-            taskService = new TaskService();
-
-            StartupMode = mode;
+            currentMode = mode;
 
             taskService = new TaskService();
 
@@ -50,20 +61,13 @@ namespace CybersecurityAwarenessChatbot
 
             Loaded += TaskWindow_Loaded;
 
-            taskService.AddTask(pendingTask);
+            AppendBotMessage(MemoryStore.TaskWelcomeMessage);
 
-            ActivityLogService.Add($"Task Created: {pendingTask.Title}");
+            ActivityLogService.Add("TASK", $"{MemoryStore.UserName} opened Task Window");
 
-            ActivityLogService.Add($"Task Deleted: {pendingTask.Title}");
+            ActivityLogTextBox.Text = ActivityLogService.GetLogs("TASK");
 
-            ActivityLogService.Add($"{MemoryStore.UserName} viewed tasks");
-
-            ActivityLogService.Add($"Reminder Set: {pendingTask.Title} - {pendingTask.ReminderDate:d}");
-
-
-            //ActivityLogService.Add($"Task added: '{pendingTask.Title}'");
-
-            //ActivityLogService.Add($"Reminder set for '{pendingTask.Title}' on {pendingTask.ReminderDate:d}");
+            Closing += Window_Closing;
 
         }
 
@@ -75,24 +79,12 @@ namespace CybersecurityAwarenessChatbot
             UserInputTextBox.Focus();
 
             LoadActivityLog();
-
-            ShowWelcomeMenu();
-
-            //CheckReminders();
+   
         }
 
         private void LoadActivityLog()
         {
-            TaskActivityLogText.Text =
-                ActivityLogService.GetSummary();
-        }
-
-        private void ShowWelcomeMenu()
-        {
-            AppendBotMessage($"👋 Welcome {MemoryStore.UserName}\n\n" +
-                             $"Cybersecurity Task Assistant Activated.\n\n" +
-                             $"Please choose one of the following options:"
-            );
+            ActivityLogTextBox.Text = ActivityLogService.GetAllLogs();
         }
 
         private void AddTaskOption_Click(object sender, RoutedEventArgs e)
@@ -104,6 +96,8 @@ namespace CybersecurityAwarenessChatbot
             AppendBotMessage(
                 "Please enter:\n\n" +
                 "Title | Description");
+
+            ActivityLogService.Add("TASK", $"Task added: '{pendingTask.Title}'");
         }
 
         private void ViewTasksOption_Click(object sender, RoutedEventArgs e)
@@ -131,9 +125,12 @@ namespace CybersecurityAwarenessChatbot
 
         private void CompleteTaskOption_Click(object sender, RoutedEventArgs e)
         {
+            
             currentAction = "COMPLETE";
 
             AppendBotMessage("Enter the task title you want to complete.");
+
+            ActivityLogService.Add("TASK", $"Task completed: '{pendingTask.Title}'");
         }
 
         private void DeleteTaskOption_Click(object sender, RoutedEventArgs e)
@@ -141,8 +138,10 @@ namespace CybersecurityAwarenessChatbot
             currentAction = "DELETE";
 
             AppendBotMessage("Enter the task title you want to delete.");
+
+            ActivityLogService.Add("TASK", $"Task deleted: '{pendingTask.Title}'");
         }
-        /*private void CheckReminders()
+       private void CheckReminders()
         {
             List<TaskItem> dueTasks = taskService.GetDueReminders();
 
@@ -151,117 +150,143 @@ namespace CybersecurityAwarenessChatbot
                 AppendBotMessage($"🔔 Reminder\n\n{task.Title}"
                 );
             }
+
+            ActivityLogService.Add("TASK", $"Reminder set for '{pendingTask.Title}' on {pendingTask.ReminderDate:d}");
         }
-        */
+
+        // Event handler for the Send button click, which processes the user's input.
+        private void SendButton_Click(object sender, RoutedEventArgs e)
+        {
+            string userMessage = UserInputTextBox.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(userMessage))
+                return;
+
+            AppendUserMessage(userMessage);
+
+            SendTaskMessage(userMessage);
+
+            // Clear textbox immediately
+            UserInputTextBox.Clear();
+        }
+
+        // Core logic for handling user input based on the current action (ADD, COMPLETE, DELETE).
+        private void SendTaskMessage(string message)
+        {
+            AppendUserMessage(message);
+
+            // STEP 1: User entered task title
+            if (!waitingForDescription &&
+                !waitingForReminderChoice &&
+                !waitingForReminderDate)
+            {
+                pendingTitle = message;
+
+                waitingForDescription = true;
+
+                AppendBotMessage(
+                    $"Task title saved:\n\n" +
+                    $"📋 {pendingTitle}\n\n" +
+                    $"Please provide a description for this task.");
+
+                return;
+            }
+
+            // STEP 2: User enters description
+            if (waitingForDescription)
+            {
+                pendingDescription = message;
+
+                waitingForDescription = false;
+                waitingForReminderChoice = true;
+
+                AppendBotMessage(
+                    $"Task added with the description:\n\n" +
+                    $"\"{pendingDescription}\"\n\n" +
+                    $"Would you like a reminder? (Yes/No)");
+
+                return;
+            }
+
+            // STEP 3: User chooses reminder
+            if (waitingForReminderChoice)
+            {
+                waitingForReminderChoice = false;
+
+                pendingTask = new TaskItem
+                {
+                    Title = pendingTitle,
+                    Description = pendingDescription,
+                    IsCompleted = false
+                };
+
+                if (message.ToLower().Contains("yes"))
+                {
+                    waitingForReminderDate = true;
+
+                    AppendBotMessage(
+                        "Great! When should I remind you?\n\n" +
+                        "Examples:\n" +
+                        "• 3 days\n" +
+                        "• 7 days\n" +
+                        "• tomorrow");
+
+                    return;
+                }
+
+                pendingTask.ReminderDate = DateTime.MinValue;
+
+                taskService.AddTask(pendingTask);
+
+                ActivityLogService.Add("TASK", $"{MemoryStore.UserName} created task: {pendingTask.Title}");
+
+                MessageBoxResult result = MessageBox.Show(
+                                    $"✅ Task Added Successfully!\n\n" +
+                                    $"Task: {pendingTask.Title}\n\n" +
+                                    $"Reminder Date: {pendingTask.ReminderDate:d}",
+                                    "Task Saved",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Information);
+
+                if (result == MessageBoxResult.OK)
+                {
+                    DatabaseService db = new DatabaseService();
+
+                    db.AddTask(pendingTask);
+
+                    ActivityLogService.Add("TASK",
+                        $"{MemoryStore.UserName} added task '{pendingTask.Title}'");
+
+                    AppendBotMessage(
+                        $"✅ Task saved successfully!\n\n" +
+                        $"📋 {pendingTask.Title}\n\n" +
+                        $"⏰ Reminder set for:\n" +
+                        $"{pendingTask.ReminderDate:d}");
+                }
+
+                return;
+            }
+        }
+      
+        // Event handler for pressing Enter in the UserInputTextBox.
+        private void UserInputTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                SendTaskMessage(UserInputTextBox.Text);
+
+                UserInputTextBox.Clear();
+
+                e.Handled = true; // prevents the beep sound
+            }
+        }
+
+        // Event handler for text changes in the UserInputTextBox to manage placeholder visibility.
         private void UserInputTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             PlaceholderText.Visibility = string.IsNullOrWhiteSpace(UserInputTextBox.Text)
                                        ? Visibility.Visible
                                        : Visibility.Hidden;
-        }
-
-        private void UserInputTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                SendTaskMessage();
-            }
-        }
-
-        private void SendButton_Click(object sender, RoutedEventArgs e)
-        {
-            SendTaskMessage();
-        }
-
-        // Core logic for handling user input based on the current action (ADD, COMPLETE, DELETE).
-        private void SendTaskMessage()
-        {
-            string input = UserInputTextBox.Text.Trim();
-
-            if (string.IsNullOrWhiteSpace(input))
-                return;
-
-            AppendUserMessage(input);
-
-            string lowerInput = input.ToLower();
-
-            // NLP ADD TASK
-
-            if (lowerInput.Contains("add task") ||
-                lowerInput.Contains("create task") ||
-                lowerInput.Contains("new task"))
-            {
-                awaitingTaskDetails = true;
-
-                AppendBotMessage("Please enter:\n\n" +
-                                 "Title | Description");
-
-                UserInputTextBox.Clear();
-                return;
-            }
-
-            // NLP VIEW TASKS
-
-            if (lowerInput.Contains("view task") ||
-                lowerInput.Contains("show task") ||
-                lowerInput.Contains("list task"))
-            {
-                AppendBotMessage(taskService.GetTaskSummary());
-
-                UserInputTextBox.Clear();
-                return;
-            }
-
-            // NLP COMPLETE TASK
-
-            if (lowerInput.Contains("complete task") ||
-                lowerInput.Contains("finish task") ||
-                lowerInput.Contains("mark task"))
-            {
-                currentAction = "COMPLETE";
-
-                AppendBotMessage(
-                    "Enter the title of the task to complete.");
-
-                UserInputTextBox.Clear();
-                return;
-            }
-
-            // NLP DELETE TASK
-
-            if (lowerInput.Contains("delete task") ||
-                lowerInput.Contains("remove task") ||
-                lowerInput.Contains("cancel task"))
-            {
-                currentAction = "DELETE";
-
-                AppendBotMessage(
-                    "Enter the title of the task to delete.");
-
-                UserInputTextBox.Clear();
-                return;
-            }
-
-            // SUMMARY
-
-            if (lowerInput.Contains("what have you done") ||
-                lowerInput.Contains("recent actions") ||
-                lowerInput.Contains("activity"))
-            {
-                AppendBotMessage(taskService.GetTaskSummary());
-
-                UserInputTextBox.Clear();
-                return;
-            }
-
-            AppendBotMessage("I didn't quite understand.\n\n" +
-                             "Try:\n" +
-                             "• Add Task\n" +
-                             "• View Tasks\n" +
-                             "• Complete Task\n" +
-                             "• Delete Task");
-
-            UserInputTextBox.Clear();
         }
 
         // Event handler for when the user selects a date from the ReminderDatePicker.
@@ -272,8 +297,7 @@ namespace CybersecurityAwarenessChatbot
 
             if (ReminderDatePicker.SelectedDate.HasValue)
             {
-                pendingTask.ReminderDate =
-                    ReminderDatePicker.SelectedDate.Value;
+                pendingTask.ReminderDate = ReminderDatePicker.SelectedDate.Value;
 
                 awaitingReminderDate = false;
 
@@ -304,6 +328,32 @@ namespace CybersecurityAwarenessChatbot
             string json = File.ReadAllText(path);
 
             AppendBotMessage("📁 Current JSON File:\n\n" + json);
+        }
+
+        private void ViewJsonTasksButton_Click(object sender, RoutedEventArgs e)
+        {
+            string path = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "Data",
+                "tasks.json");
+
+            if (!File.Exists(path))
+            {
+                MessageBox.Show("No saved tasks found.",
+                                "Tasks",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
+                return;
+            }
+
+            string json = File.ReadAllText(path);
+
+            MessageBox.Show(json,
+                            "Saved Tasks (JSON)",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Information);
+
+            ActivityLogService.Add("TASK", $"{MemoryStore.UserName} viewed saved JSON tasks");
         }
 
         private void AppendBotMessage(string message)
@@ -406,10 +456,15 @@ namespace CybersecurityAwarenessChatbot
             ChatPanel.Children.Add(container);
         }
 
+        private void Window_Closing(object sender,CancelEventArgs e)
+        {
+            ActivityLogService.Add("TASK", $"{MemoryStore.UserName} closed Task Window");
+        }
+
         // Back to main chat window
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            ChatWindow chatWindow = new ChatWindow();
+            MainWindow chatWindow = new MainWindow();
 
             chatWindow.Show();
 

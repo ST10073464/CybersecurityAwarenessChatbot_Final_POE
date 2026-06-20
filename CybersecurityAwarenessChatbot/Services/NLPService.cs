@@ -14,8 +14,8 @@ namespace CybersecurityAwarenessChatbot.Classes
             // TASKS
             if (input.Contains("add task") ||
                 input.Contains("create task") ||
-                input.Contains("new task") ||
-                input.Contains("task"))
+                input.Contains("new task")) //||
+                //input.Contains("task"))
             {
                 return "ADD_TASK";
             }
@@ -26,15 +26,6 @@ namespace CybersecurityAwarenessChatbot.Classes
                 input.Contains("notify"))
             {
                 return "REMINDER";
-            }
-
-            // QUIZ
-            if (input.Contains("quiz") ||
-                input.Contains("game") ||
-                input.Contains("test me") ||
-                input.Contains("question"))
-            {
-                return "QUIZ";
             }
 
             // VIEW TASKS
@@ -59,6 +50,15 @@ namespace CybersecurityAwarenessChatbot.Classes
                 input.Contains("remove task"))
             {
                 return "DELETE_TASK";
+            }
+
+            // QUIZ
+            if (input.Contains("quiz") ||
+                input.Contains("game") ||
+                input.Contains("test me") ||
+                input.Contains("question"))
+            {
+                return "QUIZ";
             }
 
             // PASSWORD
@@ -97,14 +97,20 @@ namespace CybersecurityAwarenessChatbot.Classes
                 return "ACTIVITY_LOG";
             }
 
-            // BACK to chatwindow
-            if (input.Contains("back") ||
-                input.Contains("go back") ||
-                input.Contains("done") ||
-                input.Contains("finished") ||
-                input.Contains("return"))
+            // LEAVE SESSION
+            if (input.Contains("leave session") ||
+                input.Contains("logout") ||
+                input.Contains("sign out"))
             {
-                return "BACK";
+                return "LEAVE_SESSION";
+            }
+
+            // BACK to MainWindow
+            if (input.Contains("exit") ||
+                input.Contains("leave") ||
+                input.Contains("main"))
+            {
+                return "EXIT";
             }
 
             return "UNKNOWN";

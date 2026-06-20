@@ -113,7 +113,7 @@
                 <ColumnDefinition Width="*"/>
 
                 <!-- Advice -->
-                <ColumnDefinition Width="350"/>
+                <ColumnDefinition Width="300"/>
 
             </Grid.ColumnDefinitions>
 
@@ -129,13 +129,13 @@
                 <StackPanel Margin="15">
 
                     <TextBlock Text="🎯 Quiz Tips"
-                           Foreground="#00E5FF"
-                           FontSize="20"
-                           FontWeight="Bold"/>
+                               Foreground="#00E5FF"
+                               FontSize="20"
+                               FontWeight="Bold"/>
 
-                    <TextBlock Margin="0,15,0,0"
-                           Foreground="White"
-                           TextWrapping="Wrap">
+                    <TextBlock Margin="0,0,0,10"
+                               Foreground="White"
+                               TextWrapping="Wrap">
 
                             • Read each question carefully.
 
@@ -316,7 +316,7 @@
                                FontSize="20"
                                FontWeight="Bold"/>
 
-                    <TextBlock Margin="0,15,0,0"
+                    <TextBlock Margin="0,0,0,10"
                                Foreground="White"
                                TextWrapping="Wrap">
 
@@ -342,6 +342,8 @@
 
                     </TextBlock>
 
+                    <Separator Margin="0,15"/>
+
                     <Border Grid.Column="1"
                             Background="#0D1B2A"
                             CornerRadius="10"
@@ -359,7 +361,7 @@
                             <ScrollViewer VerticalScrollBarVisibility="Auto"
                                           Height="400">
 
-                                <TextBlock x:Name="ActivityLogText"
+                                <TextBlock x:Name="QuizActivityLogText"
                                            Foreground="White"
                                            FontSize="14"
                                            TextWrapping="Wrap"/>
@@ -370,13 +372,9 @@
 
                     </Border>
 
-
                 </StackPanel>
-                
 
             </Border>
-            
-            
 
         </Grid>
 

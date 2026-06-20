@@ -1,9 +1,10 @@
-﻿<Window x:Class="CybersecurityAwarenessChatbot.ChatWindow"
+﻿<Window x:Class="CybersecurityAwarenessChatbot.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="SecureWin Cybersecurity Assistant"
         WindowState="Maximized"
-        Background="#07111F">
+        Background="#07111F"
+        Loaded="MainWindow_Loaded">
 
     <Grid>
 
@@ -41,19 +42,6 @@
                     <ColumnDefinition Width="250"/>
 
                 </Grid.ColumnDefinitions>
-
-                <!-- LEFT -->
-
-                <Button Grid.Column="0"
-                        Background = "#00C2FF" 
-                        Content="🚪 Leave Session"
-                        Width="120"
-                        Height="40"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Foreground = "White"
-                        Margin="10"
-                        Click="BackButton_Click"/>
 
                 <!-- CENTER -->
 
@@ -392,7 +380,7 @@
 
 
         <Border Grid.Row="3"
-                            Background="#081520">
+                Background="#081520">
 
             <TextBlock Text="🛡️ Protecting South African Citizens Online • SecureWin 2026 🛡️ Erwin Mashobane"
                                 Foreground="White"
