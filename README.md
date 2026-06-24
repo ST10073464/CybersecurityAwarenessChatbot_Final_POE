@@ -132,7 +132,7 @@ Leave session
 
 # Prerequisites
 
-Before running the application ensure the following are installed:
+Before running the application, ensure the following are installed:
 
 * Visual Studio 2022
 * .NET 8.0 SDK
@@ -235,17 +235,12 @@ when the first task is added.
 # Screenshots
 
 ## Running GUI
-
-Insert screenshot here.
-
-![Running GUI](Images/gui-screenshot.png)
+![Running GUI](Images/RunningGUI1.png)
+![Running GUI](Images/RunningGUI2.png)
 
 ## GitHub Actions Green Tick
 
-Insert screenshot here.
-
-![GitHub Actions](Images/github-actions.png)
-
+![GitHub Actions] (Images/GitHub_actions.png)
 
 # YouTube Demonstration
 
@@ -253,47 +248,16 @@ Unlisted YouTube demonstration:
 
 PASTE YOUR YOUTUBE LINK HERE
 
-# Releases
+## Releases
 
-## Release 1 – Part 1
+### v3.0 – Task Assistant and JSON Storage Integration
+Created after the Task Assistant GUI and JSON persistence were fully implemented and tested.
 
-Description:
+### v3.1 – Quiz and Activity Log Features Added
+Created after integrating the Cybersecurity Quiz and Activity Logging functionality.
 
-* Console chatbot implementation.
-* Sentiment analysis.
-* Keyword recognition.
-* User memory.
-
-Release Link:
-
-PASTE RELEASE LINK
-
-## Release 2 – Part 2
-
-Description:
-
-* WPF GUI implementation.
-* Enhanced interaction.
-* Improved user experience.
-
-Release Link:
-
-PASTE RELEASE LINK
-
-## Release 3 – Part 3
-
-Description:
-
-* Task management.
-* JSON persistence.
-* NLP integration.
-* Activity logging.
-* Quiz enhancements.
-* Reminder system.
-
-Release Link:
-
-PASTE RELEASE LINK
+### v3.2 – Final Integrated Version
+Final version containing full integration of Parts 1, 2, and 3, ready for submission.
 
 # Author
 
