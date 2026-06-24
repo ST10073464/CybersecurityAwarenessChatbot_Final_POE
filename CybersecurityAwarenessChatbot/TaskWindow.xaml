@@ -111,7 +111,7 @@
                 <ColumnDefinition Width="*"/>
 
                 <!-- RIGHT HELP PANEL -->
-                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="350"/>
 
             </Grid.ColumnDefinitions>
 
@@ -309,52 +309,31 @@
                                    Foreground="White"
                                    Margin="0,3"/>
 
-                        <Separator Margin="0,15"/>
+                    <Separator Margin="0,0,0,15"/>
 
-                        <!-- ACTIVITY LOG -->
+                    <!-- ACTIVITY LOG -->                   
 
-                        <Border Grid.Column="1"
-                                Background="#0D1B2A"
-                                CornerRadius="10"
-                                Padding="10"
-                                Margin="10,0,0,0">
-
-                        <StackPanel Margin="10">
-
-                            <TextBlock Text="📜 ACTIVITY LOG"
-                                           FontSize="16"
+                    <TextBlock Text="📜 ACTIVITY LOG"
+                                           FontSize="18"
                                            FontWeight="Bold"
                                            Foreground="#00E5FF"
                                            Margin="0,0,0,10"/>
 
-                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer Height="300"
+                                  VerticalScrollBarVisibility="Auto">
 
-                                <TextBlock x:Name="ActivityLogTextBox"
+                            <TextBlock x:Name="ActivityLogTextBox"
                                            Foreground="White"
                                            TextWrapping="Wrap"
-                                           FontSize="10"/>
+                                           FontSize="12"/>
 
-                            </ScrollViewer>
-                            <Separator Margin="0,15"/>
+                        </ScrollViewer>
 
-                            <Button x:Name="ViewJsonButton"
+                    <Button x:Name="ViewJsonButton"
                                     Content="📁 View Saved JSON"
                                     Height="40"
-                                    Margin="0,5"
+                                    Margin="0,15,0,0"
                                     Click="ViewJsonTasksButton_Click"/>
-
-                        </StackPanel>
-
-                    </Border>
-
-                    <Separator Margin="0,15"/>
-
-                    <Button x:Name="ViewJsonTasksButton"
-                            Content="📁 Saved Tasks"
-                            Visibility="Collapsed"
-                            Click="ViewJsonTasksButton_Click"
-                            Margin="5"
-                            Height="35"/>
 
                 </StackPanel>
 

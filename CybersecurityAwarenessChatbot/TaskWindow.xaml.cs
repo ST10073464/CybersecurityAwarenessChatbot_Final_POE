@@ -156,7 +156,8 @@ namespace CybersecurityAwarenessChatbot
             AppendBotMessage(
                 $"✅ Task saved successfully!\n\n" +
                 $"📋 Title: {title}\n\n" +
-                $"📝 Description:\n{description}");
+                $"📝 Description:\n{description}" +
+                (hasReminder ? $"\n\n🔔 Reminder set for {reminderDate:d}" : ""));
         }
 
         private void ViewTasksOption_Click(object sender, RoutedEventArgs e)
@@ -341,8 +342,8 @@ namespace CybersecurityAwarenessChatbot
 
                 AppendBotMessage($"Got it! I'll remind you on {pendingTask.ReminderDate:d}");
 
-                ViewJsonTasksButton.Visibility =
-                    Visibility.Visible;
+         
+    
 
                 return;
             }
