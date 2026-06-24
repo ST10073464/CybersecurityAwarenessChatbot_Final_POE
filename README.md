@@ -246,7 +246,7 @@ when the first task is added.
 
 Unlisted YouTube demonstration:
 
-PASTE YOUR YOUTUBE LINK HERE
+(https://youtu.be/O3q4hPAsuok)
 
 ## Releases
 
