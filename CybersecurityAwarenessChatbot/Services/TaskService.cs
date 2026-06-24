@@ -4,23 +4,27 @@
 */
 
 using CybersecurityAwarenessChatbot.Models;
+using Newtonsoft.Json;
 using System.IO;
-using System.Text.Json;
 
 namespace CybersecurityAwarenessChatbot.Classes
 {
-    // Service for managing tasks with JSON storage.
     public class TaskService
     {
-        private readonly string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "tasks.json");
+        private readonly string filePath =
+            Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "Data",
+                "tasks.json");
 
         public TaskService()
         {
-            string? folder = Path.GetDirectoryName(filePath);
+            string folder =
+                Path.GetDirectoryName(filePath);
 
             if (!Directory.Exists(folder))
             {
-                Directory.CreateDirectory(folder!);
+                Directory.CreateDirectory(folder);
             }
 
             if (!File.Exists(filePath))
@@ -29,14 +33,20 @@ namespace CybersecurityAwarenessChatbot.Classes
             }
         }
 
-        // Load TASKS
+        // LOAD TASKS
         public List<TaskItem> LoadTasks()
         {
             try
             {
                 string json = File.ReadAllText(filePath);
 
-                return JsonSerializer.Deserialize<List<TaskItem>>(json) ?? new List<TaskItem>();
+                if (string.IsNullOrWhiteSpace(json))
+                    return new List<TaskItem>();
+
+                List<TaskItem>? tasks =
+                    JsonConvert.DeserializeObject<List<TaskItem>>(json);
+
+                return tasks ?? new List<TaskItem>();
             }
             catch
             {
@@ -44,61 +54,37 @@ namespace CybersecurityAwarenessChatbot.Classes
             }
         }
 
-        // Save TASKS
+        // SAVE TASKS
         public void SaveTasks(List<TaskItem> tasks)
         {
-            string path = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "Data",
-                "tasks.json");
+            string json =
+                JsonConvert.SerializeObject(
+                    tasks,
+                    Newtonsoft.Json.Formatting.Indented);
 
-            string json = JsonSerializer.Serialize(
-                tasks,
-                new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                });
-
-            File.WriteAllText(path, json);
+            File.WriteAllText(filePath, json);
         }
 
-        // Add TASK
+        // ADD TASK
         public void AddTask(TaskItem task)
         {
             List<TaskItem> tasks = LoadTasks();
-
-            task.Id = tasks.Count == 0
-                ? 1
-                : tasks.Max(t => t.Id) + 1;
 
             tasks.Add(task);
 
             SaveTasks(tasks);
         }
 
-        // Complete TASK
-        public bool CompleteTask(string title)
-        {
-            List<TaskItem> tasks = LoadTasks();
-
-            TaskItem? task = tasks.FirstOrDefault(t => t.Title.Equals(title, StringComparison.OrdinalIgnoreCase));
-
-            if (task == null)
-                return false;
-
-            task.IsCompleted = true;
-
-            SaveTasks(tasks);
-
-            return true;
-        }
-
-        // Delete TASK
+        // DELETE TASK
         public bool DeleteTask(string title)
         {
             List<TaskItem> tasks = LoadTasks();
 
-            TaskItem? task = tasks.FirstOrDefault(t => t.Title.Equals(title, StringComparison.OrdinalIgnoreCase));
+            TaskItem task =
+                tasks.FirstOrDefault(t =>
+                    t.Title.Equals(
+                        title,
+                        StringComparison.OrdinalIgnoreCase));
 
             if (task == null)
                 return false;
@@ -110,54 +96,37 @@ namespace CybersecurityAwarenessChatbot.Classes
             return true;
         }
 
-        // Find TASK
-
-        public TaskItem? FindTask(string title)
-        {
-            return LoadTasks().FirstOrDefault(t => t.Title.Equals(title, StringComparison.OrdinalIgnoreCase));
-        }
-
-        // Reminders Due Today
-       public List<TaskItem> GetDueReminders()
-       {
-           return LoadTasks().Where(t =>
-                    !t.IsCompleted &&
-                    t.ReminderDate.HasValue &&
-                    t.ReminderDate.Value.Date <= DateTime.Today).ToList();
-       }
-
-        // view TASKS as text summary
-        public string GetTaskSummary()
+        // COMPLETE TASK
+        public bool MarkTaskCompleted(string title)
         {
             List<TaskItem> tasks = LoadTasks();
 
-            if (!tasks.Any())
-            {
-                return "📋 No tasks available.";
-            }
+            TaskItem task =
+                tasks.FirstOrDefault(t =>
+                    t.Title.Equals(
+                        title,
+                        StringComparison.OrdinalIgnoreCase));
 
-            string result = "📋 Your Cybersecurity Tasks\n\n";
+            if (task == null)
+                return false;
 
-            foreach (TaskItem task in tasks)
-            {
-                string status =
-                    task.IsCompleted
-                    ? "✅ Completed"
-                    : "⏳ Pending";
+            task.IsCompleted = true;
 
-                string reminder =
-                    task.ReminderDate.HasValue
-                    ? task.ReminderDate.Value.ToShortDateString()
-                    : "No Reminder";
+            SaveTasks(tasks);
 
-                result +=
-                    $"Title: {task.Title}\n" +
-                    $"Description: {task.Description}\n" +
-                    $"Reminder: {reminder}\n" +
-                    $"Status: {status}\n\n";
-            }
+            return true;
+        }
 
-            return result;
+
+        // DUE REMINDERS
+        public List<TaskItem> GetDueReminders()
+        {
+            return LoadTasks()
+                .Where(t =>
+                    t.ReminderDate.HasValue &&
+                    !t.IsCompleted &&
+                    t.ReminderDate.Value.Date <= DateTime.Today)
+                .ToList();
         }
     }
 }

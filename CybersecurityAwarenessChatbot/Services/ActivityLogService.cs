@@ -45,5 +45,13 @@ namespace CybersecurityAwarenessChatbot.Classes
 
             return string.Join("\n\n", logs);
         }
+
+        public static List<string> GetRecentActivities(int count = 10)
+        {
+            return allLogs
+                .TakeLast(count)
+                .Reverse()
+                .ToList();
+        }
     }
 }

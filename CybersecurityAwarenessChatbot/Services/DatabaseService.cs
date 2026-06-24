@@ -35,17 +35,6 @@ namespace CybersecurityAwarenessChatbot.Services
             {
                 File.WriteAllText(filePath, "[]");
             }
-
-            DatabaseService db = new DatabaseService();
-
-            db.AddTask(new TaskItem
-            {
-                Title = "Test Task",
-                Description = "Testing JSON Save",
-                ReminderDate = DateTime.Today.AddDays(3),
-                IsCompleted = false
-            });
-
         }
 
         // Add Task

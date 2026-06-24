@@ -5,10 +5,8 @@
 
 using CybersecurityAwarenessChatbot.Classes;
 using CybersecurityAwarenessChatbot.Models;
-using CybersecurityAwarenessChatbot.Services;
 using System.ComponentModel;
 using System.IO;
-using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -19,6 +17,8 @@ namespace CybersecurityAwarenessChatbot
     public partial class TaskWindow : Window
     {
         private readonly TaskService taskService;
+
+        private MainWindow chatWindow;
 
         private List<TaskItem> tasks;
 
@@ -40,18 +40,16 @@ namespace CybersecurityAwarenessChatbot
 
         private bool awaitingReminderDate;
 
-        private bool awaitingSaveConfirmation;
-
-        //private TaskItem? pendingTask = null;
-
         private string currentMode = "";
 
         private TaskItem pendingTask;
 
         // Constructor.
-        public TaskWindow(string mode = "")
+        public TaskWindow(string mode = "", MainWindow mainWindow = null)
         {
             InitializeComponent();
+
+            chatWindow = mainWindow;
 
             currentMode = mode;
 
@@ -59,7 +57,9 @@ namespace CybersecurityAwarenessChatbot
 
             tasks = taskService.LoadTasks();
 
-            Loaded += TaskWindow_Loaded;
+            UserNameText.Text = $"👤 {MemoryStore.UserName}";
+
+            Loaded += TaskWindow_Loaded;       
 
             AppendBotMessage(MemoryStore.TaskWelcomeMessage);
 
@@ -89,15 +89,74 @@ namespace CybersecurityAwarenessChatbot
 
         private void AddTaskOption_Click(object sender, RoutedEventArgs e)
         {
-            currentAction = "ADD";
+            string title =
+                Microsoft.VisualBasic.Interaction.InputBox(
+                    "Enter task title:",
+                    "Add Task");
 
-            awaitingTaskDetails = true;
+            if (string.IsNullOrWhiteSpace(title))
+                return;
+
+            string description =
+                Microsoft.VisualBasic.Interaction.InputBox(
+                    "Enter task description:",
+                    "Add Task");
+
+            if (string.IsNullOrWhiteSpace(description))
+                return;
+
+            MessageBoxResult result =
+                MessageBox.Show(
+                    "Would you like to add a reminder?",
+                    "Reminder",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+            DateTime reminderDate = DateTime.MinValue;
+
+            bool hasReminder = false;
+
+            if (result == MessageBoxResult.Yes)
+            {
+                hasReminder = true;
+
+                string daysInput =Microsoft.VisualBasic.Interaction.InputBox(
+                        "Remind me in how many days?",
+                        "Reminder");
+
+                if (int.TryParse(daysInput, out int days))
+                {
+                    reminderDate = DateTime.Today.AddDays(days);
+
+                    hasReminder = true;
+                }
+            }
+
+            pendingTask = new TaskItem
+            {
+                Title = title,
+                Description = description,
+                ReminderDate = reminderDate,
+                HasReminder = hasReminder,
+                IsCompleted = false
+            };
+
+            MessageBox.Show(
+                "✅ Task added successfully!",
+                "Task Saved",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            taskService.AddTask(pendingTask);
+
+            ActivityLogService.Add(
+                "TASK",
+                $"{MemoryStore.UserName} added task '{title}'");
 
             AppendBotMessage(
-                "Please enter:\n\n" +
-                "Title | Description");
-
-            ActivityLogService.Add("TASK", $"Task added: '{pendingTask.Title}'");
+                $"✅ Task saved successfully!\n\n" +
+                $"📋 Title: {title}\n\n" +
+                $"📝 Description:\n{description}");
         }
 
         private void ViewTasksOption_Click(object sender, RoutedEventArgs e)
@@ -106,31 +165,44 @@ namespace CybersecurityAwarenessChatbot
 
             if (!tasks.Any())
             {
-                AppendBotMessage("📋 No tasks available.");
+                AppendBotMessage(
+                    "📋 No tasks available.");
                 return;
             }
 
-            string response = "📋 TASK LIST\n\n";
+            string response =
+                "📋 TASK LIST\n\n";
 
             foreach (TaskItem task in tasks)
             {
                 response +=
-                    $"• {task.Title}\n" +
-                    $"  {task.Description}\n" +
-                    $"  Status: {(task.IsCompleted ? "✅ Completed" : "⏳ Pending")}\n\n";
+                    $"📌 {task.Title}\n" +
+                    $"{task.Description}\n" +
+                    $"Status: " +
+                    $"{(task.IsCompleted ? "✅ Completed" : "⏳ Pending")}\n";
+
+                if (task.HasReminder)
+                {
+                    response +=
+                        $"Reminder: {task.ReminderDate:d}\n";
+                }
+
+                response += "\n";
             }
 
             AppendBotMessage(response);
+
+            ActivityLogService.Add(
+                "TASK",
+                $"{MemoryStore.UserName} viewed tasks");
         }
 
         private void CompleteTaskOption_Click(object sender, RoutedEventArgs e)
         {
             
-            currentAction = "COMPLETE";
+            currentMode = "COMPLETE";
 
             AppendBotMessage("Enter the task title you want to complete.");
-
-            ActivityLogService.Add("TASK", $"Task completed: '{pendingTask.Title}'");
         }
 
         private void DeleteTaskOption_Click(object sender, RoutedEventArgs e)
@@ -138,21 +210,45 @@ namespace CybersecurityAwarenessChatbot
             currentAction = "DELETE";
 
             AppendBotMessage("Enter the task title you want to delete.");
-
-            ActivityLogService.Add("TASK", $"Task deleted: '{pendingTask.Title}'");
         }
-       private void CheckReminders()
+       private void ViewRemindersTaskOption_Click(
+    object sender,
+    RoutedEventArgs e)
+{
+    List<TaskItem> reminders =
+        taskService.GetDueReminders();
+
+    if (!reminders.Any())
+    {
+        AppendBotMessage(
+            "🔔 No reminders available.");
+        return;
+    }
+
+    string message =
+        "🔔 CURRENT REMINDERS\n\n";
+
+    foreach (TaskItem task in reminders)
+    {
+        message +=
+            $"📌 {task.Title}\n";
+
+        if (task.ReminderDate.HasValue)
         {
-            List<TaskItem> dueTasks = taskService.GetDueReminders();
-
-            foreach (TaskItem task in dueTasks)
-            {
-                AppendBotMessage($"🔔 Reminder\n\n{task.Title}"
-                );
-            }
-
-            ActivityLogService.Add("TASK", $"Reminder set for '{pendingTask.Title}' on {pendingTask.ReminderDate:d}");
+            message +=
+                $"Reminder Date: " +
+                $"{task.ReminderDate.Value:d}\n";
         }
+
+        message += "\n";
+    }
+
+    AppendBotMessage(message);
+
+    ActivityLogService.Add(
+        "TASK",
+        $"{MemoryStore.UserName} viewed reminders");
+}
 
         // Event handler for the Send button click, which processes the user's input.
         private void SendButton_Click(object sender, RoutedEventArgs e)
@@ -208,61 +304,92 @@ namespace CybersecurityAwarenessChatbot
                 return;
             }
 
-            // STEP 3: User chooses reminder
-            if (waitingForReminderChoice)
+            // User chooses reminder
+            if (waitingForReminderDate)
             {
-                waitingForReminderChoice = false;
+                waitingForReminderDate = false;
 
-                pendingTask = new TaskItem
+                int days = 0;
+
+                if (message.Contains("day"))
                 {
-                    Title = pendingTitle,
-                    Description = pendingDescription,
-                    IsCompleted = false
-                };
+                    string number =
+                        new string(message.Where(char.IsDigit).ToArray());
 
-                if (message.ToLower().Contains("yes"))
-                {
-                    waitingForReminderDate = true;
+                    int.TryParse(number, out days);
 
-                    AppendBotMessage(
-                        "Great! When should I remind you?\n\n" +
-                        "Examples:\n" +
-                        "• 3 days\n" +
-                        "• 7 days\n" +
-                        "• tomorrow");
-
-                    return;
+                    pendingTask.ReminderDate =
+                        DateTime.Now.AddDays(days);
                 }
-
-                pendingTask.ReminderDate = DateTime.MinValue;
+                else
+                {
+                    pendingTask.ReminderDate =
+                        DateTime.Now.AddDays(1);
+                }
 
                 taskService.AddTask(pendingTask);
 
-                ActivityLogService.Add("TASK", $"{MemoryStore.UserName} created task: {pendingTask.Title}");
+                ActivityLogService.Add(
+                    "TASK",
+                    $"Reminder set for '{pendingTask.Title}' on {pendingTask.ReminderDate:d}");
 
-                MessageBoxResult result = MessageBox.Show(
-                                    $"✅ Task Added Successfully!\n\n" +
-                                    $"Task: {pendingTask.Title}\n\n" +
-                                    $"Reminder Date: {pendingTask.ReminderDate:d}",
-                                    "Task Saved",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Information);
+                MessageBox.Show(
+                    $"Task '{pendingTask.Title}' added.\n\nReminder set for {pendingTask.ReminderDate:d}",
+                    "Task Saved",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
 
-                if (result == MessageBoxResult.OK)
+                AppendBotMessage($"Got it! I'll remind you on {pendingTask.ReminderDate:d}");
+
+                ViewJsonTasksButton.Visibility =
+                    Visibility.Visible;
+
+                return;
+            }
+
+            if (currentMode == "COMPLETE")
+            {
+                bool completed =
+                    taskService.MarkTaskCompleted(message);
+
+                if (completed)
                 {
-                    DatabaseService db = new DatabaseService();
+                    AppendBotMessage($"✅ Task '{message}' marked as completed.");
 
-                    db.AddTask(pendingTask);
-
-                    ActivityLogService.Add("TASK",
-                        $"{MemoryStore.UserName} added task '{pendingTask.Title}'");
-
-                    AppendBotMessage(
-                        $"✅ Task saved successfully!\n\n" +
-                        $"📋 {pendingTask.Title}\n\n" +
-                        $"⏰ Reminder set for:\n" +
-                        $"{pendingTask.ReminderDate:d}");
+                    ActivityLogService.Add(
+                        "TASK",
+                        $"Completed task '{message}'");
                 }
+                else
+                {
+                    AppendBotMessage($"❌ Task '{message}' not found.");
+                }
+
+                currentMode = "";
+
+                return;
+            }
+
+            if (currentAction == "DELETE")
+            {
+                bool deleted =
+                    taskService.DeleteTask(message);
+
+                if (deleted)
+                {
+                    AppendBotMessage($"🗑 Task '{message}' deleted.");
+
+                    ActivityLogService.Add(
+                        "TASK",
+                        $"Deleted task '{message}'");
+                }
+                else
+                {
+                    AppendBotMessage(
+                        $"❌ Task '{message}' not found.");
+                }
+
+                currentAction = "";
 
                 return;
             }
@@ -289,71 +416,41 @@ namespace CybersecurityAwarenessChatbot
                                        : Visibility.Hidden;
         }
 
-        // Event handler for when the user selects a date from the ReminderDatePicker.
-        private void ReminderDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (!awaitingReminderDate || pendingTask == null)
-                return;
-
-            if (ReminderDatePicker.SelectedDate.HasValue)
-            {
-                pendingTask.ReminderDate = ReminderDatePicker.SelectedDate.Value;
-
-                awaitingReminderDate = false;
-
-                awaitingSaveConfirmation = true;
-
-                ReminderDatePicker.Visibility = Visibility.Collapsed;
-
-                AppendBotMessage(
-                    $"📅 Reminder set successfully.\n\n" +
-                    $"Task Details:\n\n" +
-                    $"Title: {pendingTask.Title}\n" +
-                    $"Description: {pendingTask.Description}\n" +
-                    $"Reminder: {pendingTask.ReminderDate:dd MMMM yyyy}\n\n" +
-                    $"Would you like to save this task?\n\n" +
-                    $"Type:\n" +
-                    $"Yes\n" +
-                    $"No");
-            }
-        }
-
-        private void ShowSavedJsonTask()
-        {
-            string path = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "Data",
-                "tasks.json");
-
-            string json = File.ReadAllText(path);
-
-            AppendBotMessage("📁 Current JSON File:\n\n" + json);
-        }
-
         private void ViewJsonTasksButton_Click(object sender, RoutedEventArgs e)
         {
-            string path = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "Data",
-                "tasks.json");
+            string path =
+                Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "Data",
+                    "tasks.json");
 
             if (!File.Exists(path))
             {
-                MessageBox.Show("No saved tasks found.",
-                                "Tasks",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Information);
+                AppendBotMessage(
+                    "❌ No saved task file found.");
+
                 return;
             }
 
-            string json = File.ReadAllText(path);
+            string json =
+                File.ReadAllText(path);
 
-            MessageBox.Show(json,
-                            "Saved Tasks (JSON)",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Information);
+            if (string.IsNullOrWhiteSpace(json)
+                || json == "[]")
+            {
+                AppendBotMessage(
+                    "📁 No tasks have been saved yet.");
 
-            ActivityLogService.Add("TASK", $"{MemoryStore.UserName} viewed saved JSON tasks");
+                return;
+            }
+
+            AppendBotMessage(
+                "📁 SAVED JSON TASK FILE\n\n" +
+                json);
+
+            ActivityLogService.Add(
+                "TASK",
+                $"{MemoryStore.UserName} viewed saved JSON file");
         }
 
         private void AppendBotMessage(string message)
@@ -464,9 +561,12 @@ namespace CybersecurityAwarenessChatbot
         // Back to main chat window
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow chatWindow = new MainWindow();
+            ActivityLogService.Add("TASK", $"{MemoryStore.UserName} returned to chat");
 
-            chatWindow.Show();
+            if (chatWindow != null)
+            {
+                chatWindow.Show();
+            }
 
             Close();
         }

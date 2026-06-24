@@ -302,74 +302,42 @@
 
                 <StackPanel>
 
-                    <TextBlock Text="🛡 CYBERSECURITY"
-                               Foreground="#00E5FF"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               Margin="0,0,0,15"/>      
-                    
-                            <TextBlock Text="✅ Malware Protection"
-                                       Foreground="White"
-                                       FontSize="12"
-                                       Margin="0,4"/>
-
-                            <TextBlock Text="✅ VPN Security"
-                                       Foreground="White"
-                                       FontSize="12"
-                                       Margin="0,4"/>
-
-                            <TextBlock Text="✅ Ransomware Safety"
-                                       Foreground="White"
-                                       FontSize="12"
-                                       Margin="0,4"/>
-
-                            <TextBlock Text="✅ Sentiment Detection"
-                                       Foreground="White"
-                                       FontSize="12"
-                                       Margin="0,4"/>
-
-                            <TextBlock Text="✅ Smart Conversations"
-                                       Foreground="White"
-                                       FontSize="12"
-                                       Margin="0,4"/>
-
-                            <TextBlock Text="✅ Activity Logging"
-                                       Foreground="White"
-                                       FontSize="12"
-                                       Margin="0,4"/>                                    
-
-                            <TextBlock Text="✅ Password Safety"
-                                       Foreground="White"
-                                       FontSize="12"
-                                       Margin="0,4"/>
-
-                            <TextBlock Text="✅ Phishing Detection"
-                                       Foreground="White"
-                                       FontSize="12"
-                                       Margin="0,4"/>
-
-                            <TextBlock Text="✅ Scam Awareness"
-                                       Foreground="White"
-                                       FontSize="12"
-                                       Margin="0,4"/>
-                       
-
-                    <Separator Margin="0,15"/>
-
+                    <!-- TIP OF THE DAY -->
                     <TextBlock Text="💡 TIP OF THE DAY"
                                Foreground="#00E5FF"
                                FontWeight="Bold"
-                               FontSize="16"/>
+                               FontSize="18"
+                               Margin="0,0,0,10"/>
 
                     <TextBlock TextWrapping="Wrap"
                                Foreground="White"
-                               Margin="0,10,0,0"
+                               Margin="0,0,0,15"
                                Text="Never click a link in an email unless you verify the sender first. Phishing attacks often imitate trusted organisations."/>
 
+                    <Separator Margin="0,0,0,15"/>
+
+                    <!-- ACTIVITY LOG -->
+                    <TextBlock Text="📜 RECENT ACTIVITY"
+                               Foreground="#00E5FF"
+                               FontWeight="Bold"
+                               FontSize="18"
+                               Margin="0,0,0,10"/>
+
+                    <ScrollViewer Height="300"
+                                  VerticalScrollBarVisibility="Auto">
+
+                        <TextBlock x:Name="ActivityLogText"
+                                   TextWrapping="Wrap"
+                                   Foreground="White"
+                                   FontSize="12"/> 
+                        
+                    </ScrollViewer>
+
+                    <!-- VIEW ALL LOGS BUTTON -->
                     <Button x:Name="ViewLogsButton"
                             Content="📜 View All Activity Logs"
                             Height="40"
-                            Margin="0,10,0,0"
+                            Margin="0,15,0,0"
                             Click="ViewLogsButton_Click"/>
 
                 </StackPanel>

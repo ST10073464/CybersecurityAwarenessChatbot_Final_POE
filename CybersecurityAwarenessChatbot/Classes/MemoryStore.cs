@@ -3,15 +3,16 @@
     ST10073464
 */
 
+using CybersecurityAwarenessChatbot.Models;
+using CybersecurityAwarenessChatbot.Services;
+
 namespace CybersecurityAwarenessChatbot.Classes
 {
     // Stores chatbot memory and user preferences.
     public class MemoryStore
     {
         // User's name.
-       // public string UserName { get; set; } = "";
-
-        public static string UserName { get; set; } = "";
+        public static string UserName { get; set; } = "";      
 
         // User's favourite cybersecurity topic.
         public string FavouriteTopic { get; set; } = "";

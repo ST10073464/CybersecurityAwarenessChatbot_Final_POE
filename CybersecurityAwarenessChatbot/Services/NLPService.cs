@@ -21,11 +21,11 @@ namespace CybersecurityAwarenessChatbot.Classes
             }
 
             // REMINDERS
-            if (input.Contains("remind") ||
-                input.Contains("reminder") ||
-                input.Contains("notify"))
+            if (input.Contains("reminder") ||
+                input.Contains("view reminders") ||
+                input.Contains("show reminders"))
             {
-                return "REMINDER";
+                return "VIEW_REMINDERS";
             }
 
             // VIEW TASKS

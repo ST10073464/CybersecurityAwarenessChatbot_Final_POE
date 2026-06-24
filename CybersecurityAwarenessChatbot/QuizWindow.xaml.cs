@@ -18,6 +18,8 @@ namespace CybersecurityAwarenessChatbot
         // Quiz service
         private readonly QuizService quizService;
 
+        private MainWindow chatWindow;
+
         // Stores wrong answers
         private readonly List<int> wrongQuestionIndexes;
 
@@ -30,9 +32,11 @@ namespace CybersecurityAwarenessChatbot
         private int totalQuestions;
 
         // Constructor
-        public QuizWindow()
+        public QuizWindow(MainWindow mainWindow = null)
         {
             InitializeComponent();
+
+            chatWindow = mainWindow;
 
             quizService = new QuizService();
 
@@ -500,11 +504,15 @@ namespace CybersecurityAwarenessChatbot
         }
 
         // Back to main chat window
-        private void BackButton_Click(object sender, RoutedEventArgs e)
+        private void BackButton_Click(object sender,
+                              RoutedEventArgs e)
         {
-            MainWindow chatWindow = new MainWindow();
+            ActivityLogService.Add("QUIZ", $"{MemoryStore.UserName} returned to chat");
 
-            chatWindow.Show();
+            if (chatWindow != null)
+            {
+                chatWindow.Show();
+            }
 
             Close();
         }

@@ -17,6 +17,8 @@ namespace CybersecurityAwarenessChatbot.Models
 
         public bool IsCompleted { get; set; }
 
+        public bool HasReminder { get; set; }
+
         public override string ToString()
         {
             return $"{(IsCompleted ? "✅" : "⏳")} {Title} - {Description}";

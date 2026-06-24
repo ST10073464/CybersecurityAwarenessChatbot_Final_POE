@@ -154,6 +154,12 @@
                                Foreground="White"
                                MouseDown="DeleteTaskOption_Click"/>
 
+                    <TextBlock Text="🔔 View Reminders"
+                            Cursor="Hand"
+                            Margin="15"
+                            Foreground="White"
+                            MouseDown="ViewRemindersTaskOption_Click"/>
+
                 </StackPanel>
 
             </Border>
@@ -255,8 +261,7 @@
                                         Visibility="Collapsed"
                                         Width="220"
                                         HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        SelectedDateChanged="ReminderDatePicker_SelectedDateChanged"/>
+                                        VerticalAlignment="Center"/>
 
                         </Grid>
 
@@ -312,33 +317,41 @@
                                 Background="#0D1B2A"
                                 CornerRadius="10"
                                 Padding="10"
-                                Margin="10,0,0,0">  
+                                Margin="10,0,0,0">
 
-                            <StackPanel Margin="10">
+                        <StackPanel Margin="10">
 
-                                <TextBlock Text="📜 ACTIVITY LOG"
+                            <TextBlock Text="📜 ACTIVITY LOG"
                                            FontSize="16"
                                            FontWeight="Bold"
                                            Foreground="#00E5FF"
                                            Margin="0,0,0,10"/>
 
-                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
 
                                 <TextBlock x:Name="ActivityLogTextBox"
                                            Foreground="White"
                                            TextWrapping="Wrap"
-                                           FontSize="13"/>
+                                           FontSize="10"/>
 
-                                </ScrollViewer>
+                            </ScrollViewer>
+                            <Separator Margin="0,15"/>
 
-                            </StackPanel>
+                            <Button x:Name="ViewJsonButton"
+                                    Content="📁 View Saved JSON"
+                                    Height="40"
+                                    Margin="0,5"
+                                    Click="ViewJsonTasksButton_Click"/>
 
-                        </Border>
+                        </StackPanel>
+
+                    </Border>
 
                     <Separator Margin="0,15"/>
 
                     <Button x:Name="ViewJsonTasksButton"
                             Content="📁 Saved Tasks"
+                            Visibility="Collapsed"
                             Click="ViewJsonTasksButton_Click"
                             Margin="5"
                             Height="35"/>

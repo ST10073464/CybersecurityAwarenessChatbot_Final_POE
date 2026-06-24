@@ -2,7 +2,6 @@
     Erwin Mashobane
     ST10073464
 */
-
 using CybersecurityAwarenessChatbot.Services;
 using System.Windows;
 
@@ -16,7 +15,7 @@ namespace CybersecurityAwarenessChatbot.Classes
         private readonly SentimentDetector sentimentDetector;
         private readonly MemoryStore memoryStore;
 
-        private readonly DatabaseService databaseService;
+        private readonly DatabaseService databaseService = new DatabaseService();
 
         private readonly Random random;
 
@@ -49,43 +48,77 @@ namespace CybersecurityAwarenessChatbot.Classes
                    "Please type your name to continue.";
         }
 
-        public string ProcessInput(string input)
+        public void ResetConversation()
         {
+            awaitingName = true;
+        }
+
+        public void ResetSession()
+        {
+            awaitingName = true;
+
+            LastMatchedKeyword = "";
+
+        }
+
+        public string ProcessInput(string input)
+        { 
+
             input = input.ToLower().Trim();
 
-            // CAPTURE USER NAME
+            // FIRST MESSAGE = USERNAME
             if (awaitingName)
             {
+                string formattedName = string.Join(" ",
+                    input.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(word =>
+                            char.ToUpper(word[0]) +
+                                word.Substring(1).ToLower()));
+
                 string previousName = MemoryStore.UserName;
 
-                memoryStore.RememberUserName(input);
+                memoryStore.RememberUserName(formattedName);
+
                 awaitingName = false;
 
+                ActivityLogService.Add(
+                    "MAIN",
+                    $"{MemoryStore.UserName} logged in");
+
+                // Returning user
                 if (
                         !string.IsNullOrEmpty(previousName) &&
                         previousName.Equals(MemoryStore.UserName, StringComparison.OrdinalIgnoreCase) &&
                         MemoryStore.ConversationHistory.Count > 0
                     )
-
                 {
                     string previousChats =
-                    string.Join("\n", MemoryStore.ConversationHistory);
+                    string.Join("\n", MemoryStore.ConversationHistory.TakeLast(10));
 
-                    return $"\n👋 Welcome back, {MemoryStore.UserName}!\n\n" +
-                           $"\nHere are your previous chats:\n\n{previousChats}";
+                    return
+                        $"👋 Welcome back, {MemoryStore.UserName}!\n\n" +
+                        $"I remember you.\n\n" +
+                        $"📝 Here are your recent chats:\n\n" +
+                        $"{previousChats}\n\n" +
+                        $"How can I assist you today?";
                 }
 
-                return $"😊 Nice to meet you, {MemoryStore.UserName}!\n\n" +
-                       $"I am here to help you stay safe online:\n\n" +
-                       $"you can ask about CYBESECURITY related questions like:\n\n" +
-                       $"🔒 Passwords, " + $"🎣 Phishing\n\n" +
-                       $"You can 📋 Add Task, " + $"📋 Play Quiz, " + $"📋 View your activity\n\n" +
-
-                       $"Tell me what you want to do, and I will gladly assit you.";
-               
+                // New user
+                return
+                    $"😊 Nice to meet you, {MemoryStore.UserName}!\n\n" +
+                    $"I am here to help you stay safe online.\n\n" +
+                    $"You can:\n\n" +
+                    $"🔒 Password Safety\n" +
+                    $"🎣 Phishing Awareness\n" +
+                    $"📋 Task Management\n" +
+                    $"📝 Activity Logs\n" +
+                    $"🧠 Cybersecurity Quiz\n\n" +
+                    $"Tell me what you would like to do.\n\n" +
+                    $"Type 'exit' anytime to leave the chat.";
             }
 
-            memoryStore.AddConversation($"User: {input}");
+            //memoryStore.AddConversation($"User: {input}");
+            ActivityLogService.Add("MAIN", $"{MemoryStore.UserName} started logged in");
 
             string intent = NLPService.DetectIntent(input);
 
@@ -93,113 +126,126 @@ namespace CybersecurityAwarenessChatbot.Classes
             {
                 case "ADD_TASK":
 
-                    ActivityLogService.Add("TASK",
-                        $"{MemoryStore.UserName} requested to add a task");
+                    ActivityLogService.Add("TASK", $"{MemoryStore.UserName} opened task window");
 
                     MemoryStore.TaskWelcomeMessage =
-                        "📋 Add Task\n\n" +
-                        "Please enter the title and description of the task you would like to add.";
+                        "📋 TASK ASSISTANT\n\n" +
+                        "Please select the option you would like to perform from the left panel.\n\n" +
+                        "✔ Add Task\n" +
+                        "✔ View Tasks\n" +
+                        "✔ Complete Task\n" +
+                        "✔ Delete Task\n" +
+                        "✔ View Reminders\n" +
+                        "✔ View Saved JSON Tasks";
 
-                    return "__OPEN_TASK_ADD__";
-
+                    return "__OPEN_TASK_WINDOW__";
 
                 case "VIEW_TASKS":
 
-                    if (!databaseService.GetTasks().Any())
-                    {
-                        return "⚠ No tasks have been added yet.\n\n" +
-                               "Would you like to add a new task?\n\n" +
-                               "Type: Add Task";
-                    }
-
-                    ActivityLogService.Add("TASK",
-                        $"{MemoryStore.UserName} requested to view tasks");
+                    ActivityLogService.Add("TASK", $"{MemoryStore.UserName} opened task window");
 
                     MemoryStore.TaskWelcomeMessage =
-                        "📋 Here are your current tasks.";
+                        "📋 TASK ASSISTANT\n\n" +
+                        "Please select the option you would like to perform from the left panel.\n\n" +
+                        "✔ Add Task\n" +
+                        "✔ View Tasks\n" +
+                        "✔ Complete Task\n" +
+                        "✔ Delete Task\n" +
+                        "✔ View Reminders\n" +
+                        "✔ View Saved JSON Tasks";
 
-                    return "__OPEN_TASK_VIEW__";
-
+                    return "__OPEN_TASK_WINDOW__";
 
                 case "DELETE_TASK":
 
-                    if (!databaseService.GetTasks().Any())
-                    {
-                        return "⚠ There are no tasks available to delete.\n\n" +
-                               "Would you like to add a task instead?\n\n" +
-                               "Type: Add Task";
-                    }
-
-                    ActivityLogService.Add("TASK",
-                        $"{MemoryStore.UserName} requested to delete a task");
+                    ActivityLogService.Add("TASK", $"{MemoryStore.UserName} opened task window");
 
                     MemoryStore.TaskWelcomeMessage =
-                        "🗑 Enter the title of the task you would like to delete.";
+                         "📋 TASK ASSISTANT\n\n" +
+                         "Please select the option you would like to perform from the left panel.\n\n" +
+                         "✔ Add Task\n" +
+                         "✔ View Tasks\n" +
+                         "✔ Complete Task\n" +
+                         "✔ Delete Task\n" +
+                         "✔ View Reminders\n" +
+                         "✔ View Saved JSON Tasks";
 
-                    return "__OPEN_TASK_DELETE__";
-
+                    return "__OPEN_TASK_WINDOW__";
 
                 case "COMPLETE_TASK":
 
-                    if (!databaseService.GetTasks().Any())
-                    {
-                        return "⚠ No tasks exist to complete.\n\n" +
-                               "Would you like to add a task first?\n\n" +
-                               "Type: Add Task";
-                    }
-
-                    ActivityLogService.Add(
-                        "TASK",
-                        $"{MemoryStore.UserName} requested to complete a task");
+                    ActivityLogService.Add("TASK", $"{MemoryStore.UserName} opened task window");
 
                     MemoryStore.TaskWelcomeMessage =
-                        "✅ Enter the title of the task you have completed.";
+                         "📋 TASK ASSISTANT\n\n" +
+                         "Please select the option you would like to perform from the left panel.\n\n" +
+                         "✔ Add Task\n" +
+                         "✔ View Tasks\n" +
+                         "✔ Complete Task\n" +
+                         "✔ Delete Task\n" +
+                         "✔ View Reminders\n" +
+                         "✔ View Saved JSON Tasks";
 
-                    return "__OPEN_TASK_COMPLETE__";
+                    return "__OPEN_TASK_WINDOW__";
 
+                    ActivityLogService.Add("TASK", $"{MemoryStore.UserName} opened task window");
+
+                case "VIEW_REMINDERS":
+                    MemoryStore.TaskWelcomeMessage =
+                        "📋 TASK ASSISTANT\n\n" +
+                        "Please select the option you would like to perform from the left panel.\n\n" +
+                        "✔ Add Task\n" +
+                        "✔ View Tasks\n" +
+                        "✔ Complete Task\n" +
+                        "✔ Delete Task\n" +
+                        "✔ View Reminders\n" +
+                        "✔ View Saved JSON Tasks";
+
+                    return "__OPEN_TASK_WINDOW__";
 
                 case "QUIZ":
 
-                    ActivityLogService.Add("TASK", $"{MemoryStore.UserName} started the quiz");
+                    ActivityLogService.Add("QUIZ", $"{MemoryStore.UserName} started the quiz");
 
                     return "__OPEN_QUIZ__";
 
-
                 case "ACTIVITY_LOG":
 
-                    ActivityLogService.Add("TASK",
+                    ActivityLogService.Add(
+                        "TASK",
                         $"{MemoryStore.UserName} viewed activity logs");
 
                     return "__SHOW_ACTIVITY_LOG__";
             }
-
-            if (input.Equals("leave session") ||
-                input.Equals("logout") ||
-                input.Equals("sign out") ||
-                input.Equals("exit"))
+            // LEAVE SESSION → allow new user
+            if (input == "exit" ||
+                input == "sign out" ||
+                input == "logout" ||
+                input == "leave session")
             {
-                ActivityLogService.Add("TASK",
-                    $"{MemoryStore.UserName} left the session");
+                ActivityLogService.Add(
+                    "MAIN",
+                    $"{MemoryStore.UserName} ended the session");
+
+                awaitingName = true;
+
+                LastMatchedKeyword = "";
 
                 return "__LEAVE_SESSION__";
             }
 
-            /* // EXIT OPTIONS
-             if (input == "exit" || input == "quit" || input == "bye")
-             {
-                 awaitingName = true;
-                 LastMatchedKeyword = "";
+            // CLOSE APPLICATION
+            if (input == "end" ||
+                input == "close" ||
+                input == "leave")
+            {
+                ActivityLogService.Add(
+                    "MAIN",
+                    $"{MemoryStore.UserName} closed SecureWin");
 
-                 return "__CLEAR_CHAT__\n\n👋 Chat ended successfully.\n\nWelcome back!\n\nWhat is your name?";
-             }
+                return "__CLOSE_SECUREWIN__";
+            }
 
-             // END → close the whole application
-             if (input == "end" || input == "close" || input == "leave")
-             {
-                 Application.Current.Shutdown();
-                 return null;
-             }
-            */
             // MEMORY QUESTIONS
             if (input.Contains("what is my name") ||
                 input.Contains("do you remember my name") ||
