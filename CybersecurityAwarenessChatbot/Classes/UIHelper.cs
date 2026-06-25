@@ -3,34 +3,6 @@
     ST10073464
 */
 
-/*
-namespace CybersecurityAwarenessChatbot.Classes
-{
-    public static class UIHelper
-    {
-        // Method to display the ASCII art logo and welcome message
-        public static string ShowLogo()
-        {
-            return @"
-            CYBERSECURITY AWARENESS BOT
- _____                           _    _ _     
-/  ___|                         | |  | (_)      
-\ `--.  ___  ___ _   _ _ __ ___ | |  | |_ _ __  
- `--. \/ _ \/ __| | | | '__/ _ \| |/\| | | '_ \ 
-/\__/ /  __/ (__| |_| | | |  __/\  /\  / | | | |
-\____/ \___|\___|\__,_|_|  \___| \/  \/|_|_| |_|
-                                                
-          Stay Secure. Stay Winning Online.
-";
-        }
-    }
-}*/
-
-/*
-    Erwin Mashobane
-    ST10073464
-*/
-
 namespace CybersecurityAwarenessChatbot.Classes
 {
     // Loads SecureWin ASCII art.

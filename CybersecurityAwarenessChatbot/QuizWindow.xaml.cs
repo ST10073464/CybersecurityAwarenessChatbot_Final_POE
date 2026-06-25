@@ -1,15 +1,10 @@
-﻿/*
-    Erwin Mashobane
-    ST10073464
-*/
-
-using CybersecurityAwarenessChatbot.Classes;
+﻿using CybersecurityAwarenessChatbot.Classes;
+using CybersecurityAwarenessChatbot.Services;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-
 
 namespace CybersecurityAwarenessChatbot
 {
@@ -17,18 +12,14 @@ namespace CybersecurityAwarenessChatbot
     {
         // Quiz service
         private readonly QuizService quizService;
-
         private MainWindow chatWindow;
 
         // Stores wrong answers
         private readonly List<int> wrongQuestionIndexes;
-
         private int totalCorrectAnswers = 0;
-
         private int totalWrongAnswers = 0;
-
         private bool retryMode = false;
-
+        private List<QuizQuestion> originalQuestionOrder;
         private int totalQuestions;
 
         // Constructor
@@ -37,11 +28,8 @@ namespace CybersecurityAwarenessChatbot
             InitializeComponent();
 
             chatWindow = mainWindow;
-
             quizService = new QuizService();
-
             wrongQuestionIndexes = new List<int>();
-
             totalQuestions = quizService.Questions.Count;
 
             PreviewKeyDown += QuizWindow_PreviewKeyDown;
@@ -51,13 +39,14 @@ namespace CybersecurityAwarenessChatbot
 
             ResultsScrollViewer.PreviewMouseWheel += ResultsScrollViewer_PreviewMouseWheel;
 
-            ActivityLogService.Add("QUIZ", $"{MemoryStore.UserName} started quiz");
-
-            QuizActivityLogText.Text = ActivityLogService.GetLogs("QUIZ");
-
             Closing += QuizWindow_Closing;
 
             LoadActivityLog();
+
+            // --- SHUFFLE ONCE AT START ---
+            quizService.Questions = quizService.Questions.OrderBy(x => Guid.NewGuid()).ToList();
+            // Backup this original random sequence
+            originalQuestionOrder = new List<QuizQuestion>(quizService.Questions);
 
             LoadQuestion();
         }
@@ -70,7 +59,6 @@ namespace CybersecurityAwarenessChatbot
                 if (NextButton.IsVisible && NextButton.IsEnabled && NextButton.IsFocused)
                 {
                     NextButton_Click(NextButton, new RoutedEventArgs());
-
                     e.Handled = true;
                 }
             }
@@ -79,7 +67,6 @@ namespace CybersecurityAwarenessChatbot
         private void ResultsScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             ResultsScrollViewer.ScrollToVerticalOffset(ResultsScrollViewer.VerticalOffset - e.Delta);
-
             e.Handled = true;
         }
 
@@ -105,24 +92,22 @@ namespace CybersecurityAwarenessChatbot
             for (int i = 0; i < question.Options.Count; i++)
             {
                 RadioButton option = new RadioButton
-                    {
-                        Content = question.Options[i],
-                        Tag = i,
-                        FontSize = 18,
-                        Margin = new Thickness(5),
-                        Foreground = Brushes.Black,
-                        GroupName = "QuizOptions"
-                    };
+                {
+                    Content = question.Options[i],
+                    Tag = i,
+                    FontSize = 18,
+                    Margin = new Thickness(5),
+                    Foreground = Brushes.Black,
+                    GroupName = "QuizOptions"
+                };
 
                 OptionsPanel.Children.Add(option);
                 option.KeyDown += Option_KeyDown;
             }
 
             // Progress display
-            ProgressText.Text = $"Question " +
-                                $"{quizService.CurrentQuestionIndex + 1} " +
-                                $"of {quizService.Questions.Count}";
-            
+            ProgressText.Text = $"Question {quizService.CurrentQuestionIndex + 1} of {quizService.Questions.Count}";
+
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 if (OptionsPanel.Children.Count > 0)
@@ -161,7 +146,6 @@ namespace CybersecurityAwarenessChatbot
                 if (rb.IsChecked == true)
                 {
                     selectedIndex = (int)rb.Tag;
-
                     break;
                 }
             }
@@ -170,7 +154,6 @@ namespace CybersecurityAwarenessChatbot
             if (selectedIndex == -1)
             {
                 MessageBox.Show("Please select an answer.");
-
                 return;
             }
 
@@ -180,7 +163,6 @@ namespace CybersecurityAwarenessChatbot
             if (selectedIndex == question.CorrectAnswer)
             {
                 quizService.Score++;
-
                 totalCorrectAnswers++;
 
                 ActivityLogService.Add("QUIZ", $"Question {quizService.CurrentQuestionIndex + 1}: Correct");
@@ -191,12 +173,10 @@ namespace CybersecurityAwarenessChatbot
                                 "Correct Answer",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
-
             }
             else
             {
                 wrongQuestionIndexes.Add(quizService.CurrentQuestionIndex);
-
                 totalWrongAnswers++;
 
                 ActivityLogService.Add("QUIZ", $"Question {quizService.CurrentQuestionIndex + 1}: Incorrect");
@@ -206,44 +186,32 @@ namespace CybersecurityAwarenessChatbot
                                 $"{question.Explanation}",
                                 "Incorrect Answer",
                                 MessageBoxButton.OK,
-                                MessageBoxImage.Warning);         
+                                MessageBoxImage.Warning);
             }
 
             // Move to next question
             quizService.CurrentQuestionIndex++;
- 
             LoadQuestion();
-
         }
 
         // SHOW RESULTS
         private void ShowResults()
         {
             QuestionText.Visibility = Visibility.Collapsed;
-
             OptionsPanel.Visibility = Visibility.Collapsed;
-
             NextButton.Visibility = Visibility.Collapsed;
-
             ProgressText.Visibility = Visibility.Collapsed;
-
-            ResultsText.Visibility = Visibility.Visible;
-
             ResultsScrollViewer.Visibility = Visibility.Visible;
-
             ResultsText.Visibility = Visibility.Visible;
 
             // FIRST ATTEMPT COMPLETE
             if (!retryMode)
             {
                 int correct = totalCorrectAnswers;
-
                 int totalQuestions = quizService.Questions.Count;
-
                 int wrong = totalWrongAnswers;
-     
-                string badge = GetBadge(correct, quizService.Questions.Count);
 
+                string badge = GetBadge(correct, quizService.Questions.Count);
                 string motivation = GetMotivationMessage(correct, quizService.Questions.Count);
 
                 ResultsText.Text =
@@ -274,9 +242,12 @@ namespace CybersecurityAwarenessChatbot
                     RetryButton.Visibility = Visibility.Visible;
                     ViewAnswersButton.Visibility = Visibility.Visible;
 
-                    ActivityLogService.Add("QUIZ", $"Quiz completed: {totalCorrectAnswers}/{totalQuestions}");
-                }
+                    // Ensure full retry is always an option
+                    TryAgainButton.Visibility = Visibility.Visible; 
 
+                    ActivityLogService.Add("QUIZ", $"Quiz completed: {totalCorrectAnswers}/{totalQuestions}");
+
+                }
                 return;
             }
 
@@ -284,11 +255,9 @@ namespace CybersecurityAwarenessChatbot
             if (retryMode)
             {
                 int finalCorrect = totalCorrectAnswers;
-
                 int finalWrong = totalQuestions - finalCorrect;
 
                 string badge = GetBadge(finalCorrect, totalQuestions);
-
                 string motivation = GetMotivationMessage(finalCorrect, totalQuestions);
 
                 ResultsText.Text =
@@ -300,7 +269,9 @@ namespace CybersecurityAwarenessChatbot
                     $"🏆 Badge: {badge}\n\n" +
                     $"{motivation}\n\n";
 
-                ActivityLogService.Add("QUIZ", $"Quiz retry started at {DateTime.Now:HH:mm:ss}");
+                ActivityLogService.Add("QUIZ", $"Quiz retry completed at {DateTime.Now:HH:mm:ss}");
+
+
 
                 // PERFECT AFTER RETRY
                 if (finalCorrect == totalQuestions)
@@ -309,12 +280,12 @@ namespace CybersecurityAwarenessChatbot
                                         $"Excellent work! You corrected every mistake and achieved a perfect score.";
 
                     RetryButton.Visibility = Visibility.Collapsed;
-
                     ViewAnswersButton.Visibility = Visibility.Visible;
-
                     TryAgainButton.Visibility = Visibility.Visible;
 
-                    ActivityLogService.Add("QUIZ", $"{MemoryStore.UserName} achieved PERFECT SCORE after retry");
+                    // UPDATED LOG
+                    ActivityLogService.Add("QUIZ", $"{MemoryStore.UserName} completed retry and achieved a PERFECT SCORE ({finalCorrect}/{totalQuestions})");
+
                 }
                 else
                 {
@@ -322,13 +293,14 @@ namespace CybersecurityAwarenessChatbot
                                         $"Review the answers and try again.";
 
                     RetryButton.Visibility = Visibility.Visible;
-
                     ViewAnswersButton.Visibility = Visibility.Visible;
-                }
+                    TryAgainButton.Visibility = Visibility.Visible;
 
+                    // UPDATED LOG 
+                    ActivityLogService.Add("QUIZ", $"{MemoryStore.UserName} completed retry. Final Score: {finalCorrect}/{totalQuestions}");
+                }
                 return;
             }
-
         }
 
         // Show correct answers in results
@@ -343,7 +315,6 @@ namespace CybersecurityAwarenessChatbot
             }
 
             ResultsText.Text = results;
-
             ResultsText.Visibility = Visibility.Visible;
         }
 
@@ -358,11 +329,8 @@ namespace CybersecurityAwarenessChatbot
         {
             double percentage = (double)score / total * 100;
 
-            if (percentage == 100)
-                return "🥇 PERFECT";
-
-            if (percentage >= 70)
-                return "🥈 GOOD";
+            if (percentage == 100) return "🥇 PERFECT";
+            if (percentage >= 70) return "🥈 GOOD";
 
             return "🥉 TRY AGAIN";
         }
@@ -387,13 +355,6 @@ namespace CybersecurityAwarenessChatbot
                        "Review the questions you missed and you'll be at a perfect score in no time.";
             }
 
-            if (score == total)
-            {
-                return "🎉 PERFECT SCORE ACHIEVED!\n\n" +
-                       "Excellent work! You corrected every mistake and achieved a perfect score.\n\n" +
-                       "You have demonstrated excellent cybersecurity awareness and online safety knowledge.";
-            }
-
             return "💪 Keep Learning!\n\n" +
                    "Every attempt improves your cybersecurity knowledge.\n" +
                    "Review the incorrect answers and try again.\n" +
@@ -407,105 +368,83 @@ namespace CybersecurityAwarenessChatbot
                 return;
 
             retryMode = true;
-
             List<QuizQuestion> retryQuestions = new();
 
             foreach (int index in wrongQuestionIndexes)
             {
-                retryQuestions.Add(
-                    quizService.Questions[index]);
+                retryQuestions.Add(quizService.Questions[index]);
             }
 
             quizService.Questions = retryQuestions;
-
             quizService.CurrentQuestionIndex = 0;
-
-            // Score only for retry questions
             quizService.Score = 0;
 
+            // UI Elements Adjustments
             ResultsText.Visibility = Visibility.Collapsed;
-
             RetryButton.Visibility = Visibility.Collapsed;
-
             ViewAnswersButton.Visibility = Visibility.Collapsed;
-
             TryAgainButton.Visibility = Visibility.Collapsed;
 
             QuestionText.Visibility = Visibility.Visible;
-
             OptionsPanel.Visibility = Visibility.Visible;
-
             NextButton.Visibility = Visibility.Visible;
 
-            ProgressText.Visibility = Visibility.Collapsed;
-
+            // Progress bar must be visible on retry 
+            ProgressText.Visibility = Visibility.Visible;
             ResultsScrollViewer.Visibility = Visibility.Collapsed;
 
-            ResultsText.Visibility = Visibility.Collapsed;
-
             ActivityLogService.Add("QUIZ", $"Quiz Retry Started at {DateTime.Now:HH:mm:ss}");
-
             LoadQuestion();
         }
 
+        // FULL RESET WITH ORIGINAL QUESTION SEQUENCE
         private void TryAgainButton_Click(object sender, RoutedEventArgs e)
         {
             retryMode = false;
-
             totalCorrectAnswers = 0;
-
             totalWrongAnswers = 0;
-
             wrongQuestionIndexes.Clear();
 
-            quizService.Questions = quizService.Questions
-                .OrderBy(x => Guid.NewGuid())
-                .ToList();
+            // Restore the exact question order saved from the 1st attempt
+            if (originalQuestionOrder != null)
+            {
+                quizService.Questions = new List<QuizQuestion>(originalQuestionOrder);
+            }
 
             quizService.CurrentQuestionIndex = 0;
-
             quizService.Score = 0;
 
+            // UI Elements Reset
             ResultsText.Visibility = Visibility.Collapsed;
-
             RetryButton.Visibility = Visibility.Collapsed;
-
             ViewAnswersButton.Visibility = Visibility.Collapsed;
-
             TryAgainButton.Visibility = Visibility.Collapsed;
 
             QuestionText.Visibility = Visibility.Visible;
-
             OptionsPanel.Visibility = Visibility.Visible;
-
             NextButton.Visibility = Visibility.Visible;
 
-            ProgressText.Visibility = Visibility.Collapsed;
-
+            // Progress bar must be visible
+            ProgressText.Visibility = Visibility.Visible;
             ResultsScrollViewer.Visibility = Visibility.Collapsed;
 
-            ResultsText.Visibility = Visibility.Collapsed;
-
             ActivityLogService.Add("QUIZ", $"Full Quiz Restarted at {DateTime.Now:HH:mm:ss}");
-
             LoadQuestion();
         }
 
         private void LoadActivityLog()
         {
-            QuizActivityLogText.Text = ActivityLogService.GetAllLogs();
+            // Only shows logs labeled with the [QUIZ] tag
+            QuizActivityLogText.Text = ActivityLogService.GetLogsByCategory("QUIZ");
         }
 
         private void QuizWindow_Closing(object sender, CancelEventArgs e)
         {
-            ActivityLogService.Add(
-                "QUIZ",
-                $"{MemoryStore.UserName} closed Quiz Window");
+            ActivityLogService.Add("QUIZ", $"{MemoryStore.UserName} closed Quiz Window");
         }
 
         // Back to main chat window
-        private void BackButton_Click(object sender,
-                              RoutedEventArgs e)
+        private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             ActivityLogService.Add("QUIZ", $"{MemoryStore.UserName} returned to chat");
 

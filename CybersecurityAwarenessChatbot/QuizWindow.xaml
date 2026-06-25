@@ -358,12 +358,11 @@
 
                         <TextBlock x:Name="QuizActivityLogText"
                                            Foreground="White"
-                                           FontSize="14"
+                                           FontSize="12"
                                            TextWrapping="Wrap"/>
 
-                        </ScrollViewer>
+                    </ScrollViewer>
 
-                    
                 </StackPanel>
 
             </Border>

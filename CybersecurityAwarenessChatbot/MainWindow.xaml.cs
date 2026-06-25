@@ -4,11 +4,12 @@
 */
 
 using CybersecurityAwarenessChatbot.Classes;
+using CybersecurityAwarenessChatbot.Services;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.IO;
 
 namespace CybersecurityAwarenessChatbot
 {
@@ -17,9 +18,7 @@ namespace CybersecurityAwarenessChatbot
     public partial class MainWindow : Window
     {
         private readonly ChatBot _chatBot;
-
         private bool _isGreetingPlayed = false;
-
         private bool awaitingUserName = true;
 
         // Constructor
@@ -27,44 +26,43 @@ namespace CybersecurityAwarenessChatbot
         {
             InitializeComponent();
 
-            // Show username in header
-            UserNameText.Text = $"👤 {MemoryStore.UserName}";
+            // Pull the saved session history from local file storage
+            MemoryStore.LoadSession();
 
-            // Initialize chatbot
+            // Default fallback display setup 
+            UserNameText.Text = $"👤 {MemoryStore.UserName ?? "Guest"}";
+
+            // Initialize chatbot engine
             _chatBot = new ChatBot();
 
-            // Disable textbox during startup greeting
+            // Disable textbox during startup greeting sequencing
             UserInputTextBox.IsEnabled = false;
             SendButton.IsEnabled = false;
 
-            // load ASCII art logo
+            // Load ASCII art logo
             AsciiArtText.Text = UIHelper.ShowLogo();
 
-            // Run startup sequence
+            // Run startup layout lifecycle sequencer
             Loaded += MainWindow_Loaded;
-
-            // Log user activity
-            ActivityLogService.Add("MAIN", $"{MemoryStore.UserName} started chatbot");
         }
 
         // On window load, display welcome message and activity log summary.
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-
-            // Check if it already ran
+            // Check if it already ran to prevent duplicated lifecycle pings
             if (_isGreetingPlayed) return;
             _isGreetingPlayed = true;
 
-            // Play greeting voice
+            // Play greeting voice asynchronously
             await Task.Run(() => VoicePlayer.PlayGreeting());
 
             // Play a quick system notification ping
             System.Media.SystemSounds.Asterisk.Play();
 
-            // Show chatbot greeting after audio
+            // Show chatbot greeting after audio finishes
             AppendBotMessage(_chatBot.GetGreeting());
 
-            // Enable user interaction
+            // Enable user interaction input elements
             UserInputTextBox.IsEnabled = true;
             SendButton.IsEnabled = true;
 
@@ -75,7 +73,7 @@ namespace CybersecurityAwarenessChatbot
 
             UserNameText.Text = $"👤 {MemoryStore.UserName}";
 
-            // load recent activity log
+            // Load recent layout elements into UI panel
             LoadRecentActivity();
 
             // Focus textbox automatically
@@ -98,13 +96,34 @@ namespace CybersecurityAwarenessChatbot
             }
         }
 
-        // load recent activity log into the ActivityLogText TextBox
+        // Load recent activity log into the ActivityLogText TextBox (Strictly limited to a maximum of 10 items)
         private void LoadRecentActivity()
         {
-            ActivityLogText.Text = ActivityLogService.GetAllLogs();
-        }      
+            try
+            {
+                // Retrieve all records from the storage log layer
+                var logString = ActivityLogService.GetAllLogs();
+                if (string.IsNullOrWhiteSpace(logString))
+                {
+                    ActivityLogText.Text = "No activities recorded yet.";
+                    return;
+                }
 
-        // Send user message when Send button is clicked.
+                var rawLogs = logString
+                    .Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+                    .ToList();
+
+                // Display only the latest 10 items directly onto the UI layout sidebar view
+                var truncatedLogs = rawLogs.TakeLast(10);
+                ActivityLogText.Text = string.Join(Environment.NewLine, truncatedLogs);
+            }
+            catch
+            {
+                ActivityLogText.Text = "Error loading activity logs.";
+            }
+        }
+
+        // Send user message and route business rules parsing logic responses
         private void SendMessage()
         {
             string input = UserInputTextBox.Text.Trim();
@@ -112,78 +131,61 @@ namespace CybersecurityAwarenessChatbot
             if (string.IsNullOrWhiteSpace(input))
                 return;
 
-            // Play Notification sound
+            // Play input execution notification sound
             VoicePlayer.PlaySound();
 
-            // Display user message
-            if (!string.IsNullOrWhiteSpace(input))
-            {
-                input = char.ToUpper(input[0]) + input.Substring(1);
-            }
+            // Format message casing safely for cleaner layout rendering
+            input = char.ToUpper(input[0]) + input.Substring(1);
 
-            // Display user message
+            // Display user message bubble right-aligned
             AppendUserMessage(input);
 
-            string response = _chatBot.ProcessInput(input); //string.Empty;
+            // Let chatbot parse and capture logs internally
+            string response = _chatBot.ProcessInput(input);
 
-            if (awaitingUserName)
+            // Synchronize State settings from memory parameters safely
+            if (awaitingUserName && MemoryStore.UserName != "Guest")
             {
                 awaitingUserName = false;
-
-                UserNameText.Text = $"👤 {MemoryStore.UserName}";
             }
 
             UserNameText.Text = $"👤 {MemoryStore.UserName}";
 
-            // Log user activity
-            ActivityLogService.Add("MAIN", $"{MemoryStore.UserName} sent message: '{input}'");
-
-            // CLEAR CHAT if signal is found
+            // Check if string contains systemic cleanup clear signals
             if (response.StartsWith("__CLEAR_CHAT__"))
             {
                 ChatPanel.Children.Clear();
-
                 response = response.Replace("__CLEAR_CHAT__", "").Trim();
             }
 
+            // Route execution strings targeting application view modifications
             switch (response)
             {
                 case "__OPEN_TASK_WINDOW__":
-
                     UserInputTextBox.Clear();
-
                     TaskWindow taskWindow = new TaskWindow("", this);
                     taskWindow.Show();
                     Hide();
                     return;
 
                 case "__OPEN_QUIZ__":
-
                     UserInputTextBox.Clear();
-
                     new QuizWindow(this).Show();
-
-                    this.Hide();
-
+                    Hide();
                     return;
 
                 case "__SHOW_ACTIVITY_LOG__":
-
                     AppendBotMessage(ActivityLogService.GetAllLogs());
-
-                    break;
+                    UserInputTextBox.Clear();
+                    LoadRecentActivity();
+                    return;
 
                 case "__OPEN_TASK_REMINDERS__":
-
                     new TaskWindow("REMINDERS").Show();
-
                     Close();
-
                     return;
 
                 case "__LEAVE_SESSION__":
-
-                    // Save username BEFORE anything resets it
                     string currentUser = UserNameText.Text.Replace("👤", "").Trim();
 
                     MessageBox.Show(
@@ -192,74 +194,68 @@ namespace CybersecurityAwarenessChatbot
                         MessageBoxButton.OK,
                         MessageBoxImage.Information);
 
-                    // Log activity before resetting
-                    ActivityLogService.Add("MAIN", $"{currentUser} ended the session");
-
-                    // Reset chatbot state
-                    _chatBot.ResetSession();
-
-                    // Reset username
+                    // Reset session flags on UI level
+                    awaitingUserName = true;
                     MemoryStore.UserName = "Guest";
-
-                    // Update GUI immediately
                     UserNameText.Text = "👤 Guest";
 
-                    // Clear chat window
+                    // Clear existing chat flow views
                     ChatPanel.Children.Clear();
 
-                    // Show welcome message for a new user
-                    AppendBotMessage(
-                        "👋 Welcome to SecureWin!\n\n" +
-                        "Please type your name to continue.");
-
-                    UserInputTextBox.Focus();
+                    // Reload clean baseline environment greets
+                    AppendBotMessage(_chatBot.GetGreeting());
+                    LoadRecentActivity();
 
                     UserInputTextBox.Clear();
-
+                    UserInputTextBox.Focus();
                     return;
 
                 case "__CLOSE_SECUREWIN__":
-
-                    MessageBoxResult result =
-                        MessageBox.Show(
-                            "Are you sure you want to close SecureWin?",
-                            "Close SecureWin",
-                            MessageBoxButton.YesNo,
-                            MessageBoxImage.Question);
+                    MessageBoxResult result = MessageBox.Show(
+                        "Are you sure you want to close SecureWin?",
+                        "Close SecureWin",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
 
                     if (result == MessageBoxResult.Yes)
                     {
+                        // Save everything right before shutdown execution runs
+                        MemoryStore.SaveSession();
                         MemoryStore.UserName = "";
-
-                        System.Windows.Application.Current.Shutdown();
+                        Application.Current.Shutdown();
                     }
-
+                    UserInputTextBox.Clear();
                     return;
-
             }
 
-            // Display bot response
-            AppendBotMessage(response);
+            // Standard message fallback printing flow
+            if (!string.IsNullOrEmpty(response))
+            {
+                AppendBotMessage(response);
+            }
 
-            // Clear textbox immediately
+            // Clear input box and scroll to baseline frame container bounds
             UserInputTextBox.Clear();
 
-            // Scroll to latest message
             Dispatcher.InvokeAsync(() =>
             {
                 ChatScrollViewer.ScrollToEnd();
             });
 
-            // Return focus to textbox
+            // Re-sync visual side panels to maintain real-time tracking accuracy
+            LoadRecentActivity();
             UserInputTextBox.Focus();
         }
 
-        // Placeholder text visibility based on user input
+        // Placeholder text visibility based on user input lengths
         private void UserInputTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            PlaceholderText.Visibility = string.IsNullOrWhiteSpace(UserInputTextBox.Text)
-                ? Visibility.Visible
-                : Visibility.Hidden;
+            if (PlaceholderText != null)
+            {
+                PlaceholderText.Visibility = string.IsNullOrWhiteSpace(UserInputTextBox.Text)
+                    ? Visibility.Visible
+                    : Visibility.Hidden;
+            }
         }
 
         // Displays username and timestamp, with a double tick indicator for sent messages.
@@ -271,7 +267,6 @@ namespace CybersecurityAwarenessChatbot
                 Margin = new Thickness(5)
             };
 
-            // Username and timestamp
             TextBlock header = new TextBlock
             {
                 Text = $"{MemoryStore.UserName} • {DateTime.Now:HH:mm}",
@@ -290,7 +285,6 @@ namespace CybersecurityAwarenessChatbot
             };
 
             StackPanel bubbleContent = new StackPanel();
-
             TextBlock text = new TextBlock
             {
                 Text = message,
@@ -299,7 +293,6 @@ namespace CybersecurityAwarenessChatbot
                 TextWrapping = TextWrapping.Wrap
             };
 
-            // Double tick indicator
             TextBlock ticks = new TextBlock
             {
                 Text = "✓✓",
@@ -311,18 +304,13 @@ namespace CybersecurityAwarenessChatbot
 
             bubbleContent.Children.Add(text);
             bubbleContent.Children.Add(ticks);
-
             bubble.Child = bubbleContent;
 
             container.Children.Add(header);
             container.Children.Add(bubble);
-
             ChatPanel.Children.Add(container);
 
-            Dispatcher.InvokeAsync(() =>
-            {
-                ChatScrollViewer.ScrollToEnd();
-            });
+            Dispatcher.InvokeAsync(() => { ChatScrollViewer.ScrollToEnd(); });
         }
 
         // Displays bot message bubble.
@@ -359,29 +347,20 @@ namespace CybersecurityAwarenessChatbot
             };
 
             bubble.Child = text;
-
             container.Children.Add(header);
             container.Children.Add(bubble);
-
             ChatPanel.Children.Add(container);
 
-            Dispatcher.InvokeAsync(() =>
-            {
-                ChatScrollViewer.ScrollToEnd();
-            });
+            Dispatcher.InvokeAsync(() => { ChatScrollViewer.ScrollToEnd(); });
         }
 
         private void ShowSavedJsonTask()
         {
-            string path = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "Data",
-                "tasks.json");
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "tasks.json");
 
             if (!File.Exists(path))
             {
                 AppendBotMessage("❌ No saved task file found.");
-
                 return;
             }
 
@@ -390,23 +369,25 @@ namespace CybersecurityAwarenessChatbot
             if (string.IsNullOrWhiteSpace(json) || json == "[]")
             {
                 AppendBotMessage("📁 No tasks have been saved yet.");
-
                 return;
             }
 
-            AppendBotMessage(
-                "📁 SAVED TASKS (JSON)\n\n" +
-                json);
+            AppendBotMessage("📁 SAVED TASKS (JSON)\n\n" + json);
         }
 
         private void ViewJsonTasksButton_Click(object sender, RoutedEventArgs e)
         {
             ShowSavedJsonTask();
+            LoadRecentActivity();
         }
 
         private void ViewLogsButton_Click(object sender, RoutedEventArgs e)
         {
-            AppendBotMessage("📋 RECENT ACTIVITY\n\n" + ActivityLogService.GetAllLogs());
+            // Log the button click action context
+            ActivityLogService.Add("MAIN", $"{MemoryStore.UserName} requested master system logs view");
+
+            // Pull down everything combined (MAIN, TASK, and QUIZ)
+            ActivityLogText.Text = ActivityLogService.GetAllLogs();
         }
     }
 }

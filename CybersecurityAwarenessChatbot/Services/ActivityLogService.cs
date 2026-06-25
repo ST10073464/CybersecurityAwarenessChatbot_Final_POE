@@ -3,55 +3,57 @@
     ST10073464
 */
 
-namespace CybersecurityAwarenessChatbot.Classes
+using System.IO;
+
+namespace CybersecurityAwarenessChatbot.Services
 {
     public static class ActivityLogService
     {
-        private static readonly List<string> allLogs = new();
+        private static readonly string LogFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "activity_log.txt");
 
-        public static void Add(string source, string action)
+        // Your existing Add method remains the same...
+        public static void Add(string category, string message)
         {
-            string log =
-                $"[{DateTime.Now:HH:mm:ss}] [{source}] {action}";
+            try
+            {
+                string directory = Path.GetDirectoryName(LogFilePath);
+                if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
 
-            allLogs.Add(log);
-
-            // Keep only latest 50 logs
-            if (allLogs.Count > 50)
-                allLogs.RemoveAt(0);
+                string logLine = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{category.ToUpper()}] {message}{Environment.NewLine}";
+                File.AppendAllText(LogFilePath, logLine);
+            }
+            catch { }
         }
 
-        // Main Window -> all logs
+        // Returns absolutely everything
         public static string GetAllLogs()
         {
-            if (allLogs.Count == 0)
-                return "No activities recorded.";
-
-            return string.Join(
-                "\n\n",
-                allLogs.TakeLast(10));
+            try
+            {
+                if (File.Exists(LogFilePath))
+                {
+                    return File.ReadAllText(LogFilePath);
+                }
+            }
+            catch { }
+            return "No logs available.";
         }
 
-        // Window-specific logs
-        public static string GetLogs(string source)
+        // CRITICAL FIX: Returns logs matching only a specific category
+        public static string GetLogsByCategory(string category)
         {
-            var logs = allLogs
-                .Where(l => l.Contains($"[{source}]"))
-                .TakeLast(10)
-                .ToList();
-
-            if (logs.Count == 0)
-                return $"No {source} activities found.";
-
-            return string.Join("\n\n", logs);
-        }
-
-        public static List<string> GetRecentActivities(int count = 10)
-        {
-            return allLogs
-                .TakeLast(count)
-                .Reverse()
-                .ToList();
+            try
+            {
+                if (File.Exists(LogFilePath))
+                {
+                    var lines = File.ReadAllLines(LogFilePath);
+                    // Filters lines containing matching tags like "[TASK]" or "[QUIZ]"
+                    var filteredLines = lines.Where(line => line.Contains($"[{category.ToUpper()}]"));
+                    return string.Join(Environment.NewLine, filteredLines);
+                }
+            }
+            catch { }
+            return $"No logs available for {category}.";
         }
     }
 }
