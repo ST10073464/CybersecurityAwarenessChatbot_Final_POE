@@ -210,14 +210,14 @@ greeting.wav
 
 inside:
 
-Assets/
+Audio/
 
 Example:
 
 CybersecurityAwarenessChatbot
 │
-├── Assets
-│   └── greeting.wav
+├── Audio
+│   └── hello.wav
 
 The application will automatically play the greeting when the chatbot starts.
 
@@ -239,14 +239,13 @@ when the first task is added.
 ![Running GUI](Images/RunningGUI2.png)
 
 ## GitHub Actions Green Tick
-
 ![GitHub Actions] (Images/GitHub_actions.png)
 
 # YouTube Demonstration
 
 Unlisted YouTube demonstration:
 
-https://youtu.be/Xz2IL-5FisY
+https://youtu.be/k0wUWVrz0ZQ
 
 ## Releases
 
