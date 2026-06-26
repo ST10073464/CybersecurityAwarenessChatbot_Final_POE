@@ -26,7 +26,8 @@ namespace CybersecurityAwarenessChatbot.Classes
                     { 
                         "A fishing website", 
                         "A scam to trick you into stealing information", 
-                        "An antivirus software tool", "A firewall configuration" 
+                        "An antivirus software tool", 
+                        "A firewall configuration" 
                     },
                     
                     CorrectAnswer = 1,

@@ -364,20 +364,31 @@ namespace CybersecurityAwarenessChatbot
         // Retry only wrong questions
         private void RetryButton_Click(object sender, RoutedEventArgs e)
         {
+            // If everything is correct, do nothing
             if (wrongQuestionIndexes.Count == 0)
                 return;
 
             retryMode = true;
-            List<QuizQuestion> retryQuestions = new();
 
+            // Build the list of failed questions safely BEFORE we clear/modify anything
+            List<QuizQuestion> retryQuestions = new();
             foreach (int index in wrongQuestionIndexes)
             {
-                retryQuestions.Add(quizService.Questions[index]);
+                // Double-check to prevent any boundary crashes
+                if (index >= 0 && index < quizService.Questions.Count)
+                {
+                    retryQuestions.Add(quizService.Questions[index]);
+                }
             }
 
+            // Update the service with ONLY the wrong questions and reset states
             quizService.Questions = retryQuestions;
             quizService.CurrentQuestionIndex = 0;
             quizService.Score = 0;
+
+            // Clear the wrong tracking collection so it can be 
+            // re-populated accurately during this new retry round
+            wrongQuestionIndexes.Clear();
 
             // UI Elements Adjustments
             ResultsText.Visibility = Visibility.Collapsed;
