@@ -39,7 +39,7 @@ namespace CybersecurityAwarenessChatbot.Services
             return "No logs available.";
         }
 
-        // CRITICAL FIX: Returns logs matching only a specific category
+        // Returns logs matching only a specific category
         public static string GetLogsByCategory(string category)
         {
             try

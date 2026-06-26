@@ -14,8 +14,7 @@ namespace CybersecurityAwarenessChatbot.Classes
             // TASKS
             if (input.Contains("add task") ||
                 input.Contains("create task") ||
-                input.Contains("new task")) //||
-                //input.Contains("task"))
+                input.Contains("new task"))               
             {
                 return "ADD_TASK";
             }
